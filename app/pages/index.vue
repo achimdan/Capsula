@@ -22,7 +22,7 @@ function schimbaProfil() { profil.value = { anNastere: null, oras: null } }
         <BandaAni :anul-meu="an15" />
         <div class="rand">
           <NuxtLink to="/random" class="btn">▶▶ Random Hit</NuxtLink>
-          <NuxtLink to="/joc" class="btn ghost">Ghicește anul</NuxtLink>
+          <NuxtLink to="/game" class="btn ghost">Ghicește anul</NuxtLink>
         </div>
       </section>
 

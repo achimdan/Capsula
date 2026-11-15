@@ -47,7 +47,7 @@ onMounted(() => { if (!areProfil.value) navigateTo('/'); else amesteca() })
         <div class="k">Scor final</div>
         <p class="d1">{{ scor }}<span class="din">/{{ RUNDE * 100 }}</span></p>
         <p class="lead">Media generației {{ String(profil.anNastere).slice(2) }} apare după ce conectăm baza de date.</p>
-        <div class="rand"><button class="btn" @click="amesteca">Joacă din nou</button><NuxtLink to="/magazin" class="btn ghost">Scorul pe tricou</NuxtLink></div>
+        <div class="rand"><button class="btn" @click="amesteca">Joacă din nou</button><NuxtLink to="/shop" class="btn ghost">Scorul pe tricou</NuxtLink></div>
       </div>
 
       <div v-else-if="curenta" class="tabla">

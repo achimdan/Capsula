@@ -3,10 +3,11 @@ const { areProfil, caseta } = useCapsula()
 const route = useRoute()
 const linkuri = [
   { to: '/', text: 'Capsula' },
+  { to: '/daily', text: 'Caseta zilei' },
   { to: '/random', text: 'Random Hit' },
-  { to: '/joc', text: 'Ghicește anul' },
-  { to: '/caseta', text: 'Caseta mea' },
-  { to: '/magazin', text: 'Magazin' }
+  { to: '/game', text: 'Ghicește anul' },
+  { to: '/tape', text: 'Caseta mea' },
+  { to: '/shop', text: 'Magazin' }
 ]
 </script>
 
@@ -15,7 +16,7 @@ const linkuri = [
     <NuxtLink to="/" class="logo">Capsula</NuxtLink>
     <nav v-if="areProfil" aria-label="Principal">
       <NuxtLink v-for="l in linkuri" :key="l.to" :to="l.to" :aria-current="route.path === l.to ? 'page' : undefined">
-        {{ l.text }}<span v-if="l.to === '/caseta' && caseta.length" class="nr">{{ caseta.length }}</span>
+        {{ l.text }}<span v-if="l.to === '/tape' && caseta.length" class="nr">{{ caseta.length }}</span>
       </NuxtLink>
     </nav>
   </header>
