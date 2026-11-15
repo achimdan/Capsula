@@ -1,4 +1,5 @@
 export default defineNuxtConfig({
+  modules: ['@nuxt/eslint'],
   compatibilityDate: '2026-10-01',
   devtools: { enabled: false },
   // Faza locală: datele stau în browser, deci randăm doar pe client.

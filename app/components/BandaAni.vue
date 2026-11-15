@@ -112,7 +112,8 @@ function onResize() { seteaza(props.anulMeu ?? 1999) }
     <div v-if="interactiva" class="cap-et" aria-hidden="true">{{ anSub ?? anulMeu }}</div>
     <div ref="tambur" class="tambur" :class="{ anim, snap }" :style="{ transform: `translateX(${x}px)` }">
       <template v-for="r in REP" :key="r">
-        <div v-for="(an, i) in ani" :key="r + '-' + an" class="an"
+        <div
+v-for="(an, i) in ani" :key="r + '-' + an" class="an"
           :class="{ eu: an === anulMeu, lovit: lovit === (r - 1) * ani.length + i, activ: interactiva && activ === (r - 1) * ani.length + i }" :style="{ flexBasis: latime + 'px' }">
           <span class="y">{{ an }}</span><span class="t">{{ titlu(an) }}</span>
         </div>

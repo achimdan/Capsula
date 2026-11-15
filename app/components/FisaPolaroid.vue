@@ -51,7 +51,7 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
     <div v-if="actiuni" class="act">
       <button type="button" class="avut" :aria-pressed="avut" @click="apasaAvut">{{ avut ? '✓ Am fost acolo' : (fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta') }}</button>
       <button type="button" class="sec" :aria-pressed="salvata" @click="apasaCaseta">
-        <svg class="banda" :class="{ lipit: salvata }" :key="'i' + salvata" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="8.5" cy="12" r="2" /><circle cx="15.5" cy="12" r="2" /><path d="M8.5 14h7" /></svg>
+        <svg :key="'i' + salvata" class="banda" :class="{ lipit: salvata }" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="8.5" cy="12" r="2" /><circle cx="15.5" cy="12" r="2" /><path d="M8.5 14h7" /></svg>
         <span>{{ salvata ? '✓ În casetă' : '+ Caseta mea' }}</span>
         <span v-if="salvata && nrCaseta" :key="bump" class="nr" aria-hidden="true">{{ nrCaseta }}</span>
       </button>

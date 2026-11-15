@@ -1,25 +1,12 @@
 <script setup lang="ts">
 const { areProfil, profil, fiseVizibile } = useCapsula()
 
-// Ziua locală, ca „azi” să se schimbe la miezul nopții utilizatorului.
-function cheieZi(d = new Date()) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-const azi = cheieZi()
-const ieri = cheieZi(new Date(Date.now() - 864e5))
+const azi = cheieZi(new Date())
+const ieri = cheieIeri(Date.now())
 const eticheta = new Date().toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })
 
-// Generator determinist: aceeași zi + aceeași generație (deceniul nașterii) = aceeași casetă.
-function seed(s: string) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0 }
-function rng(a: number) { return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296 } }
-
-const generatie = computed(() => Math.floor((profil.value.anNastere ?? 1984) / 10) * 10)
-const fise = computed(() => {
-  const r = rng(seed(azi + ':' + generatie.value))
-  const pool = [...fiseVizibile.value]
-  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [pool[i], pool[j]] = [pool[j]!, pool[i]!] }
-  return pool.slice(0, 5)
-})
+const generatie = computed(() => generatieDinAn(profil.value.anNastere))
+const fise = computed(() => alegeFise(fiseVizibile.value, azi, generatie.value))
 
 const zi = useStocare<{ data: string; deschise: number }>('caseta-zilei', { data: '', deschise: 0 })
 const serie = useStocare<{ ultima: string; zile: number }>('serie', { ultima: '', zile: 0 })
@@ -31,7 +18,7 @@ function deschide(i: number) {
   if (i === deschise.value) {
     zi.value = { data: azi, deschise: i + 1 }
     if (i === 4 && serie.value.ultima !== azi) {
-      serie.value = { ultima: azi, zile: serie.value.ultima === ieri ? serie.value.zile + 1 : 1 }
+      serie.value = actualizeazaSerie(serie.value, azi, ieri)
     }
   }
   curenta.value = i
@@ -72,7 +59,8 @@ onMounted(() => {
           <div class="et-jos"><span>C-5</span><span>{{ deschise }}/5 ▮ NR</span></div>
         </div>
         <div class="sloturi" role="group" aria-label="Amintirile de azi">
-          <button v-for="(f, i) in fise" :key="f.id" type="button" class="slot" :aria-pressed="curenta === i"
+          <button
+v-for="(f, i) in fise" :key="f.id" type="button" class="slot" :aria-pressed="curenta === i"
             :disabled="i > deschise" :class="{ gata: i < deschise }" @click="deschide(i)">
             <span class="nr">{{ i + 1 }}</span><span class="t">{{ i < deschise ? f.an : '••••' }}</span>
           </button>
