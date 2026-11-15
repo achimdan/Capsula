@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Categorie } from '~/data/fise'
 const { areProfil, profil, an15, fiseVizibile, orasDeblocat, voturi } = useCapsula()
+const { ton, profilCititor } = useProfilCitit()
+const linieTon = computed(() => (ton.value ? LINII_TON[ton.value] : ''))
 const categorii: Categorie[] = ['Evenimente', 'Muzică', 'Filme & TV', 'Obiecte & Haine', 'Mâncare']
 const filtru = ref<Categorie | null>(null)
 const nationale = computed(() => fiseVizibile.value
@@ -9,7 +11,6 @@ const nationale = computed(() => fiseVizibile.value
 const locale = computed(() => fiseVizibile.value.filter(f => f.oras !== null).sort((a, b) => a.an - b.an))
 const aVotat = computed(() => !!profil.value.oras && voturi.value.includes(profil.value.oras))
 function voteaza() { if (profil.value.oras && !aVotat.value) voturi.value = [...voturi.value, profil.value.oras] }
-function schimbaProfil() { profil.value = { anNastere: null, oras: null } }
 
 // Headline: cuvinte care urcă din mască + odometru care rulează anii până la anul tău
 const cuvinte = ['Aveai', '15', 'ani', 'în']
@@ -43,13 +44,14 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 
 <template>
   <main class="pagina">
-    <Onboarding v-if="!areProfil" />
-    <template v-else>
+    <!-- Fără profil, middleware-ul trimite la /start; până atunci nu randăm nimic. -->
+    <template v-if="areProfil">
       <section class="erou" :class="{ gata }">
-        <div class="k">Născut în {{ profil.anNastere }} · {{ profil.oras }} · <button class="link" @click="schimbaProfil">schimbă</button></div>
+        <div class="k">Născut în {{ profil.anNastere }}<template v-if="profil.oras"> · {{ profil.oras }}</template><template v-if="profilCititor"> · {{ profilCititor.nume }}</template> · <NuxtLink to="/start" class="link">refă testul</NuxtLink></div>
         <h1 class="d1" :aria-label="`Aveai 15 ani în ${an15}`">
           <span v-for="(c, i) in cuvinte" :key="c" class="cuv" aria-hidden="true"><span class="cuv-i" :style="{ '--i': i }">{{ c }}</span>&nbsp;</span><span class="odo" aria-hidden="true"><span v-for="(d, col) in cifre" :key="col" class="col"><span class="sz">{{ d }}</span><span class="strip" :style="{ '--t': tinta(d, col), '--c': col }"><span v-for="n in 20" :key="n" class="cf">{{ (n - 1) % 10 }}</span></span></span></span>
         </h1>
+        <p v-if="linieTon" class="ton-linie" :data-ton="ton">{{ linieTon }}</p>
         <BandaAni :anul-meu="an15" interactiva />
         <div class="rand">
           <NuxtLink to="/random" class="btn">▶▶ Random Hit</NuxtLink>
@@ -69,7 +71,7 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
         </div>
       </section>
 
-      <section class="sec">
+      <section v-if="profil.oras" class="sec">
         <div class="k">Stratul orașului</div>
         <template v-if="orasDeblocat">
           <h2 class="d2">{{ profil.oras }}, noaptea</h2>
@@ -94,11 +96,14 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 .link{position:relative;background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer;letter-spacing:inherit;text-transform:inherit;transition:color .2s}
 .link::after{content:"";position:absolute;inset:-14px -10px}
 .link:hover{color:var(--signal)}
+.ton-linie{margin:0;font-family:var(--mono);font-size:14px;letter-spacing:.04em;color:var(--muted);max-width:52ch}
+.ton-linie[data-ton="ironic"]{font-style:italic}
+.ton-linie[data-ton="documentar"]{text-transform:uppercase;font-size:12px;letter-spacing:.1em}
 .link:active{opacity:.7}
 
 .cuv{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.06em}
 .cuv-i{display:inline-block;transform:translateY(105%);opacity:0}
-.odo{display:inline-flex;vertical-align:top;color:var(--signal)}
+.odo{display:inline-flex;vertical-align:top;color:var(--accent)}
 .col{position:relative;display:inline-block;height:.9em;overflow:hidden;line-height:.9}
 .sz{visibility:hidden}
 .col .strip{position:absolute;inset:0 auto auto 50%;margin-left:-.5em;width:1em;text-align:center}

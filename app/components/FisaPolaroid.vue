@@ -41,6 +41,7 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
 <template>
   <article ref="card" class="fisa" :class="{ dev: developare }" @pointermove="pePointer" @pointerleave="laIesire" @pointercancel="laIesire">
     <div class="img" :style="{ background: `linear-gradient(135deg, ${fisa.culori[0]}, ${fisa.culori[1]})` }">
+      <img v-if="fisa.poza" class="foto" :src="`/fise/${fisa.id}-480.webp`" :srcset="`/fise/${fisa.id}-480.webp 480w, /fise/${fisa.id}-960.webp 960w`" sizes="(max-width: 640px) 90vw, 300px" :alt="fisa.titlu" loading="lazy" decoding="async" width="480" height="480">
       <span class="eticheta">{{ fisa.categorie }}{{ fisa.oras ? ' · ' + fisa.oras : '' }}</span>
       <span v-if="avut" :key="stamped ? 'nou' : 'vechi'" class="stampila" :class="{ nou: stamped }" aria-hidden="true">{{ fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta' }}</span>
     </div>
@@ -48,8 +49,11 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
     <h3>{{ fisa.titlu }}</h3>
     <p>{{ fisa.nota }}</p>
     <p v-if="fisa.sursa" class="sursa">Sursă: {{ fisa.sursa }}</p>
+    <p v-if="fisa.poza" class="sursa credit">
+      {{ fisa.poza.generata ? "Ilustrație generată" : "Foto" }}: <a v-if="fisa.poza.url" :href="fisa.poza.url" target="_blank" rel="noopener">{{ fisa.poza.autor }}</a><template v-else>{{ fisa.poza.autor }}</template> · {{ fisa.poza.licenta }}
+    </p>
     <div v-if="actiuni" class="act">
-      <button type="button" class="avut" :aria-pressed="avut" @click="apasaAvut">{{ avut ? '✓ Am fost acolo' : (fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta') }}</button>
+      <button type="button" class="avut" :aria-pressed="avut" @click="apasaAvut">{{ avut ? '✓ ' + (fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta') : (fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta') }}</button>
       <button type="button" class="sec" :aria-pressed="salvata" @click="apasaCaseta">
         <svg :key="'i' + salvata" class="banda" :class="{ lipit: salvata }" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="8.5" cy="12" r="2" /><circle cx="15.5" cy="12" r="2" /><path d="M8.5 14h7" /></svg>
         <span>{{ salvata ? '✓ În casetă' : '+ Caseta mea' }}</span>
@@ -64,6 +68,9 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
 .fisa{--rx:0deg;--ry:0deg;--gx:0%;--gy:0%;position:relative;background:var(--card);color:var(--ink);padding:10px 10px 14px;width:min(300px,100%);
   box-shadow:0 18px 30px -18px rgba(0,0,0,.45);transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));transition:transform .5s var(--ease-ff),box-shadow .5s var(--ease-ff);will-change:transform}
 .img{aspect-ratio:1;position:relative;overflow:hidden}
+.foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.credit{font-size:11px;opacity:.75}
+.credit a{color:inherit}
 .img::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;mix-blend-mode:multiply;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
 .img::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 40%,#C9D0B4,#5E7A62 70%,#2B4036)}

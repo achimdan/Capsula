@@ -5,10 +5,19 @@
   --body:"Work Sans",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,monospace;
   --ease-ff:cubic-bezier(.15,.7,.1,1);
+  --accent:var(--signal); /* accentul profilului (setat pe <html>): doar UI mare, nu text mic */
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#111A15;--card:#1C2721;--ink:#DCE3DA;--muted:#9AAA9F;--line:#2E3B33;--signal:#EE6A40;color-scheme:dark}}
 :root[data-theme="dark"]{--paper:#111A15;--card:#1C2721;--ink:#DCE3DA;--muted:#9AAA9F;--line:#2E3B33;--signal:#EE6A40;color-scheme:dark}
+
+/* Fundaluri alese din /admin: suprascriu tokenii, peste regulile dark/light. */
+[data-fundal="tapet"]:is(:root,.previzualizare){--paper:#1E1A12;--card:#2B251A;--ink:#EADFC8;--muted:#B9AB90;--line:#4A3F2C;--signal:#F0A030;color-scheme:dark}
+[data-fundal="vhs"]:is(:root,.previzualizare){--paper:#08090A;--card:#131617;--ink:#E6E2D6;--muted:#A5A194;--line:#2A2E30;--signal:#FF7A2E;color-scheme:dark}
+[data-fundal="arhiva"]:is(:root,.previzualizare){--paper:#EFE6D0;--card:#FBF6E8;--ink:#2A2218;--muted:#5C503F;--line:#CFC2A3;--signal:#D2501F;color-scheme:light}
+/* Pe fundal decorat, pagina lasă fundalul să se vadă; antetul rămâne plin. */
+:root[data-fundal]:not([data-fundal="clasic"]) body{background:transparent}
+:root[data-fundal]:not([data-fundal="clasic"]){background:var(--paper)}
 
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -27,7 +36,7 @@ img{max-width:100%}
 .btn.semnal{background:var(--signal);color:#14211B}
 .btn:disabled{opacity:.35;cursor:default}
 .chip{font:500 14px var(--body);background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--accent)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .contor{display:inline-flex;font-family:var(--mono);font-size:13px;background:var(--ink);color:var(--paper);padding:4px 8px;border-radius:2px;letter-spacing:.15em}
 .rand{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
