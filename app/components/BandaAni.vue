@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { AN_MIN, AN_MAX, FISE } from '~/data/fise'
-const props = withDefaults(defineProps<{ anulMeu?: number; latime?: number; inaltime?: number }>(), { latime: 140, inaltime: 120 })
+const props = withDefaults(defineProps<{ anulMeu?: number; latime?: number; inaltime?: number; interactiva?: boolean }>(), { latime: 140, inaltime: 120, interactiva: false })
 const ani = Array.from({ length: AN_MAX - AN_MIN + 1 }, (_, i) => AN_MIN + i)
 const REP = 3
 const banda = ref<HTMLElement>()
@@ -9,10 +9,13 @@ const x = ref(0)
 const anim = ref(false)
 const ff = ref(false)
 const lovit = ref<number | null>(null)
+const snap = ref(false)
+const trage = ref(false)
+const activ = ref<number | null>(null)
 const titlu = (an: number) => FISE.find(f => f.an === an && f.oras === null)?.titlu ?? ''
 
 function centru(idx: number) { return (banda.value?.clientWidth ?? 0) / 2 - (idx * props.latime + props.latime / 2) }
-function seteaza(an: number) { anim.value = false; x.value = centru(ani.indexOf(an)) }
+function seteaza(an: number) { anim.value = false; snap.value = false; x.value = centru(ani.indexOf(an)) }
 
 // Derulează rapid (cu blur) până la anul dat; se rezolvă când banda s-a oprit
 function deruleaza(an: number): Promise<void> {
@@ -29,19 +32,88 @@ function deruleaza(an: number): Promise<void> {
     }))
   })
 }
+
+// --- Drag cu inerție + cap magnetic (doar cu prop-ul `interactiva`) ---
+const redus = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const perioada = () => ani.length * props.latime
+const idxSub = () => Math.floor(((banda.value?.clientWidth ?? 0) / 2 - x.value) / props.latime)
+function normalizeaza() {
+  const p = perioada()
+  let i = idxSub()
+  while (i < ani.length) { x.value -= p; i += ani.length }
+  while (i >= ani.length * 2) { x.value += p; i -= ani.length }
+  activ.value = idxSub()
+}
+let ultimX = 0; let ultimT = 0; let v = 0; let raf = 0
+function opresteInertia() { cancelAnimationFrame(raf); raf = 0 }
+function lipeste() {
+  const i = Math.min(ani.length * 3 - 1, Math.max(0, idxSub()))
+  trage.value = false
+  anim.value = false
+  snap.value = !redus()
+  x.value = centru(0) - i * props.latime
+  activ.value = i
+}
+function jos(e: PointerEvent) {
+  if (!props.interactiva || (e.pointerType === 'mouse' && e.button !== 0)) return
+  opresteInertia(); anim.value = false; snap.value = false; lovit.value = null
+  trage.value = true; v = 0; ultimX = e.clientX; ultimT = performance.now()
+  ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+  activ.value = idxSub()
+}
+function misca(e: PointerEvent) {
+  if (!trage.value) return
+  const t = performance.now(); const dt = Math.max(1, t - ultimT)
+  const dx = e.clientX - ultimX
+  v = v * 0.6 + (dx / dt) * 0.4
+  x.value += dx; ultimX = e.clientX; ultimT = t
+  normalizeaza()
+}
+function sus() {
+  if (!trage.value) return
+  if (redus() || Math.abs(v) < 0.05) { lipeste(); return }
+  let t0 = performance.now()
+  const pas = (t: number) => {
+    const dt = Math.min(32, t - t0); t0 = t
+    x.value += v * dt; v *= Math.pow(0.95, dt / 16)
+    normalizeaza()
+    if (Math.abs(v) < 0.04) { raf = 0; lipeste(); return }
+    raf = requestAnimationFrame(pas)
+  }
+  raf = requestAnimationFrame(pas)
+  trage.value = false
+}
+function tasta(e: KeyboardEvent) {
+  if (!props.interactiva) return
+  const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
+  if (!d) return
+  e.preventDefault(); opresteInertia()
+  anim.value = false; snap.value = !redus(); lovit.value = null
+  const i = idxSub() - d
+  x.value = centru(0) - i * props.latime
+  nextTick(normalizeaza)
+}
+const anSub = computed(() => activ.value === null ? null : ani[((activ.value % ani.length) + ani.length) % ani.length])
 defineExpose({ deruleaza, seteaza })
 onMounted(() => { seteaza(props.anulMeu ?? 1999); window.addEventListener('resize', onResize) })
-onBeforeUnmount(() => window.removeEventListener('resize', onResize))
+onBeforeUnmount(() => { window.removeEventListener('resize', onResize); opresteInertia() })
 function onResize() { seteaza(props.anulMeu ?? 1999) }
 </script>
 
 <template>
-  <div ref="banda" class="banda" :class="{ ff }" :style="{ height: inaltime + 'px' }" role="img" :aria-label="`Banda anilor ${AN_MIN}–${AN_MAX}`">
+   <div
+    ref="banda" class="banda" :class="{ ff, inter: interactiva, trage }" :style="{ height: inaltime + 'px' }"
+    :role="interactiva ? 'slider' : 'img'" :tabindex="interactiva ? 0 : undefined"
+    :aria-label="`Banda anilor ${AN_MIN}–${AN_MAX}`"
+    :aria-valuemin="interactiva ? AN_MIN : undefined" :aria-valuemax="interactiva ? AN_MAX : undefined"
+    :aria-valuenow="interactiva ? (anSub ?? anulMeu) : undefined"
+    @pointerdown="jos" @pointermove="misca" @pointerup="sus" @pointercancel="sus" @keydown="tasta">
     <div class="cap" aria-hidden="true" />
-    <div ref="tambur" class="tambur" :class="{ anim }" :style="{ transform: `translateX(${x}px)` }">
+    <div v-if="interactiva" class="cap-et" aria-hidden="true">{{ anSub ?? anulMeu }}</div>
+    <div ref="tambur" class="tambur" :class="{ anim, snap }" :style="{ transform: `translateX(${x}px)` }">
       <template v-for="r in REP" :key="r">
         <div v-for="(an, i) in ani" :key="r + '-' + an" class="an"
-          :class="{ eu: an === anulMeu, lovit: lovit === (r - 1) * ani.length + i }" :style="{ flexBasis: latime + 'px' }">
+          :class="{ eu: an === anulMeu, lovit: lovit === (r - 1) * ani.length + i, activ: interactiva && activ === (r - 1) * ani.length + i }" :style="{ flexBasis: latime + 'px' }">
           <span class="y">{{ an }}</span><span class="t">{{ titlu(an) }}</span>
         </div>
       </template>
@@ -61,5 +133,18 @@ function onResize() { seteaza(props.anulMeu ?? 1999) }
 .lovit{background:#E2582F;color:#14211B}
 .lovit .t{color:#14211B}
 .lovit.eu .y::after{color:#14211B}
+.inter{cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.inter:hover{box-shadow:0 0 0 2px var(--line)}
+.inter:focus-visible{box-shadow:0 0 0 3px var(--signal)}
+.trage{cursor:grabbing}
+.tambur.snap{transition:transform .6s cubic-bezier(.2,1.5,.35,1)}
+.an{transition:background-color .2s}
+.activ .y{color:var(--signal)}
+.activ.lovit .y{color:inherit}
+.cap{transform-origin:center;transition:transform .25s var(--ease-ff)}
+.trage .cap{transform:scaleX(3)}
+.cap-et{position:absolute;top:0;left:50%;z-index:4;transform:translate(-50%,-100%);font-family:var(--mono);font-size:11px;background:var(--signal);color:var(--ink);padding:2px 6px;border-radius:0 0 2px 2px;opacity:0;transition:opacity .2s,transform .3s var(--ease-ff);pointer-events:none}
+.trage .cap-et,.inter:focus-visible .cap-et{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){.tambur.snap,.cap,.cap-et{transition:none}.trage .cap{transform:none}}
 .cap{position:absolute;top:0;bottom:0;left:50%;width:2px;background:#E2582F;z-index:3}
 </style>

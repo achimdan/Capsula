@@ -11,21 +11,72 @@ const dezvaluit = ref(false)
 const puncte = ref(0)
 const terminat = ref(false)
 
+// --- animation state (presentation only) ---
+const reduce = ref(false)
+const afisScor = ref(0)
+const afisPuncte = ref(0)
+const flap = ref<string[]>(['', '', '', ''])
+const flapGata = ref<boolean[]>([false, false, false, false])
+let rafScor = 0
+let rafPuncte = 0
+let flapTimer: ReturnType<typeof setInterval> | undefined
+
+function tween(from: number, to: number, ms: number, set: (v: number) => void, slot: 'scor' | 'puncte') {
+  if (slot === 'scor') cancelAnimationFrame(rafScor); else cancelAnimationFrame(rafPuncte)
+  if (reduce.value || from === to) { set(to); return }
+  const t0 = performance.now()
+  const pas = (t: number) => {
+    const k = Math.min(1, (t - t0) / ms)
+    set(Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3))))
+    const id = k < 1 ? requestAnimationFrame(pas) : 0
+    if (slot === 'scor') rafScor = id; else rafPuncte = id
+  }
+  const id = requestAnimationFrame(pas)
+  if (slot === 'scor') rafScor = id; else rafPuncte = id
+}
+function opresteFlap() { if (flapTimer) clearInterval(flapTimer); flapTimer = undefined }
+function pornesteFlap() {
+  opresteFlap()
+  const tinta = String(curenta.value?.an ?? '').padStart(4, '0').split('')
+  if (reduce.value) { flap.value = tinta; flapGata.value = [true, true, true, true]; return }
+  flapGata.value = [false, false, false, false]
+  let tick = 0
+  flapTimer = setInterval(() => {
+    tick++
+    flap.value = tinta.map((c, i) => {
+      if (tick >= 6 + i * 3) { flapGata.value[i] = true; return c }
+      return String(Math.floor(Math.random() * 10))
+    })
+    if (tick >= 6 + 3 * 3) opresteFlap()
+  }, 70)
+}
+
 function amesteca() {
+  opresteFlap()
   const exacte = FISE.filter(f => f.an_exact && (f.oras === null || f.oras === profil.value.oras))
   lista.value = [...exacte].sort(() => Math.random() - .5).slice(0, RUNDE)
   runda.value = 0; scor.value = 0; dezvaluit.value = false; terminat.value = false; ghicit.value = 1997
+  afisScor.value = 0; afisPuncte.value = 0
 }
 const curenta = computed(() => lista.value[runda.value])
 function confirma() {
   if (!curenta.value) return
   const d = Math.abs(ghicit.value - curenta.value.an)
   puncte.value = Math.max(0, 100 - 25 * d)
+  const dinainte = scor.value
   scor.value += puncte.value
   dezvaluit.value = true
+  pornesteFlap()
+  tween(0, puncte.value, 900, v => { afisPuncte.value = v }, 'puncte')
+  setTimeout(() => tween(dinainte, scor.value, 700, v => { afisScor.value = v }, 'scor'), reduce.value ? 0 : 900)
 }
 function urmatoarea() {
-  if (runda.value + 1 >= lista.value.length) { terminat.value = true; recorduri.value = [...recorduri.value, scor.value]; return }
+  opresteFlap()
+  if (runda.value + 1 >= lista.value.length) {
+    terminat.value = true; recorduri.value = [...recorduri.value, scor.value]
+    tween(0, scor.value, 1100, v => { afisScor.value = v }, 'scor')
+    return
+  }
   runda.value++; dezvaluit.value = false
 }
 const mesaj = computed(() => {
@@ -34,50 +85,150 @@ const mesaj = computed(() => {
   return d === 0 ? 'Exact!' : d === 1 ? 'Aproape!' : `A fost ${curenta.value.an}`
 })
 const record = computed(() => recorduri.value.length ? Math.max(...recorduri.value) : null)
-onMounted(() => { if (!areProfil.value) navigateTo('/'); else amesteca() })
+
+// odometer digits for the guess
+const cifre = computed(() => String(ghicit.value).padStart(4, '0').split('').map(Number))
+// distance meter (positions are static %, animation is scaleX / opacity)
+const span = AN_MAX - AN_MIN
+const proc = (an: number) => Math.max(0, Math.min(100, ((an - AN_MIN) / span) * 100))
+const pozGhicit = computed(() => proc(ghicit.value))
+const pozReal = computed(() => proc(curenta.value?.an ?? ghicit.value))
+const bara = computed(() => ({
+  left: `${Math.min(pozGhicit.value, pozReal.value)}%`,
+  width: `${Math.abs(pozGhicit.value - pozReal.value)}%`,
+  transformOrigin: pozReal.value >= pozGhicit.value ? 'left center' : 'right center',
+}))
+const diferenta = computed(() => curenta.value ? Math.abs(ghicit.value - curenta.value.an) : 0)
+const titlu = computed(() => scor.value >= 450 ? 'Arhivar de meserie' : scor.value >= 300 ? 'Ureche bună de casetofon' : scor.value >= 150 ? 'Banda se mai derulează' : 'Casetă nouă, încă fără amintiri')
+
+onMounted(() => {
+  reduce.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (!areProfil.value) navigateTo('/'); else amesteca()
+})
+onBeforeUnmount(() => { opresteFlap(); cancelAnimationFrame(rafScor); cancelAnimationFrame(rafPuncte) })
 </script>
 
 <template>
   <main class="pagina">
     <section class="joc">
-      <div class="rand"><span class="contor">RUNDA {{ Math.min(runda + 1, RUNDE) }}/{{ RUNDE }} · {{ scor }} PCT</span><span v-if="record !== null" class="k">Recordul tău: {{ record }}</span></div>
+      <div class="rand"><span class="contor">RUNDA {{ Math.min(runda + 1, RUNDE) }}/{{ RUNDE }} · <span class="tic">{{ afisScor }}</span> PCT</span><span v-if="record !== null" class="k">Recordul tău: {{ record }}</span></div>
       <h1 class="d1">Ghicește anul</h1>
 
-      <div v-if="terminat" class="card final">
-        <div class="k">Scor final</div>
-        <p class="d1">{{ scor }}<span class="din">/{{ RUNDE * 100 }}</span></p>
-        <p class="lead">Media generației {{ String(profil.anNastere).slice(2) }} apare după ce conectăm baza de date.</p>
-        <div class="rand"><button class="btn" @click="amesteca">Joacă din nou</button><NuxtLink to="/shop" class="btn ghost">Scorul pe tricou</NuxtLink></div>
-      </div>
-
-      <div v-else-if="curenta" class="tabla">
-        <FisaPolaroid :key="curenta.id + dezvaluit" :fisa="curenta" :ascunde-an="!dezvaluit" :actiuni="dezvaluit" :developare="dezvaluit" />
-        <div class="ghiceste">
-          <output class="mare" for="an-ghicit">{{ ghicit }}</output>
-          <label class="k" for="an-ghicit">Derulează la anul pe care îl crezi</label>
-          <input id="an-ghicit" v-model.number="ghicit" type="range" :min="AN_MIN" :max="AN_MAX" :disabled="dezvaluit">
-          <div class="scala"><span>{{ AN_MIN }}</span><span>{{ AN_MAX }}</span></div>
-          <button v-if="!dezvaluit" class="btn" @click="confirma">Ăsta e anul</button>
-          <template v-else>
-            <p class="rez" aria-live="polite"><b>{{ mesaj }}</b> +{{ puncte }} puncte</p>
-            <button class="btn semnal" @click="urmatoarea">{{ runda + 1 >= lista.length ? 'Vezi scorul' : 'Următoarea ▶▶' }}</button>
-          </template>
+      <Transition name="kaseta" mode="out-in">
+        <div v-if="terminat" key="final" class="card final">
+          <div class="k">Scor final</div>
+          <p class="d1 scorfinal"><span class="tic">{{ afisScor }}</span><span class="din">/{{ RUNDE * 100 }}</span></p>
+          <span class="sr" role="status">Scor final {{ scor }} din {{ RUNDE * 100 }}. {{ titlu }}.</span>
+          <div class="stampila" aria-hidden="true"><span>{{ titlu }}</span><b>{{ scor }} PCT</b></div>
+          <p class="lead">Media generației {{ String(profil.anNastere).slice(2) }} apare după ce conectăm baza de date.</p>
+          <div class="rand"><button class="btn" @click="amesteca">Joacă din nou</button><NuxtLink to="/shop" class="btn ghost">Scorul pe tricou</NuxtLink></div>
         </div>
-      </div>
+
+        <div v-else-if="curenta" :key="`r${runda}`" class="tabla">
+          <FisaPolaroid :key="curenta.id + dezvaluit" :fisa="curenta" :ascunde-an="!dezvaluit" :actiuni="dezvaluit" :developare="dezvaluit" />
+          <div class="ghiceste">
+            <output class="mare" for="an-ghicit">
+              <span class="sr">{{ ghicit }}</span>
+              <span class="odo" aria-hidden="true">
+                <span v-for="(c, i) in cifre" :key="i" class="coloana">
+                  <span class="banda" :style="{ transform: `translateY(${-c * 10}%)` }">
+                    <span v-for="n in 10" :key="n">{{ n - 1 }}</span>
+                  </span>
+                </span>
+              </span>
+            </output>
+            <label class="k" for="an-ghicit">Derulează la anul pe care îl crezi</label>
+            <input id="an-ghicit" v-model.number="ghicit" type="range" :min="AN_MIN" :max="AN_MAX" :disabled="dezvaluit">
+            <div class="scala"><span>{{ AN_MIN }}</span><span>{{ AN_MAX }}</span></div>
+            <button v-if="!dezvaluit" class="btn" @click="confirma">Ăsta e anul</button>
+            <template v-else>
+              <div class="flap" aria-hidden="true">
+                <span v-for="(c, i) in flap" :key="`${i}${flapGata[i] ? 's' : 'r'}`" class="foaie" :class="{ gata: flapGata[i] }">{{ c }}</span>
+              </div>
+              <div class="metru" aria-hidden="true">
+                <div class="sina">
+                  <span class="bara" :style="bara" />
+                  <span class="semn tu" :style="{ left: `${pozGhicit}%` }" />
+                  <span class="semn real" :style="{ left: `${pozReal}%` }" />
+                </div>
+                <div class="k">{{ diferenta === 0 ? 'Fix pe bandă' : `${diferenta} ${diferenta === 1 ? 'an' : 'ani'} distanță` }}</div>
+              </div>
+              <p class="rez" aria-live="polite"><b>{{ mesaj }}</b><span class="sr"> +{{ puncte }} puncte</span><span aria-hidden="true">+<span class="tic">{{ afisPuncte }}</span> puncte</span></p>
+              <button class="btn semnal" @click="urmatoarea">{{ runda + 1 >= lista.length ? 'Vezi scorul' : 'Următoarea ▶▶' }}</button>
+            </template>
+          </div>
+        </div>
+      </Transition>
     </section>
   </main>
 </template>
 
 <style scoped>
-.joc{display:grid;gap:20px}
+.joc{display:grid;gap:20px;overflow-x:clip}
 .tabla{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center;justify-items:center}
 @media (max-width:720px){.tabla{grid-template-columns:1fr}}
-.ghiceste{display:grid;gap:10px;width:min(360px,100%)}
-.mare{font-family:var(--display);font-weight:800;font-size:88px;line-height:.85;text-align:center}
-input[type=range]{width:100%;accent-color:var(--signal)}
+.ghiceste{display:grid;gap:10px;width:min(360px,100%);min-width:0}
+.tic{font-variant-numeric:tabular-nums}
+
+/* odometer */
+.mare{display:flex;justify-content:center;font-family:var(--display);font-weight:800;font-size:clamp(64px,22vw,88px);line-height:1}
+.odo{display:inline-flex;gap:4px;padding:6px 8px;background:var(--ink);color:var(--paper);border-radius:4px;box-shadow:inset 0 0 0 1px var(--ink)}
+.coloana{display:block;height:1em;width:.62em;overflow:hidden;text-align:center;background:linear-gradient(to bottom,transparent 49%,var(--muted) 49%,var(--muted) 51%,transparent 51%)}
+.banda{display:flex;flex-direction:column;transition:transform .45s var(--ease-ff);will-change:transform}
+.banda span{display:block;height:1em;line-height:1}
+input[type=range]{width:100%;min-height:44px;margin:0;accent-color:var(--signal);cursor:grab}
+input[type=range]:active{cursor:grabbing}
+input[type=range]:hover:not(:disabled){filter:brightness(1.1)}
+input[type=range]:focus-visible{outline:3px solid var(--signal);outline-offset:4px;border-radius:4px}
 .scala{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+/* split-flap */
+.flap{display:flex;justify-content:center;gap:6px;perspective:400px}
+.foaie{position:relative;display:grid;place-items:center;width:clamp(40px,12vw,52px);height:68px;background:var(--ink);color:var(--paper);font:800 52px/1 var(--display);border-radius:3px;font-variant-numeric:tabular-nums}
+.foaie::after{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:var(--paper);opacity:.35}
+.foaie.gata{animation:flip .38s var(--ease-ff) both}
+@keyframes flip{from{transform:rotateX(-90deg);opacity:.2}to{transform:rotateX(0);opacity:1}}
+
+/* distance meter */
+.metru{display:grid;gap:6px}
+.sina{position:relative;height:44px}
+.sina::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:var(--line)}
+.bara{position:absolute;top:50%;height:6px;margin-top:-3px;background:var(--signal);transform:scaleX(0);animation:trage .7s .5s var(--ease-ff) forwards}
+.semn{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%}
+.semn.tu{background:var(--muted)}
+.semn.real{background:var(--signal);outline:3px solid var(--ink);opacity:0;transform:scale(.2);animation:pop .4s 1.1s var(--ease-ff) forwards}
+@keyframes trage{to{transform:scaleX(1)}}
+@keyframes pop{to{opacity:1;transform:scale(1)}}
+
 .rez{margin:0;font-size:18px;text-align:center}
 .rez b{font-family:var(--display);font-size:30px;text-transform:uppercase;margin-right:6px}
-.final{display:grid;gap:12px;justify-items:start}
+
+/* buttons */
+.btn{min-height:44px;transition:transform .15s var(--ease-ff),opacity .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(1px) scale(.98)}
+.btn:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
+
+/* end screen */
+.final{position:relative;display:grid;gap:12px;justify-items:start;overflow:hidden}
 .din{font-size:.4em;color:var(--muted)}
+.stampila{display:grid;justify-items:center;gap:2px;padding:10px 18px;border:4px double var(--signal);border-radius:6px;color:var(--signal);font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.06em;transform:rotate(-6deg);opacity:0;animation:stampila .5s 1.2s var(--ease-ff) forwards}
+.stampila span{font-size:18px}
+.stampila b{font-size:32px;line-height:1}
+@keyframes stampila{from{opacity:0;transform:rotate(-14deg) scale(2.2)}60%{opacity:1;transform:rotate(-6deg) scale(.94)}to{opacity:1;transform:rotate(-6deg) scale(1)}}
+
+/* round transition: cassette slide */
+.kaseta-enter-active,.kaseta-leave-active{transition:transform .4s var(--ease-ff),opacity .3s}
+.kaseta-enter-from{transform:translateX(60px);opacity:0}
+.kaseta-leave-to{transform:translateX(-60px);opacity:0}
+
+@media (prefers-reduced-motion:reduce){
+  .banda,.btn,.kaseta-enter-active,.kaseta-leave-active{transition:none}
+  .foaie.gata{animation:none}
+  .bara{animation:none;transform:scaleX(1)}
+  .semn.real{animation:none;opacity:1;transform:none}
+  .stampila{animation:none;opacity:1}
+  .kaseta-enter-from,.kaseta-leave-to{transform:none}
+  .btn:hover,.btn:active{transform:none}
+}
 </style>
