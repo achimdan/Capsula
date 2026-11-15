@@ -29,7 +29,8 @@ interface Baza { id: string, capitol: CapitolId, text: string, ajutor?: string }
 
 export type Intrebare =
   | Baza & { tip: 'an', min: number, max: number }
-  | Baza & { tip: 'unic', optiuni: Optiune[] }
+  // permiteLocalitate: pe lângă opțiuni, se poate căuta orice localitate din SIRUTA (răspuns „loc:<siruta>:<u|r>”)
+  | Baza & { tip: 'unic', optiuni: Optiune[], permiteLocalitate?: true }
   | Baza & { tip: 'multiplu', max: number, optiuni: Optiune[] }
   | Baza & { tip: 'asta-sau-aia', optiuni: [Optiune, Optiune] }
   // Scală 1–5: mijlocul (3) e neutru; fiecare pas în sus adaugă `ponderi`, în jos le scade.
@@ -45,17 +46,23 @@ export const SCALA_MIJLOC = 3
 export const PREFER = 'prefer'
 const prefer = (): Optiune => ({ id: PREFER, text: 'Prefer să nu spun', ponderi: {}, neutra: true })
 
+export const ALT_ORAS = 'Alt oraș'
+export const SAT = 'sat'
+export const PONDERI_SAT: Ponderi = { urban: -2, familist: 1 }
+// O localitate căutată cântărește ca „Alt oraș” dacă e urbană și ca „La sat” dacă e rurală.
+export const PONDERI_LOCALITATE_URBANA: Ponderi = { urban: 1 }
+
 // Orașele reiau lista din fise.ts; id-ul e chiar numele, ca să se potrivească cu profil.oras.
 const optiuniOras: Optiune[] = [
-  ...ORASE.map(o => ({ id: o, text: o, ponderi: { urban: o === 'Alt oraș' ? 1 : 2 } })),
-  { id: 'sat', text: 'La sat sau la comună', ponderi: { urban: -2, familist: 1 } },
+  ...ORASE.map(o => ({ id: o, text: o === ALT_ORAS ? 'Altă localitate (o caut eu)' : o, ponderi: { urban: o === ALT_ORAS ? 1 : 2 } })),
+  { id: SAT, text: 'La sat sau la comună', ponderi: PONDERI_SAT },
   prefer()
 ]
 
 export const INTREBARI: Intrebare[] = [
   // ── Copilărie & cartier
   { id: 'an-nastere', capitol: 'copilarie', tip: 'an', min: 1975, max: 2000, text: 'Ce an scrie pe certificatul tău?', ajutor: 'Doar ca să știm ce ți-a cântat radioul la 15 ani.' },
-  { id: 'oras', capitol: 'copilarie', tip: 'unic', text: 'Unde ți-ai tocit genunchii în copilărie?', optiuni: optiuniOras },
+  { id: 'oras', capitol: 'copilarie', tip: 'unic', text: 'Unde ți-ai tocit genunchii în copilărie?', optiuni: optiuniOras, permiteLocalitate: true },
   {
     id: 'fata-blocului', capitol: 'copilarie', tip: 'unic', text: 'Ce se auzea de la tine din fața blocului?',
     optiuni: [

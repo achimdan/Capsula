@@ -1,7 +1,7 @@
-// PROVIZORIU: decizie doar pe client (localStorage). Vezi useAuth.
-const LIBERE = ['/', '/login', '/admin']
-// Autentificat fără profil: doar aici are voie (testul, login-ul și admin-ul).
-const FARA_PROFIL = ['/start', '/login', '/admin']
+// Decizie pe client: sesiunea Supabase e citită local de pluginul modulului înainte de middleware.
+const LIBERE = ['/', '/login', '/confirm', '/admin']
+// Autentificat fără profil: doar aici are voie (testul, login-ul, întoarcerea din link și admin-ul).
+const FARA_PROFIL = ['/start', '/login', '/confirm', '/admin']
 
 export default defineNuxtRouteMiddleware((to) => {
   if (import.meta.server) return

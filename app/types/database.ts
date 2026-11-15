@@ -1,0 +1,110 @@
+// Scris de mână după supabase/migrations/20261115211537_profiles_questionnaire_tape.sql.
+// Regenerează cu `supabase gen types typescript --project-id brnweurjdimvwydoiafd` după ce migrația e aplicată.
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+
+export type Database = {
+  public: {
+    Tables: {
+      profiles: {
+        Row: {
+          id: string
+          birth_year: number | null
+          city: string | null
+          locality_siruta: number | null
+          locality_name: string | null
+          locality_county: string | null
+          locality_province: string | null
+          locality_development_region: string | null
+          locality_is_urban: boolean | null
+          reader_profile_id: string | null
+          reader_traits: Json | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          birth_year?: number | null
+          city?: string | null
+          locality_siruta?: number | null
+          locality_name?: string | null
+          locality_county?: string | null
+          locality_province?: string | null
+          locality_development_region?: string | null
+          locality_is_urban?: boolean | null
+          reader_profile_id?: string | null
+          reader_traits?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          birth_year?: number | null
+          city?: string | null
+          locality_siruta?: number | null
+          locality_name?: string | null
+          locality_county?: string | null
+          locality_province?: string | null
+          locality_development_region?: string | null
+          locality_is_urban?: boolean | null
+          reader_profile_id?: string | null
+          reader_traits?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      questionnaire_responses: {
+        Row: {
+          user_id: string
+          answers: Json
+          step: number
+          is_retake: boolean
+          completed_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          answers?: Json
+          step?: number
+          is_retake?: boolean
+          completed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          answers?: Json
+          step?: number
+          is_retake?: boolean
+          completed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tape_items: {
+        Row: {
+          user_id: string
+          card_id: string
+          added_at: string
+        }
+        Insert: {
+          user_id: string
+          card_id: string
+          added_at?: string
+        }
+        Update: {
+          user_id?: string
+          card_id?: string
+          added_at?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: { [_ in never]: never }
+    Functions: { [_ in never]: never }
+    Enums: { [_ in never]: never }
+    CompositeTypes: { [_ in never]: never }
+  }
+}

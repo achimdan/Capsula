@@ -1,6 +1,7 @@
 import { FISE, ORASE_DEBLOCATE, type Fisa } from '~/data/fise'
 
-export interface Profil { anNastere: number | null; oras: string | null }
+// localitate: codul SIRUTA, când a fost căutată în chestionar (vezi utils/localitati.ts)
+export interface Profil { anNastere: number | null; oras: string | null; localitate?: number | null }
 
 export function useCapsula() {
   const profil = useStocare<Profil>('profil', { anNastere: null, oras: null })

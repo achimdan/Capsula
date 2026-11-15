@@ -1,9 +1,10 @@
 // Logica pură a profilării: scorul răspunsurilor, alegerea profilului, mici ajutoare.
 // Totul e determinist: aceleași răspunsuri dau mereu același profil.
 import {
-  INTREBARI, SCENE, TRASATURI, SCALA_MAX, SCALA_MIJLOC, SCALA_MIN,
+  INTREBARI, PONDERI_LOCALITATE_URBANA, PONDERI_SAT, SCENE, TRASATURI, SCALA_MAX, SCALA_MIJLOC, SCALA_MIN,
   type Intrebare, type Optiune, type Ponderi, type Raspuns, type Raspunsuri, type Scena, type Trasatura
 } from '../data/chestionar'
+import { citesteRaspunsLocalitate } from './localitati'
 import { ARHETIPURI, PROFILURI, type Arhetip, type ProfilCititor } from '../data/profiluri'
 
 export interface ScoruriProfil { trasaturi: Record<Trasatura, number>, scene: Record<Scena, number> }
@@ -26,7 +27,12 @@ export function contributiiRaspuns(q: Intrebare, r: Raspuns | undefined): { pond
   switch (q.tip) {
     case 'an':
       return []
-    case 'unic':
+    case 'unic': {
+      const loc = q.permiteLocalitate ? citesteRaspunsLocalitate(r) : null
+      if (loc) return [{ ponderi: loc.urban ? PONDERI_LOCALITATE_URBANA : PONDERI_SAT, factor: 1 }]
+      const o = gasesteOptiune(q, r)
+      return o && !o.neutra ? [{ ponderi: o.ponderi, factor: 1 }] : []
+    }
     case 'asta-sau-aia': {
       const o = gasesteOptiune(q, r)
       return o && !o.neutra ? [{ ponderi: o.ponderi, factor: 1 }] : []

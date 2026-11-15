@@ -1,8 +1,9 @@
 // Profilul „Capsula te citește”: răspunsurile la chestionar, profilul ales și efectele lui în UI.
 // Funcțiile pure (fără auto-importuri Nuxt) sunt testate în tests/start.test.ts.
-import { CAPITOLE, INTREBARI, PREFER, type Intrebare, type Raspuns, type Raspunsuri, type Trasatura } from '../data/chestionar'
+import { ALT_ORAS, CAPITOLE, INTREBARI, PREFER, SAT, type Intrebare, type Raspuns, type Raspunsuri, type Trasatura } from '../data/chestionar'
 import type { Categorie } from '../data/fise'
 import { pickProfile, profilDupaId, scoreAnswers } from '../utils/profilare'
+import { citesteRaspunsLocalitate } from '../utils/localitati'
 import type { Ton } from '../data/profiluri'
 
 type Capitol_ = typeof CAPITOLE[number]
@@ -39,16 +40,20 @@ export function esteRaspuns(q: Intrebare, r: Raspuns | undefined): boolean {
   if (q.tip === 'an') return typeof r === 'number' && Number.isInteger(r) && r >= q.min && r <= q.max
   if (q.tip === 'multiplu') return Array.isArray(r) && r.length > 0 && (r.includes(PREFER) || r.length <= q.max)
   if (q.tip === 'scala') return r === PREFER ? !!q.permiteNeutru : typeof r === 'number' && r >= 1 && r <= 5
+  if (q.tip === 'unic' && q.permiteLocalitate && citesteRaspunsLocalitate(r)) return true
   return typeof r === 'string' && q.optiuni.some(o => o.id === r)
 }
 
 // An + oraș pentru useCapsula. „La sat” și „Prefer să nu spun” păstrează orașul null.
-export function profilDinRaspunsuri(r: Raspunsuri): { anNastere: number | null, oras: string | null } {
+// O localitate căutată: orașul devine „Alt oraș” dacă e urbană, null dacă e rurală; codul SIRUTA rămâne în `localitate`.
+export function profilDinRaspunsuri(r: Raspunsuri): { anNastere: number | null, oras: string | null, localitate: number | null } {
   const an = r['an-nastere']
   const oras = r['oras']
+  const loc = citesteRaspunsLocalitate(oras)
   return {
     anNastere: typeof an === 'number' ? an : null,
-    oras: typeof oras === 'string' && oras !== 'sat' && oras !== PREFER ? oras : null
+    oras: loc ? (loc.urban ? ALT_ORAS : null) : typeof oras === 'string' && oras !== SAT && oras !== PREFER ? oras : null,
+    localitate: loc?.siruta ?? null
   }
 }
 

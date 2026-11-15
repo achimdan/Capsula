@@ -1,0 +1,25 @@
+/* Nuxt UI fără preflight-ul Tailwind: banda.css rămâne baza paginii. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "@nuxt/ui";
+
+/* Culorile Nuxt UI urmează tokenurile benzii, deci și fundalurile din /admin. */
+:root {
+  --ui-bg: var(--card);
+  --ui-bg-elevated: var(--paper);
+  --ui-bg-accented: var(--line);
+  --ui-text: var(--ink);
+  --ui-text-highlighted: var(--ink);
+  --ui-text-muted: var(--muted);
+  --ui-text-dimmed: var(--muted);
+  --ui-border: var(--line);
+  --ui-primary: var(--signal);
+  --ui-error: var(--signal);
+  --ui-radius: 2px;
+}
+
+/* Fără preflight: reset minim doar pentru elementele din meniurile Nuxt UI
+   (butoanele au altfel fundalul browserului, iar linkurile sublinierea din banda.css). */
+[role="menuitem"]{text-decoration:none}
+button[role="menuitem"]{background:transparent;border:0;font-family:inherit;text-align:left;cursor:pointer}

@@ -41,7 +41,7 @@ describe('esteRaspuns', () => {
 
 describe('profilDinRaspunsuri', () => {
   it('ia anul și orașul', () => {
-    expect(profilDinRaspunsuri({ 'an-nastere': 1985, 'oras': 'Cluj' })).toEqual({ anNastere: 1985, oras: 'Cluj' })
+    expect(profilDinRaspunsuri({ 'an-nastere': 1985, 'oras': 'Cluj' })).toEqual({ anNastere: 1985, oras: 'Cluj', localitate: null })
   })
   it('La sat și Prefer lasă orașul null', () => {
     expect(profilDinRaspunsuri({ 'an-nastere': 1985, 'oras': 'sat' }).oras).toBeNull()

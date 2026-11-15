@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { PREFER, SCALA_MAX, SCALA_MIN, type Intrebare, type Raspuns } from '~/data/chestionar'
+import { ALT_ORAS, PREFER, SCALA_MAX, SCALA_MIN, type Intrebare, type Raspuns } from '~/data/chestionar'
+import { citesteRaspunsLocalitate } from '~/utils/localitati'
 
 const props = defineProps<{ intrebare: Intrebare, modelValue: Raspuns | undefined }>()
 const emit = defineEmits<{ 'update:modelValue': [Raspuns], 'trimite': [] }>()
@@ -9,6 +10,21 @@ const multi = computed(() => (Array.isArray(props.modelValue) ? props.modelValue
 const an = computed(() => (typeof props.modelValue === 'number' ? props.modelValue : ''))
 
 function alege(id: string | number) { emit('update:modelValue', id) }
+
+// Întrebarea cu localitate: „Altă localitate” deschide căutarea; o localitate aleasă o ține bifată.
+const cuLocalitate = computed(() => props.intrebare.tip === 'unic' && !!props.intrebare.permiteLocalitate)
+const eLocalitate = computed(() => !!citesteRaspunsLocalitate(props.modelValue))
+const cautaLocalitate = computed(() => cuLocalitate.value && (props.modelValue === ALT_ORAS || eLocalitate.value))
+const focusCautare = ref(false)
+function bifat(id: string) {
+  return props.modelValue === id || (id === ALT_ORAS && cuLocalitate.value && eLocalitate.value)
+}
+function alegeOptiune(id: string) {
+  focusCautare.value = cuLocalitate.value && id === ALT_ORAS
+  // Re-click pe „Altă localitate” păstrează localitatea deja aleasă.
+  if (id === ALT_ORAS && eLocalitate.value) return
+  alege(id)
+}
 function comuta(id: string) {
   if (props.intrebare.tip !== 'multiplu') return
   if (id === PREFER) return emit('update:modelValue', multi.value.includes(PREFER) ? [] : [PREFER])
@@ -58,11 +74,14 @@ v-for="n in treptele" :key="n" type="button" class="treapta" role="radio" :aria-
 
     <div v-else class="optiuni" :class="{ dublu: intrebare.tip === 'asta-sau-aia' }" role="radiogroup" :aria-label="intrebare.text">
       <button
-v-for="(o, i) in intrebare.optiuni" :key="o.id" type="button" class="opt" role="radio" :aria-checked="modelValue === o.id"
-        @click="alege(o.id)">
+v-for="(o, i) in intrebare.optiuni" :key="o.id" type="button" class="opt" role="radio" :aria-checked="bifat(o.id)"
+        @click="alegeOptiune(o.id)">
         <span class="nr" aria-hidden="true">{{ i + 1 }}</span><span>{{ o.text }}</span>
       </button>
     </div>
+    <ChestionarLocalitate
+      v-if="cautaLocalitate" :model-value="modelValue" :autofocus="focusCautare"
+      @update:model-value="v => emit('update:modelValue', v)" />
   </fieldset>
 </template>
 
