@@ -1,0 +1,211 @@
+<title>Capsula · Direcții vizuale</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700&family=Space+Mono:wght@400;700&family=Big+Shoulders+Display:wght@500;800&family=Work+Sans:wght@400;500&display=swap">
+<style>
+/* Layout: o pagină de comparație — trei „plăci de stil” stivuite, fiecare o lume vizuală proprie, cu Random Hit funcțional */
+:root{
+  --bg:#F3F3F1; --fg:#1B1C1E; --muted:#5E6166; --line:#D6D7D3; --chip:#E6E7E3;
+  --sans:"Work Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16171A;--fg:#ECECEA;--muted:#9EA1A6;--line:#2C2E33;--chip:#23252A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16171A;--fg:#ECECEA;--muted:#9EA1A6;--line:#2C2E33;--chip:#23252A;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 64px}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:48px}
+header h1{font-family:"Newsreader",Georgia,serif;font-weight:400;font-size:clamp(30px,5vw,46px);line-height:1.1;margin:0 0 10px;text-wrap:balance}
+header p{color:var(--muted);max-width:62ch;margin:0}
+.meta{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.dir{display:grid;gap:16px}
+.dir-head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between}
+.dir-head h2{margin:0;font-size:20px;font-weight:500}
+.dir-head .tag{font-family:"IBM Plex Mono",monospace;font-size:12px;background:var(--chip);padding:3px 8px;border-radius:3px}
+.dir-desc{color:var(--muted);margin:0;max-width:70ch}
+.tile{border-radius:6px;overflow:hidden;position:relative;display:grid;grid-template-columns:1.1fr 1fr;min-height:420px}
+@media (max-width:760px){.tile{grid-template-columns:1fr}}
+.tile > *{min-width:0}
+.pane{padding:32px;position:relative;z-index:1}
+.grain::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;opacity:.13;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.swatches{display:flex;gap:6px;flex-wrap:wrap;margin-top:18px}
+.sw{width:34px;height:34px;border-radius:50%;border:1px solid rgba(0,0,0,.12)}
+.specs{display:grid;gap:4px;margin-top:16px;font-size:13px}
+button{cursor:pointer;font:inherit}
+button:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.pros{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:14px}
+@media (max-width:600px){.pros{grid-template-columns:1fr}}
+.pros h3{font-size:12px;font-family:"IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;font-weight:500}
+.pros ul{margin:0;padding-left:18px}
+
+/* ===== A · FIȘIER ===== */
+.A{background:#E9ECE8;color:#1E2A3A}
+.A .pane:first-child{border-right:1px solid #C9CFC9}
+@media (max-width:760px){.A .pane:first-child{border-right:0;border-bottom:1px solid #C9CFC9}}
+.A h3.disp{font-family:"Newsreader",Georgia,serif;font-weight:400;font-size:clamp(34px,4.6vw,52px);line-height:1.02;margin:0 0 14px;letter-spacing:-.01em}
+.A h3.disp em{font-style:italic;color:#2F5D8A}
+.A p{font-family:"Newsreader",Georgia,serif;font-size:17px;margin:0;max-width:40ch}
+.A .mono{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.06em}
+.A .stage{display:grid;place-items:center;perspective:1000px}
+.A .card{width:min(320px,100%);background:#FAFBF8;border:1px solid #C9CFC9;padding:18px 18px 16px;transform-origin:50% 100%;
+  box-shadow:0 1px 0 #C9CFC9,0 14px 30px -18px rgba(30,42,58,.35)}
+.A .card .row{display:flex;justify-content:space-between;gap:8px}
+.A .card .hole{width:12px;height:12px;border-radius:50%;background:#E9ECE8;border:1px solid #C9CFC9;margin:0 auto 10px}
+.A .card h4{font-family:"Newsreader",Georgia,serif;font-weight:600;font-size:22px;margin:10px 0 6px;line-height:1.15}
+.A .card .note{font-family:"Newsreader",Georgia,serif;font-style:italic;font-size:15px;color:#3A4656;margin:0}
+.A .card .stamp{display:inline-block;margin-top:12px;border:1.5px solid #2F5D8A;color:#2F5D8A;padding:2px 8px;transform:rotate(-3deg);font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em}
+.A .btn{margin-top:22px;background:#1E2A3A;color:#FAFBF8;border:0;padding:12px 18px;font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.06em}
+.A .card.out{animation:pullA .9s cubic-bezier(.2,.8,.2,1)}
+@keyframes pullA{0%{transform:translateY(60%) rotateX(55deg);opacity:0}60%{transform:translateY(-6%) rotateX(-4deg);opacity:1}100%{transform:none}}
+
+/* ===== B · DEVELOPAT ===== */
+.B{background:#1A1614;color:#EDE3D3}
+.B .k{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#D9A441}
+.B h3.disp{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:clamp(36px,5vw,58px);line-height:.95;margin:12px 0 14px;letter-spacing:-.02em}
+.B p{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;margin:0;max-width:40ch;color:#CDBFAA}
+.B .stage{display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#3A2516 0%,#1A1614 70%)}
+.B .pola{width:min(270px,100%);background:#F2EEE6;padding:12px 12px 46px;color:#2A2420;transform:rotate(-2deg);box-shadow:0 24px 50px -20px #000;position:relative}
+.B .photo{aspect-ratio:1;width:100%;position:relative;overflow:hidden;background:#222}
+.B .photo canvas{width:100%;height:100%;display:block}
+.B .pola .cap{position:absolute;left:14px;right:14px;bottom:10px;font-family:"Space Mono",monospace;font-size:12px;display:flex;justify-content:space-between;gap:8px}
+.B .pola .cap b{font-family:"Bricolage Grotesque",sans-serif;font-size:15px}
+.B .btn{margin-top:22px;background:#D9A441;color:#1A1614;border:0;padding:12px 18px;font-family:"Space Mono",monospace;font-weight:700;font-size:13px;letter-spacing:.08em;border-radius:2px}
+.B .photo.dev canvas{animation:dev 3.2s ease-out}
+.B .pola.eject{animation:eject .7s cubic-bezier(.2,.8,.2,1)}
+@keyframes dev{0%{filter:brightness(2.6) contrast(.2) saturate(0) sepia(.4)}40%{filter:brightness(1.6) contrast(.5) saturate(.3) sepia(.5)}100%{filter:none}}
+@keyframes eject{0%{transform:translateY(-40px) rotate(0);opacity:0}100%{transform:rotate(-2deg);opacity:1}}
+.B.grain::after{mix-blend-mode:screen;opacity:.09}
+
+/* ===== C · BANDĂ ===== */
+.C{background:#DCE3DA;color:#14211B;grid-template-columns:1fr}
+.C .pane{padding:28px 32px}
+.C .k{font-family:"Work Sans",sans-serif;font-weight:500;font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.C h3.disp{font-family:"Big Shoulders Display",sans-serif;font-weight:800;font-size:clamp(46px,8vw,96px);line-height:.86;margin:8px 0 10px;text-transform:uppercase;letter-spacing:-.005em}
+.C p{margin:0;max-width:56ch;font-size:16px}
+.C .tape{position:relative;overflow:hidden;border-block:2px solid #14211B;background:#14211B;color:#DCE3DA;height:150px;margin-top:18px}
+.C .reel{display:flex;position:absolute;top:0;left:0;height:100%;will-change:transform}
+.C .yr{flex:0 0 180px;height:100%;border-right:1px dashed rgba(220,227,218,.3);padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between}
+.C .yr .y{font-family:"Big Shoulders Display",sans-serif;font-weight:800;font-size:54px;line-height:1}
+.C .yr .t{font-size:13px;line-height:1.35;color:#B9C6B6}
+.C .yr.hit{background:#E2582F;color:#14211B}
+.C .yr.hit .t{color:#14211B}
+.C .head{position:absolute;top:-2px;bottom:-2px;left:50%;width:2px;background:#E2582F;z-index:3}
+.C .head::before{content:"";position:absolute;top:0;left:-7px;border:8px solid transparent;border-top-color:#E2582F}
+.C .tape.ff .reel{filter:blur(3px)}
+.C .ctrl{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.C .btn{background:#14211B;color:#DCE3DA;border:0;padding:12px 18px;font-family:"Big Shoulders Display",sans-serif;font-weight:800;font-size:20px;letter-spacing:.04em;text-transform:uppercase}
+.C .readout{font-family:"IBM Plex Mono",monospace;font-size:13px}
+.C.grain::after{opacity:.1}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="meta">Capsula · Etapa 2 · Design system</div>
+    <h1>Trei direcții vizuale pentru Capsula</h1>
+    <p>Fiecare placă de mai jos e o lume vizuală diferită, cu Random Hit funcțional. Apasă butonul din fiecare ca să simți animația. Toate merg fără fotografii de arhivă, pentru că încă nu avem.</p>
+  </header>
+
+  <!-- A -->
+  <section class="dir" aria-labelledby="hA">
+    <div class="dir-head"><h2 id="hA">A · Fișierul</h2><span class="tag">bibliotecă · tipografie · liniște</span></div>
+    <p class="dir-desc">Capsula ca un catalog de bibliotecă județeană: fișe cu gaură, număr de inventar, ștampilă albastră. Calm, foarte tipografic, aproape fără imagini. Random Hit scoate o fișă din sertar.</p>
+    <div class="tile A grain">
+      <div class="pane">
+        <div class="mono">FOND: CLUJ · SERIA 1995–2005</div>
+        <h3 class="disp">Aveai 15 ani<br>în <em>1999</em>.</h3>
+        <p>Capsula ta are 38 de fișe. Trage una la întâmplare.</p>
+        <button class="btn" id="btnA">↧ Trage o fișă</button>
+        <div class="swatches" aria-hidden="true"><span class="sw" style="background:#E9ECE8"></span><span class="sw" style="background:#FAFBF8"></span><span class="sw" style="background:#1E2A3A"></span><span class="sw" style="background:#2F5D8A"></span><span class="sw" style="background:#C9CFC9"></span></div>
+        <div class="specs mono"><span>Titluri — Newsreader (serif editorial)</span><span>Date — IBM Plex Mono</span></div>
+      </div>
+      <div class="pane stage">
+        <article class="card" id="cardA" aria-live="polite"></article>
+      </div>
+    </div>
+    <div class="pros"><div><h3>Pentru</h3><ul><li>Cea mai apropiată de Archive No. 03 / TRACE</li><li>Se face cu conținut doar text, deci pornim imediat</li><li>Merch-ul tipografic (fișa ca poster) iese natural</li></ul></div><div><h3>Contra</h3><ul><li>Poate părea rece dacă notele nu au voce caldă</li><li>Mai puțin „wow” pe mobil la prima vedere</li></ul></div></div>
+  </section>
+
+  <!-- B -->
+  <section class="dir" aria-labelledby="hB">
+    <div class="dir-head"><h2 id="hB">B · Camera obscură</h2><span class="tag">laborator foto · lumină caldă · developare</span></div>
+    <p class="dir-desc">Interfața e un laborator foto întunecat, cu lumină de chihlimbar. Random Hit scoate un polaroid care se developează în 3 secunde: din alb spălat apare imaginea. Cea mai cinematografică variantă.</p>
+    <div class="tile B grain">
+      <div class="pane">
+        <div class="k">Rola 99 · cadru nou</div>
+        <h3 class="disp">Ce tare<br>o fost.</h3>
+        <p>Imaginile din MVP sunt ilustrații și fotografii de obiecte făcute de noi; pozele din discoteci vin mai târziu, de la comunitate.</p>
+        <button class="btn" id="btnB">● Developează</button>
+        <div class="swatches" aria-hidden="true"><span class="sw" style="background:#1A1614"></span><span class="sw" style="background:#3A2516"></span><span class="sw" style="background:#D9A441"></span><span class="sw" style="background:#F2EEE6"></span><span class="sw" style="background:#CDBFAA"></span></div>
+        <div class="specs" style="font-family:'Space Mono',monospace;font-size:12px"><span>Titluri — Bricolage Grotesque</span><span>Date — Space Mono</span></div>
+      </div>
+      <div class="pane stage">
+        <figure class="pola" id="polaB" style="margin:0">
+          <div class="photo" id="photoB"><canvas id="cvB" width="400" height="400" aria-hidden="true"></canvas></div>
+          <figcaption class="cap"><b id="capB"></b><span id="yrB"></span></figcaption>
+        </figure>
+      </div>
+    </div>
+    <div class="pros"><div><h3>Pentru</h3><ul><li>Animația de developare e „momentul” memorabil (Awwwards)</li><li>Polaroidul devine cardul de share perfect</li></ul></div><div><h3>Contra</h3><ul><li>Depinde de imagini bune, pe care încă nu le avem</li><li>Tema întunecată e mai grea pentru textele lungi</li></ul></div></div>
+  </section>
+
+  <!-- C -->
+  <section class="dir" aria-labelledby="hC">
+    <div class="dir-head"><h2 id="hC">C · Banda</h2><span class="tag">timp · ritm · derulare</span></div>
+    <p class="dir-desc">Timpul e o bandă magnetică pe care derulezi anii. Tipografie mare și condensată, ca un afiș de concert. Random Hit face „fast forward” cu blur și se oprește brusc pe un an și o amintire.</p>
+    <div class="tile C grain">
+      <div class="pane">
+        <div class="k">Partea A · 90 de minute</div>
+        <h3 class="disp">Derulează<br>până la tine</h3>
+        <p>Fiecare an e un segment de bandă. Capul de citire, linia portocalie, îți arată unde ai ajuns.</p>
+        <div class="tape" id="tapeC"><div class="head" aria-hidden="true"></div><div class="reel" id="reelC"></div></div>
+        <div class="ctrl"><button class="btn" id="btnC">▶▶ Random Hit</button><span class="readout" id="roC" aria-live="polite">Apasă ca să derulezi</span></div>
+        <div class="swatches" aria-hidden="true"><span class="sw" style="background:#DCE3DA"></span><span class="sw" style="background:#14211B"></span><span class="sw" style="background:#E2582F"></span><span class="sw" style="background:#B9C6B6"></span></div>
+        <div class="specs readout"><span>Titluri — Big Shoulders Display</span><span>Text — Work Sans</span></div>
+      </div>
+    </div>
+    <div class="pros"><div><h3>Pentru</h3><ul><li>Cronologia „Aveai 10 / 15 / 18 ani” are o formă naturală</li><li>Cea mai energică; se potrivește cu discotecile</li></ul></div><div><h3>Contra</h3><ul><li>Cea mai departe de „arhiva calmă” din brief</li><li>Scroll-ul orizontal cere grijă pe mobil</li></ul></div></div>
+  </section>
+</div>
+
+<script>
+const fise=[
+  {nr:"CJ-0042",an:"1999",cat:"Locuri",t:"Discoteca Atlantic, Mănăștur",n:"Există filmări din '99. Tu unde stăteai: la bar sau lângă boxe?"},
+  {nr:"CJ-0107",an:"1997",cat:"Obiecte",t:"Caseta de 90 de minute și creionul",n:"Derulai cu creionul ca să nu consumi bateriile walkman-ului."},
+  {nr:"CJ-0013",an:"1995",cat:"Locuri",t:"Bianco e Nero, str. Universității",n:"Peste drum de UBB. Mulți o țin minte ca prima discotecă din oraș."},
+  {nr:"CJ-0211",an:"2002",cat:"Filme & TV",t:"Filmul copiat de la un prieten",n:"Caseta trecea pe la cinci prieteni până ajungea la tine, cu imaginea tot mai ștearsă."},
+  {nr:"CJ-0088",an:"1998",cat:"Obiecte",t:"Abțibildurile din guma cu surprize",n:"Le lipeai pe dulap. Mama nu era de acord."}
+];
+let iA=0,iB=1,iC=0;
+const $=id=>document.getElementById(id);
+function renderA(){const f=fise[iA%fise.length];$("cardA").innerHTML=`<div class="hole"></div><div class="row mono"><span>NR. INV. ${f.nr}</span><span>${f.an}</span></div><h4>${f.t}</h4><p class="note">${f.n}</p><span class="stamp">${f.cat.toUpperCase()}</span>`}
+renderA();
+$("btnA").onclick=()=>{iA++;const c=$("cardA");c.classList.remove("out");void c.offsetWidth;renderA();c.classList.add("out")};
+
+/* B: imagine abstractă generată (placeholder pentru ilustrații/fotografii proprii) */
+const pal=[["#C9572F","#F0B35A","#2B4C6F"],["#3D6B5A","#E8C76A","#7A2E3A"],["#5B3A7A","#E07B4C","#F3D9A4"],["#2E5E8C","#D9A441","#B33A3A"],["#7A5230","#E9D3A9","#3B5B4A"]];
+function drawB(k){const c=$("cvB"),x=c.getContext("2d"),p=pal[k%pal.length];x.fillStyle=p[0];x.fillRect(0,0,400,400);
+  for(let i=0;i<7;i++){x.globalAlpha=.55;x.fillStyle=p[i%3];x.beginPath();x.arc(60+Math.random()*280,60+Math.random()*280,30+Math.random()*120,0,7);x.fill()}
+  x.globalAlpha=1;const g=x.createRadialGradient(200,200,80,200,200,300);g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,.55)");x.fillStyle=g;x.fillRect(0,0,400,400)}
+function renderB(){const f=fise[iB%fise.length];drawB(iB);$("capB").textContent=f.t.split(",")[0];$("yrB").textContent="'"+f.an.slice(2)}
+renderB();
+$("btnB").onclick=()=>{iB++;const p=$("polaB"),ph=$("photoB");p.classList.remove("eject");ph.classList.remove("dev");void p.offsetWidth;renderB();p.classList.add("eject");ph.classList.add("dev")};
+
+/* C: bandă cu ani */
+const ani=[];for(let y=1990;y<=2008;y++)ani.push(y);
+const reel=$("reelC"),reps=4;let html="";
+for(let r=0;r<reps;r++)ani.forEach(y=>{const f=fise.find(f=>+f.an===y);html+=`<div class="yr" data-y="${y}"><span class="y">${y}</span><span class="t">${f?f.t:""}</span></div>`});
+reel.innerHTML=html;
+let pos=0;const W=180;
+function place(px,anim){reel.style.transition=anim?"transform 1.6s cubic-bezier(.15,.7,.1,1)":"none";reel.style.transform=`translateX(${px}px)`}
+function center(idx){return $("tapeC").clientWidth/2-(idx*W+W/2)}
+place(center(9),false);
+$("btnC").onclick=()=>{const f=fise[iC++%fise.length],y=+f.an;
+  reel.querySelectorAll(".hit").forEach(e=>e.classList.remove("hit"));
+  const idx=ani.length*2+ani.indexOf(y);place(center(ani.length*0+ani.indexOf(y)),false);
+  requestAnimationFrame(()=>{requestAnimationFrame(()=>{$("tapeC").classList.add("ff");place(center(idx),true)})});
+  $("roC").textContent="Se derulează…";
+  setTimeout(()=>{$("tapeC").classList.remove("ff");reel.children[idx].classList.add("hit");$("roC").textContent=`${y} · ${f.t}`},1300)};
+addEventListener("resize",()=>place(center(9),false));
+</script>

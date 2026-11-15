@@ -1,0 +1,269 @@
+<title>Capsula · Banda</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;800&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: document de design system — secțiuni verticale (principii, culori, tipografie, componente, ecrane), fiecare cu exemple vii */
+:root{
+  --paper:#DCE3DA;   /* fundal: verde-cenușiu de etichetă de casetă */
+  --card:#F4F6F1;    /* hârtia polaroidului / fișei */
+  --ink:#14211B;     /* text și banda magnetică */
+  --muted:#4F5F55;
+  --line:#B9C6B6;
+  --signal:#E2582F;  /* capul de citire: singurul accent, folosit rar */
+  --display:"Big Shoulders Display","Arial Narrow",sans-serif;
+  --body:"Work Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --ease-ff:cubic-bezier(.15,.7,.1,1);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#111A15;--card:#1C2721;--ink:#DCE3DA;--muted:#9AAA9F;--line:#2E3B33;--signal:#EE6A40;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#111A15;--card:#1C2721;--ink:#DCE3DA;--muted:#9AAA9F;--line:#2E3B33;--signal:#EE6A40;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 72px;position:relative}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.08;z-index:50;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:64px}
+.k{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(56px,11vw,128px);line-height:.85;margin:10px 0 16px;text-wrap:balance}
+h2{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(34px,5vw,52px);line-height:.9;margin:6px 0 20px}
+p{margin:0;max-width:62ch}
+section{display:grid;gap:8px}
+.counter{display:inline-flex;gap:2px;font-family:var(--mono);font-size:13px;background:var(--ink);color:var(--paper);padding:4px 8px;border-radius:2px;letter-spacing:.15em}
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.g5{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.grid > *{min-width:0}
+
+/* Principii */
+.pr{border-top:2px solid var(--ink);padding-top:12px}
+.pr b{font-family:var(--display);font-size:26px;text-transform:uppercase;display:block;line-height:1;margin-bottom:6px}
+.pr p{font-size:15px;color:var(--muted)}
+
+/* Culori */
+.sw{border:1px solid var(--line);border-radius:3px;overflow:hidden;background:var(--card)}
+.sw i{display:block;height:84px}
+.sw div{padding:10px 12px;font-size:13px}
+.sw code{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+/* Tipografie */
+.type{display:grid;gap:18px;border-top:2px solid var(--ink);padding-top:16px}
+.trow{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:baseline}
+@media (max-width:620px){.trow{grid-template-columns:1fr;gap:2px}}
+.trow > *{min-width:0}
+.t-d1{font-family:var(--display);font-weight:800;font-size:clamp(48px,8vw,88px);line-height:.85;text-transform:uppercase}
+.t-d2{font-family:var(--display);font-weight:800;font-size:40px;line-height:.9;text-transform:uppercase}
+.t-b{font-size:17px}
+.t-m{font-family:var(--mono);font-size:13px;letter-spacing:.06em}
+
+/* Componente */
+.comp{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:24px;display:grid;gap:14px;align-content:start}
+.comp .k{margin-bottom:2px}
+.btn{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:22px;letter-spacing:.03em;background:var(--ink);color:var(--paper);border:0;padding:12px 20px;border-radius:2px;cursor:pointer;justify-self:start}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.btn:focus-visible,.chip:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
+.chip{font:500 14px var(--body);background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Fișa-polaroid */
+.fisa{background:#F4F6F1;color:#14211B;padding:10px 10px 14px;box-shadow:0 18px 30px -18px rgba(0,0,0,.45);width:min(260px,100%);transform:rotate(-1.5deg)}
+.fisa .img{aspect-ratio:1;background:linear-gradient(135deg,#2E5E8C,#E2582F 60%,#F0B35A);position:relative;overflow:hidden}
+.fisa .img span{position:absolute;left:8px;bottom:8px;font-family:var(--mono);font-size:11px;color:#F4F6F1;background:rgba(20,33,27,.6);padding:2px 6px}
+.fisa .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;margin-top:10px;color:#4F5F55}
+.fisa h4{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:26px;line-height:.92;margin:6px 0 6px}
+.fisa p{font-size:14px;line-height:1.4}
+.fisa .am{display:flex;align-items:center;justify-content:space-between;margin-top:12px;border-top:1px dashed #B9C6B6;padding-top:10px;font-size:13px}
+.fisa .am button{font:600 13px var(--body);background:#14211B;color:#F4F6F1;border:0;padding:6px 10px;border-radius:2px;cursor:pointer}
+.fisa .am button[aria-pressed="true"]{background:#E2582F;color:#14211B}
+
+/* Banda */
+.tape{position:relative;overflow:hidden;background:#14211B;color:#DCE3DA;height:120px;border-radius:2px}
+.reel{display:flex;position:absolute;top:0;left:0;height:100%;will-change:transform}
+.yr{flex:0 0 140px;border-right:1px dashed rgba(220,227,218,.28);padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between}
+.yr .y{font-family:var(--display);font-weight:800;font-size:44px;line-height:1}
+.yr .t{font-size:12px;line-height:1.3;color:#B9C6B6}
+.yr.hit{background:#E2582F;color:#14211B}.yr.hit .t{color:#14211B}
+.yr.me .y::after{content:" ●";font-size:14px;color:#E2582F;vertical-align:top}
+.yr.hit.me .y::after{color:#14211B}
+.head{position:absolute;top:0;bottom:0;left:50%;width:2px;background:#E2582F;z-index:3}
+.tape.ff .reel{filter:blur(3px)}
+
+/* Motion */
+.mot{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.mot > div{border-top:2px solid var(--ink);padding-top:10px}
+.mot b{display:block;font-family:var(--display);font-size:24px;text-transform:uppercase;line-height:1}
+.mot code{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.mot p{font-size:14px;color:var(--muted);margin-top:4px}
+
+/* Ecran mobil */
+.screens{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start}
+.phone{width:min(330px,100%);border:8px solid var(--ink);border-radius:30px;overflow:hidden;background:#DCE3DA;color:#14211B;position:relative}
+.phone .in{padding:18px 16px 20px;display:grid;gap:14px}
+.phone .top{display:flex;justify-content:space-between;align-items:center}
+.phone .logo{font-family:var(--display);font-weight:800;font-size:24px;text-transform:uppercase;letter-spacing:.02em}
+.phone h3{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:54px;line-height:.84;margin:0}
+.phone .rh{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:24px;background:#14211B;color:#DCE3DA;border:0;padding:14px;border-radius:2px;width:100%;cursor:pointer}
+.phone .rh:focus-visible{outline:3px solid #E2582F;outline-offset:3px}
+.phone .mini{height:84px}
+.phone .mini .yr{flex-basis:96px}.phone .mini .yr .y{font-size:30px}
+.phone .strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}
+.phone .strip .s{flex:0 0 120px;background:#F4F6F1;padding:6px 6px 8px;font-size:12px;line-height:1.25}
+.phone .strip .s i{display:block;aspect-ratio:1;margin-bottom:6px}
+.phone .city{border:1.5px dashed #14211B;padding:10px 12px;font-size:13px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.phone .city b{font-family:var(--display);font-size:20px;text-transform:uppercase}
+.note{font-size:14px;color:var(--muted);max-width:42ch}
+.note b{color:var(--ink)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="k">Capsula · Etapa 2 · Design system v0.1</div>
+    <h1>Banda</h1>
+    <p>Timpul e o bandă magnetică pe care o derulezi. Structura și energia vin din casetă și din afișele de concert. Liniștea vine din fișele-polaroid, grain-ul ușor și un singur accent: capul de citire portocaliu.</p>
+    <p style="margin-top:14px"><span class="counter" aria-label="contor bandă">0 4 1 2</span> <span class="k" style="margin-left:8px">contorul casetofonului: detaliul nostru semnătură</span></p>
+  </header>
+
+  <section>
+    <div class="k">01 · Principii</div>
+    <h2>Cum gândim</h2>
+    <div class="grid g3">
+      <div class="pr"><b>Un singur accent</b><p>Portocaliul înseamnă „ești aici” sau „Random Hit”. Nu îl folosim decorativ, nicăieri altundeva.</p></div>
+      <div class="pr"><b>Tare și liniștit</b><p>Titlurile sunt mari, condensate, ca de afiș. Textul rămâne calm, aerisit și cald.</p></div>
+      <div class="pr"><b>Timpul e spațiu</b><p>Navighezi prin ani ca pe o bandă. Pe desktop banda e orizontală, pe mobil e verticală, cu contor.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="k">02 · Culori</div>
+    <h2>Paleta</h2>
+    <div class="grid g5">
+      <div class="sw"><i style="background:#DCE3DA"></i><div>Etichetă<br><code>paper · #DCE3DA</code></div></div>
+      <div class="sw"><i style="background:#F4F6F1"></i><div>Polaroid<br><code>card · #F4F6F1</code></div></div>
+      <div class="sw"><i style="background:#14211B"></i><div>Bandă<br><code>ink · #14211B</code></div></div>
+      <div class="sw"><i style="background:#B9C6B6"></i><div>Linie<br><code>line · #B9C6B6</code></div></div>
+      <div class="sw"><i style="background:#E2582F"></i><div>Cap de citire<br><code>signal · #E2582F</code></div></div>
+    </div>
+    <p class="k" style="margin-top:8px">Modul întunecat inversează banda și eticheta. Accentul se luminează ușor, ca să rămână lizibil.</p>
+  </section>
+
+  <section>
+    <div class="k">03 · Tipografie</div>
+    <h2>Litere</h2>
+    <div class="type">
+      <div class="trow"><span class="k">Display 1 · Big Shoulders 800</span><span class="t-d1">Aveai 15 ani</span></div>
+      <div class="trow"><span class="k">Display 2</span><span class="t-d2">Ce tare o fost</span></div>
+      <div class="trow"><span class="k">Text · Work Sans 17</span><span class="t-b">Derulai caseta cu creionul ca să nu consumi bateriile. Diacritice corecte: ș, ț, ă, î, â.</span></div>
+      <div class="trow"><span class="k">Date · Plex Mono 13</span><span class="t-m">NR. INV. RO-0107 · 1997 · OBIECTE</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="k">04 · Componente</div>
+    <h2>Piese</h2>
+    <div class="grid g3">
+      <div class="comp">
+        <div class="k">Fișa-polaroid</div>
+        <article class="fisa">
+          <div class="img"><span>ilustrație proprie</span></div>
+          <div class="row"><span>NR. INV. RO-0107</span><span>1997</span></div>
+          <h4>Caseta și creionul</h4>
+          <p>Derulai cu creionul ca să nu consumi bateriile walkman-ului.</p>
+          <div class="am"><span id="cnt">1.284 de oameni</span><button id="amBtn" aria-pressed="false">Am avut asta</button></div>
+        </article>
+      </div>
+      <div class="comp">
+        <div class="k">Butoane</div>
+        <button class="btn">▶▶ Random Hit</button>
+        <button class="btn ghost">Vezi capsula</button>
+        <div class="k" style="margin-top:8px">Filtre</div>
+        <div class="chips" id="chips">
+          <button class="chip" aria-pressed="true">Muzică</button>
+          <button class="chip" aria-pressed="false">Filme &amp; TV</button>
+          <button class="chip" aria-pressed="false">Obiecte</button>
+          <button class="chip" aria-pressed="false">Mâncare</button>
+        </div>
+      </div>
+      <div class="comp">
+        <div class="k">Contor & stări</div>
+        <span class="counter">0 4 1 2</span>
+        <p style="font-size:14px;color:var(--muted)">Contorul arată poziția pe bandă: anul și fișa curentă. Se rotește ca la casetofon când derulezi.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="chip" style="cursor:default;border-style:dashed">Oraș blocat · votează</span>
+          <span class="chip" style="cursor:default;background:var(--signal);border-color:var(--signal);color:#14211B">Cluj · deblocat</span>
+        </div>
+      </div>
+    </div>
+    <div class="comp" style="margin-top:16px">
+      <div class="k">Banda · cronologia națională (● = anul tău, 1999 · 15 ani)</div>
+      <div class="tape" id="tape"><div class="head" aria-hidden="true"></div><div class="reel" id="reel"></div></div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="btn" id="rh">▶▶ Random Hit</button><span class="t-m" id="ro" aria-live="polite">Apasă ca să derulezi</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="k">05 · Mișcare</div>
+    <h2>Animații</h2>
+    <div class="mot">
+      <div><b>Fast forward</b><code>1.6s · ease-ff · blur 3px</code><p>Random Hit: banda accelerează cu blur, apoi frânează brusc pe un an.</p></div>
+      <div><b>Developare</b><code>2.4s · după oprire</code><p>Polaroidul fișei apare din alb spălat. E singurul împrumut din direcția B.</p></div>
+      <div><b>Scroll = derulare</b><code>legat de scroll</code><p>Contorul se rotește pe măsură ce derulezi capsula; anii trec pe sub capul de citire.</p></div>
+      <div><b>Mișcare redusă</b><code>prefers-reduced-motion</code><p>Fără blur sau derulare: se face un salt direct la fișă.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="k">06 · Ecran</div>
+    <h2>Acasă, pe mobil</h2>
+    <div class="screens">
+      <div class="phone" aria-label="Machetă ecran acasă">
+        <div class="in">
+          <div class="top"><span class="logo">Capsula</span><span class="counter">0 0 1 5</span></div>
+          <div class="k" style="color:#4F5F55">Născut în 1984</div>
+          <h3>Aveai 15 ani în 1999</h3>
+          <div class="tape mini" id="tape2"><div class="head" aria-hidden="true"></div><div class="reel" id="reel2"></div></div>
+          <button class="rh">▶▶ Random Hit</button>
+          <div class="k" style="color:#4F5F55">Din capsula ta</div>
+          <div class="strip">
+            <div class="s"><i style="background:linear-gradient(135deg,#2E5E8C,#F0B35A)"></i>Caseta și creionul</div>
+            <div class="s"><i style="background:linear-gradient(135deg,#7A2E3A,#E2582F)"></i>Abțibildurile din guma cu surprize</div>
+            <div class="s"><i style="background:linear-gradient(135deg,#3D6B5A,#E8C76A)"></i>Filmul copiat de la un prieten</div>
+          </div>
+          <div class="city"><span><b>Brașov</b><br>Încă nu e deblocat. 212 voturi.</span><span class="chip" style="border-color:#14211B;color:#14211B">Votează</span></div>
+        </div>
+      </div>
+      <p class="note"><b>Capsula națională e aceeași pentru toți.</b> Stratul de oraș apare doar sub ea: cine a ales Cluj vede discotecile și locurile, iar ceilalți văd orașul lor cu buton de vot. Numerele de pe ecran (voturi, „1.284 de oameni”) sunt exemple de machetă, nu date reale.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+const fise=[
+ {an:1993,t:"Prima antenă de satelit pe bloc"},
+ {an:1997,t:"Caseta și creionul"},
+ {an:1998,t:"Abțibildurile din guma cu surprize"},
+ {an:1999,t:"Eclipsa din august"},
+ {an:2002,t:"Filmul copiat de la un prieten"},
+ {an:2004,t:"Primul telefon cu ecran color"}
+];
+const ani=[];for(let y=1990;y<=2008;y++)ani.push(y);
+function build(reel,W,reps){let h="";for(let r=0;r<reps;r++)ani.forEach(y=>{const f=fise.find(f=>f.an===y);h+=`<div class="yr${y===1999?' me':''}"><span class="y">${y}</span><span class="t">${f?f.t:""}</span></div>`});reel.innerHTML=h}
+const $=id=>document.getElementById(id);
+const reel=$("reel"),tape=$("tape"),W=140;build(reel,W,3);
+function place(px,anim){reel.style.transition=anim?"transform 1.6s var(--ease-ff)":"none";reel.style.transform=`translateX(${px}px)`}
+const center=i=>tape.clientWidth/2-(i*W+W/2);
+place(center(ani.indexOf(1999)),false);
+let k=0;
+$("rh").onclick=()=>{const f=fise[k++%fise.length],i0=ani.indexOf(f.an),idx=ani.length*2+i0;
+ reel.querySelectorAll(".hit").forEach(e=>e.classList.remove("hit"));place(center(i0),false);
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{tape.classList.add("ff");place(center(idx),true)}));
+ $("ro").textContent="Se derulează…";
+ setTimeout(()=>{tape.classList.remove("ff");reel.children[idx].classList.add("hit");$("ro").textContent=`${f.an} · ${f.t}`},1300)};
+addEventListener("resize",()=>place(center(ani.indexOf(1999)),false));
+/* mini bandă pe telefon */
+const r2=$("reel2"),t2=$("tape2");build(r2,96,1);
+const c2=()=>{r2.style.transform=`translateX(${t2.clientWidth/2-(ani.indexOf(1999)*96+48)}px)`};c2();addEventListener("resize",c2);
+/* butoane */
+$("amBtn").onclick=e=>{const b=e.currentTarget,on=b.getAttribute("aria-pressed")==="true";b.setAttribute("aria-pressed",String(!on));$("cnt").textContent=(on?"1.284":"1.285")+" de oameni"};
+document.querySelectorAll("#chips .chip").forEach(c=>c.onclick=()=>c.setAttribute("aria-pressed",c.getAttribute("aria-pressed")==="true"?"false":"true"));
+</script>

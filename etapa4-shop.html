@@ -1,0 +1,228 @@
+<title>Capsula · Magazin</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;800&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: trei modele de magazin și monetizare, fiecare cu demo interactiv + economie + riscuri; design system „Banda” */
+:root{
+  --paper:#DCE3DA;--card:#F4F6F1;--ink:#14211B;--muted:#4F5F55;--line:#B9C6B6;--signal:#E2582F;
+  --display:"Big Shoulders Display","Arial Narrow",sans-serif;--body:"Work Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+  --ease-ff:cubic-bezier(.15,.7,.1,1);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#111A15;--card:#1C2721;--ink:#DCE3DA;--muted:#9AAA9F;--line:#2E3B33;--signal:#EE6A40;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#111A15;--card:#1C2721;--ink:#DCE3DA;--muted:#9AAA9F;--line:#2E3B33;--signal:#EE6A40;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 72px}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.08;z-index:50;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:72px}
+.k{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(52px,10vw,116px);line-height:.85;margin:10px 0 16px;text-wrap:balance}
+h2{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(36px,5.5vw,58px);line-height:.88;margin:6px 0 12px}
+p{margin:0;max-width:62ch}
+.lead{color:var(--muted)}
+.var{display:grid;gap:20px}
+.demo{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:28px}
+@media (max-width:820px){.demo{grid-template-columns:1fr}}
+.stage{display:grid;gap:16px;align-content:start}
+.info{display:grid;gap:16px;align-content:start}
+.info h3{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;font-weight:500}
+.info ul{margin:0;padding-left:18px;font-size:15px}
+.info li+li{margin-top:4px}
+.risk li::marker{content:"⚠ ";color:var(--signal)}
+.btn{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:20px;letter-spacing:.03em;background:var(--ink);color:var(--paper);border:0;padding:11px 18px;border-radius:2px;cursor:pointer;justify-self:start}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.btn:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:500 14px var(--body);background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+label.k{display:block;margin-bottom:6px}
+input[type=text],select{font:inherit;background:var(--paper);color:var(--ink);border:1.5px solid var(--ink);border-radius:2px;padding:8px 10px;width:100%}
+.ok{font-size:14px;color:var(--muted);min-height:1.4em}
+
+/* A: configurator */
+.mock{display:grid;place-items:center;background:var(--paper);border-radius:4px;padding:24px;min-height:330px;position:relative}
+.tee{width:min(280px,100%);aspect-ratio:1/1.05;position:relative}
+.tee svg{width:100%;height:100%;display:block}
+.print{position:absolute;left:28%;right:28%;top:30%;display:grid;gap:4px;text-align:center;font-family:var(--display);font-weight:800;text-transform:uppercase;line-height:.85}
+.print .y{font-size:clamp(40px,7vw,56px)}
+.print .s{font-family:var(--mono);font-weight:500;font-size:10px;letter-spacing:.12em;line-height:1.3}
+.print .bar{height:3px;background:currentColor;margin:4px 0}
+.poster{width:min(230px,100%);aspect-ratio:3/4;background:#F4F6F1;color:#14211B;padding:18px;display:grid;align-content:space-between;box-shadow:0 18px 30px -18px rgba(0,0,0,.45)}
+.poster .y{font-family:var(--display);font-weight:800;font-size:76px;line-height:.8}
+.poster .t{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:24px;line-height:.9}
+.poster .m{font-family:var(--mono);font-size:10px;letter-spacing:.1em}
+.poster .head{height:3px;background:#E2582F}
+.cfg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cfg > *{min-width:0}
+@media (max-width:480px){.cfg{grid-template-columns:1fr}}
+
+/* B: talcioc */
+.lst{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.item{background:var(--paper);border-radius:3px;padding:8px;display:grid;gap:6px;font-size:14px;line-height:1.3}
+.item i{display:block;aspect-ratio:1;border-radius:2px}
+.item .p{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.item .ex{font-family:var(--mono);font-size:10px;letter-spacing:.08em;background:var(--ink);color:var(--paper);padding:1px 5px;justify-self:start}
+
+/* C: drop */
+.drop{background:var(--ink);color:var(--paper);border-radius:4px;padding:20px;display:grid;gap:10px}
+.drop .t{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:40px;line-height:.88}
+.cd{display:flex;gap:8px;font-family:var(--mono)}
+.cd div{background:rgba(220,227,218,.12);padding:8px 10px;border-radius:2px;text-align:center;min-width:58px}
+.cd b{display:block;font-family:var(--display);font-size:30px;line-height:1}
+.cd span{font-size:10px;letter-spacing:.1em}
+.stock{height:6px;background:rgba(220,227,218,.2);border-radius:3px;overflow:hidden}
+.stock i{display:block;height:100%;background:#E2582F;width:0;transition:width 1.2s var(--ease-ff)}
+.tiers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tiers > div{border:1.5px solid var(--ink);border-radius:3px;padding:14px;display:grid;gap:6px;align-content:start}
+.tiers b{font-family:var(--display);font-size:24px;text-transform:uppercase;line-height:1}
+.tiers ul{margin:0;padding-left:16px;font-size:14px}
+.tiers .on{background:var(--ink);color:var(--paper)}
+@media (max-width:480px){.tiers{grid-template-columns:1fr}}
+
+.compare{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td:first-child{font-weight:600}
+.note{font-size:14px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="k">Capsula · Etapa 4 · Magazin + monetizare</div>
+    <h1>Cum face bani Capsula</h1>
+    <p class="lead">Trei modele de afaceri diferite, nu trei magazine care arată diferit. Prețurile și numerele din pagină sunt exemple de machetă: le stabilim după ce aflăm costurile reale de la furnizori.</p>
+  </header>
+
+  <!-- A -->
+  <section class="var" aria-labelledby="hA">
+    <div><div class="k">Varianta A</div><h2 id="hA">Anul tău, tipărit</h2>
+    <p class="lead">Print-on-demand personalizat din datele pe care aplicația le are deja: anul tău, orașul, scorul din „Ghicește anul”, fișele salvate în caseta ta. Fiecare produs e unic, nu avem stoc, iar textul și designul sunt 100% ale noastre.</p></div>
+    <div class="demo">
+      <div class="stage">
+        <div class="mock" id="mockA"></div>
+        <div class="cfg">
+          <div><label class="k" for="pA">Produs</label><select id="pA"><option value="tee">Tricou</option><option value="poster">Poster A3</option></select></div>
+          <div><label class="k" for="yA">Anul tău (15 ani)</label><select id="yA"></select></div>
+          <div><label class="k" for="cA">Oraș</label><input type="text" id="cA" value="Cluj" maxlength="16"></div>
+          <div><label class="k" for="sA">Scor „Ghicește anul”</label><select id="sA"><option value="">Fără scor</option><option value="420">420 / 500</option><option value="500">500 / 500</option></select></div>
+        </div>
+        <button class="btn" id="notA">Anunță-mă când se lansează</button>
+        <span class="ok" id="okA" aria-live="polite"></span>
+      </div>
+      <div class="info">
+        <div><h3>Cum face bani</h3><ul><li>Marjă la fiecare produs (preț minus costul de producție și transport)</li><li>Vânzarea pornește din share: cardul de scor duce direct la tricoul cu scorul</li></ul></div>
+        <div><h3>Ce intră în MVP</h3><ul><li>Configurator cu 2 produse (tricou, poster)</li><li>Buton „Anunță-mă” ca să măsurăm cererea înainte de a vinde</li></ul></div>
+        <div class="risk"><h3>Riscuri</h3><ul><li>Costul de producție și transportul în România trebuie aflate de la furnizori reali</li><li>Fără logo-uri de mărci, trupe sau discoteci: doar tipografia noastră</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- B -->
+  <section class="var" aria-labelledby="hB">
+    <div><div class="k">Varianta B</div><h2 id="hB">Talcioc</h2>
+    <p class="lead">Un târg online de obiecte autentice din anii '90–2000: casete, CD-uri, jucării, reviste. Le vând oamenii, iar noi luăm comision. E singura variantă în care casetele și CD-urile pe care le-ai cerut chiar există.</p></div>
+    <div class="demo">
+      <div class="stage">
+        <div class="chips" id="fB">
+          <button class="chip" aria-pressed="true" data-c="toate">Toate</button>
+          <button class="chip" aria-pressed="false" data-c="muzica">Casete &amp; CD-uri</button>
+          <button class="chip" aria-pressed="false" data-c="jucarii">Jucării</button>
+          <button class="chip" aria-pressed="false" data-c="hartie">Reviste &amp; hârtie</button>
+        </div>
+        <div class="lst" id="lB"></div>
+        <button class="btn ghost" id="sellB">+ Vinde și tu</button>
+        <span class="ok" id="okB" aria-live="polite"></span>
+      </div>
+      <div class="info">
+        <div><h3>Cum face bani</h3><ul><li>Comision din fiecare vânzare</li><li>Opțional: plată pentru anunț promovat</li></ul></div>
+        <div><h3>Ce intră în MVP</h3><ul><li>Anunțuri cu poze, preț și oraș</li><li>Fiecare obiect e legat de o fișă („asta e caseta din fișa RO-0107”)</li></ul></div>
+        <div class="risk"><h3>Riscuri</h3><ul><li>Cel mai complex legal: plăți între persoane, retururi, fraude</li><li>Casetele copiate sau piratate nu au voie să fie listate</li><li>Fără vânzători, magazinul arată gol la lansare</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- C -->
+  <section class="var" aria-labelledby="hC">
+    <div><div class="k">Varianta C</div><h2 id="hC">Drop-uri + Membru</h2>
+    <p class="lead">Aplicația rămâne gratuită. Lunar lansăm un „drop” tematic în ediție limitată (de exemplu „Vara lui '99”), iar membrii plătitori primesc acces înainte și extra-uri în aplicație.</p></div>
+    <div class="demo">
+      <div class="stage">
+        <div class="drop">
+          <span class="k" style="color:#B9C6B6">Drop nr. 01 · ediție limitată</span>
+          <span class="t">Vara lui '99</span>
+          <div class="cd" id="cdC" aria-label="Timp până la lansare"></div>
+          <div class="stock" aria-hidden="true"><i id="stC"></i></div>
+          <span class="k" style="color:#B9C6B6" id="stTxt">Stoc: 300 de bucăți numerotate</span>
+        </div>
+        <div class="tiers" id="tC">
+          <div><b>Gratuit</b><ul><li>Zapping nelimitat</li><li>Ghicește anul: 1 joc pe zi</li><li>Acces la drop odată cu toată lumea</li></ul></div>
+          <div><b>Membru</b><ul><li>Joc nelimitat și clasamente pe orașe</li><li>Acces la drop cu 48 de ore înainte</li><li>Numărul tău de membru pe produse</li></ul></div>
+        </div>
+        <div class="chips"><button class="chip" aria-pressed="false" id="memC">Vreau să fiu membru</button></div>
+        <span class="ok" id="okC" aria-live="polite"></span>
+      </div>
+      <div class="info">
+        <div><h3>Cum face bani</h3><ul><li>Venit recurent din abonamente, plus vânzări de drop-uri</li><li>Ediția limitată creează urgență fără reduceri agresive</li></ul></div>
+        <div><h3>Ce intră în MVP</h3><ul><li>Un singur drop de test, cu precomandă</li><li>Membru: doar lista de interes, fără plăți încă</li></ul></div>
+        <div class="risk"><h3>Riscuri</h3><ul><li>Un abonament cere conținut nou constant</li><li>Limita de joc gratuit poate frâna viralitatea din „Ghicește anul”</li><li>Drop-urile cu stoc înseamnă bani blocați în produse</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="var">
+    <div><div class="k">Comparație</div><h2>Pe scurt</h2></div>
+    <div class="compare">
+      <table>
+        <thead><tr><th></th><th>A · Anul tău</th><th>B · Talcioc</th><th>C · Drop + Membru</th></tr></thead>
+        <tbody>
+          <tr><td>Investiție inițială</td><td>Mică (fără stoc)</td><td>Medie (platformă, plăți)</td><td>Medie (stoc pentru drop)</td></tr>
+          <tr><td>Legătură cu A + C</td><td>Foarte bună (scor, an, casetă)</td><td>Bună (fișă → obiect real)</td><td>Bună (limite de joc)</td></tr>
+          <tr><td>Complexitate legală</td><td>Mică</td><td>Mare</td><td>Medie</td></tr>
+          <tr><td>Casete / CD-uri</td><td>Nu</td><td>Da, autentice</td><td>Doar ca obiect de design, fără muzică</td></tr>
+          <tr><td>Venit recurent</td><td>Nu</td><td>Parțial</td><td>Da</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+/* A */
+for(let y=1985;y<=2010;y++){const o=document.createElement("option");o.value=y;o.textContent=y;if(y===1999)o.selected=true;$("yA").appendChild(o)}
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function renderA(){
+  const y=$("yA").value,c=esc($("cA").value.trim()||"România"),s=$("sA").value,born=y-15;
+  if($("pA").value==="tee"){
+    $("mockA").innerHTML=`<div class="tee"><svg viewBox="0 0 200 210" aria-hidden="true"><path d="M60 10 L80 4 Q100 18 120 4 L140 10 L196 40 L178 78 L156 68 L156 206 L44 206 L44 68 L22 78 L4 40 Z" fill="#14211B"/></svg>
+    <div class="print" style="color:#DCE3DA"><span class="s">Capsula · ${c}</span><span class="y">'${String(y).slice(2)}</span><div class="bar" style="background:#E2582F"></div><span class="s">Aveai 15 ani<br>Născut ${born}${s?"<br>Scor "+s+"/500":""}</span></div></div>`;
+  }else{
+    $("mockA").innerHTML=`<div class="poster"><span class="m">CAPSULA · ${c.toUpperCase()} · NR. INV. ${born}-${y}</span><div><div class="y">${y}</div><div class="head"></div></div><div class="t">Aveai 15 ani.<br>Ce tare o fost.</div><span class="m">${s?"GHICEȘTE ANUL · "+s+"/500":"NĂSCUT "+born}</span></div>`;
+  }
+}
+["pA","yA","cA","sA"].forEach(id=>$(id).addEventListener("input",renderA));renderA();
+$("notA").onclick=()=>$("okA").textContent="Notat (în demo). În aplicație, așa măsurăm câți ar cumpăra.";
+/* B */
+const items=[
+ {t:"Casetă audio goală, 90 min, sigilată",c:"muzica",p:"preț pus de vânzător",o:"Cluj",g:["#14211B","#E2582F"]},
+ {t:"Album de abțibilduri, completat pe jumătate",c:"hartie",p:"preț pus de vânzător",o:"Iași",g:["#7A2E3A","#F0B35A"]},
+ {t:"Joc electronic de buzunar, merge",c:"jucarii",p:"preț pus de vânzător",o:"Brașov",g:["#3D6B5A","#E8C76A"]},
+ {t:"CD original, cu carnețel",c:"muzica",p:"preț pus de vânzător",o:"Timișoara",g:["#2E5E8C","#D9A441"]},
+ {t:"Revistă pentru adolescenți, 1998",c:"hartie",p:"preț pus de vânzător",o:"Cluj",g:["#5B3A7A","#E07B4C"]},
+ {t:"Tamagotchi-like, fără baterie",c:"jucarii",p:"preț pus de vânzător",o:"București",g:["#E2582F","#F4F6F1"]}
+];
+function renderB(cat){$("lB").innerHTML=items.filter(i=>cat==="toate"||i.c===cat).map(i=>`<div class="item"><i style="background:linear-gradient(135deg,${i.g[0]},${i.g[1]})"></i><span class="ex">EXEMPLU</span>${i.t}<span class="p">${i.o} · ${i.p}</span></div>`).join("")}
+renderB("toate");
+$("fB").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{$("fB").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");renderB(b.dataset.c)});
+$("sellB").onclick=()=>$("okB").textContent="În aplicație: poze, descriere, preț, oraș, apoi moderare înainte de publicare.";
+/* C */
+const end=Date.now()+((3*24+7)*3600+42*60)*1000;
+function tick(){let s=Math.max(0,Math.floor((end-Date.now())/1000));const d=Math.floor(s/86400);s%=86400;const h=Math.floor(s/3600);s%=3600;const m=Math.floor(s/60);s%=60;
+ $("cdC").innerHTML=[[d,"ZILE"],[h,"ORE"],[m,"MIN"],[s,"SEC"]].map(([v,l])=>`<div><b>${String(v).padStart(2,"0")}</b><span>${l}</span></div>`).join("")}
+tick();setInterval(tick,1000);
+setTimeout(()=>{$("stC").style.width="38%";$("stTxt").textContent="Stoc: 300 de bucăți numerotate · 114 rezervate de membri (exemplu)"},400);
+$("memC").onclick=e=>{const b=e.currentTarget,on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);$("tC").children[1].classList.toggle("on",on);$("okC").textContent=on?"Ești pe lista de membri (demo). Fără plată în MVP.":""};
+</script>
