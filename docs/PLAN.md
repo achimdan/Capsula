@@ -65,7 +65,7 @@ Demo: https://claude.ai/artifact/TzJWrZoDD6iTGiW1GaR9B1
 | Găzduire | Cloudflare Workers (Worker `capsula`, cu assets statice; deploy automat din `main` prin Workers Builds) |
 | Date, conturi, scoruri, voturi | Supabase (Postgres + Auth), într-un cont separat |
 | Imagini | Supabase Storage sau Cloudflare R2 |
-| Carduri de share | Imagini generate pe server |
+| Carduri de share | Acum: PNG desenat în browser (canvas) la finalul „Ghicește anul”; imagini de previzualizare generate pe server, mai târziu |
 | Plăți | Stripe; Stripe Connect pentru Talcioc |
 | Print-on-demand | API-ul unui furnizor, ales după costurile reale pentru România |
 | 3D | Nu în MVP |
@@ -75,6 +75,8 @@ Codul de server rulează pe Cloudflare Workers, nu pe Node: orice bibliotecă no
 Fonturile se descarcă la build prin `@nuxt/fonts` și se servesc din `/_fonts`, nu de la Google. Google a redenumit „Big Shoulders Display” în „Big Shoulders” (variabil, cu mărime optică); în CSS rămân amândouă numele.
 
 **Conturi și admin.** Intrarea e doar cu Google și e deschisă oricui. `/admin` e doar pentru super admin (rolul din `app_metadata`, pus de baza de date). Meniul și ruta nu se bazează doar pe JWT-ul citit local: rolul e confirmat de serverul de Auth (`getUser`) înainte să apară linkul sau pagina; scrierile le păzește RLS. Tot ce se alege în `/admin` se salvează în `site_settings` și se aplică tuturor vizitatorilor. Acum sunt două setări: fundalul paginii, care nu mai depinde de profilul citit, și felul în care se afișează „Ce era peste tot” (grilă de polaroiduri sau cronologie pe bandă, cu anii pe orizontală și categoriile ca piste).
+
+**Cardul de scor.** La finalul „Ghicește anul”, „Distribuie scorul” desenează în browser un PNG de 1080×1350 cu scorul pe bandă, titlul, generația și cele 5 runde (anul real și cu cât ai greșit). Pe telefon se deschide foaia de share; unde browserul nu poate trimite fișiere, imaginea se descarcă. Fără `--signal` pe card. Conținutul e în `app/utils/cardScor.ts`, desenul în `app/composables/useCardScor.ts`. Previzualizarea linkurilor (og:image) cere randare pe server și rămâne pentru când revine SSR.
 
 **Confidențialitate.** `/privacy` e publică și spune ce date ținem (contul Google, profilul, testul, caseta, amintirile), cine le găzduiește (Supabase, Cloudflare, Google) și ce drepturi ai. Utilizatorul logat își descarcă de acolo toate datele într-un JSON și își poate șterge contul: funcția `delete_my_account()` din baza de date șterge rândul din `auth.users`, iar restul pleacă prin cascade; în browser se șterg cheile `capsula:*`. Textul e o ciornă: operatorul și contactul sunt de completat în `app/data/confidentialitate.ts` și urmează verificarea juridică.
 
