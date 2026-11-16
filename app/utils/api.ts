@@ -53,6 +53,32 @@ export function contApi() {
   return { citesteCont, salveazaProfil, salveazaChestionar, modificaCaseta, importa }
 }
 
+// Datele personale: tot ce ține de cont, pentru export, și ștergerea contului (funcția delete_my_account din baza de date).
+export function datePersonaleApi() {
+  const client = useSupabaseClient()
+
+  async function citesteTot(userId: string) {
+    const [p, c, t, u] = await Promise.all([
+      client.from('profiles').select('*').eq('id', userId).maybeSingle(),
+      client.from('questionnaire_responses').select('*').eq('user_id', userId).maybeSingle(),
+      client.from('tape_items').select('card_id, added_at').eq('user_id', userId).order('added_at').limit(1000),
+      client.from('user_cards').select('title, note, year, category, created_at').eq('user_id', userId).order('year').limit(LIMITE_FISA.peCont)
+    ])
+    const eroare = p.error ?? c.error ?? t.error ?? u.error
+    if (eroare) throw eroare
+    return { profil: p.data, chestionar: c.data, caseta: t.data, amintiri: u.data }
+  }
+
+  async function stergeCont() {
+    const { error } = await client.rpc('delete_my_account')
+    if (error) throw error
+    // Contul nu mai există: doar sesiunea locală (o deconectare globală ar cere API-ul pentru un cont șters).
+    await client.auth.signOut({ scope: 'local' })
+  }
+
+  return { citesteTot, stergeCont }
+}
+
 // Setările site-ului: citite de oricine, scrise doar de super admin (RLS cu is_super_admin()).
 export function setariApi() {
   const client = useSupabaseClient()

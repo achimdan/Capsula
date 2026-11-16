@@ -23,6 +23,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
     cont,
     capsula,
     ...(superAdmin.value ? [[{ label: 'Admin · Aspect', icon: 'i-lucide-palette', to: '/admin' }]] : []),
+    [{ label: 'Datele tale', icon: 'i-lucide-shield', to: '/privacy#datele-tale' }],
     [{ label: 'Ieși', icon: 'i-lucide-log-out', color: 'error', onSelect: iesire }]
   ]
 })
