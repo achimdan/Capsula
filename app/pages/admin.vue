@@ -1,6 +1,20 @@
 <script setup lang="ts">
-const fundal = useFundal()
+import type { Fundal } from '~/utils/setari'
+
+const { fundal, salveazaFundal } = useSetari()
 useHead({ title: 'Admin · Aspect', meta: [{ name: 'robots', content: 'noindex' }] })
+
+const stare = ref<'' | 'salvez' | 'salvat' | 'eroare'>('')
+async function alege(f: Fundal) {
+  if (f === fundal.value || stare.value === 'salvez') return
+  stare.value = 'salvez'
+  try {
+    await salveazaFundal(f)
+    stare.value = 'salvat'
+  } catch {
+    stare.value = 'eroare'
+  }
+}
 </script>
 
 <template>
@@ -15,7 +29,7 @@ useHead({ title: 'Admin · Aspect', meta: [{ name: 'robots', content: 'noindex' 
       <fieldset class="grila">
         <legend class="sr">Fundal</legend>
         <label v-for="f in FUNDALURI" :key="f.id" class="optiune">
-          <input v-model="fundal" class="sr" type="radio" name="fundal" :value="f.id">
+          <input class="sr" type="radio" name="fundal" :value="f.id" :checked="fundal === f.id" :disabled="stare === 'salvez'" @change="alege(f.id)">
           <span class="tile previzualizare" :data-fundal="f.id">
             <FundalCapsula :tema="f.id" mini />
             <span class="proba">
@@ -31,7 +45,12 @@ useHead({ title: 'Admin · Aspect', meta: [{ name: 'robots', content: 'noindex' 
       <template #fallback><div class="grila" style="min-height:240px" /></template>
     </ClientOnly>
 
-    <p class="k nota">Setarea se salvează în acest browser. Când conectăm conturile, o mutăm pe server.</p>
+    <p class="k nota" role="status" aria-live="polite">
+      <template v-if="stare === 'salvez'">Se salvează…</template>
+      <template v-else-if="stare === 'salvat'">Salvat. Toți vizitatorii văd acum fundalul ăsta.</template>
+      <template v-else-if="stare === 'eroare'">Nu s-a salvat. Fundalul a rămas cel de dinainte; încearcă din nou.</template>
+      <template v-else>Fundalul se salvează pe server și se aplică tuturor vizitatorilor.</template>
+    </p>
   </main>
 </template>
 

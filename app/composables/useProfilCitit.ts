@@ -73,21 +73,19 @@ export function useProfilCitit() {
   const stare = useStocare<StareChestionar>('chestionar', { raspunsuri: {}, pas: 0, refacere: false })
   const profilCitit = useStocare<ProfilCitit | null>('profilcitit', null)
   const { profil } = useCapsula()
-  const fundal = useFundal()
 
   const profilCititor = computed(() => (profilCitit.value ? profilDupaId(profilCitit.value.id) ?? null : null))
   const ton = computed<Ton | null>(() => profilCititor.value?.config.ton ?? null)
   const accent = computed(() => profilCititor.value?.config.accent ?? null)
   const ponderiCategorii = computed(() => profilCititor.value?.config.ponderiCategorii)
 
-  // La final: profilul, anul/orașul și fundalul. /admin poate suprascrie fundalul ulterior.
+  // La final: profilul și anul/orașul. Fundalul nu: e unul pentru tot site-ul, ales din /admin (site_settings).
   function aplica() {
     const r = stare.value.raspunsuri
     const scoruri = scoreAnswers(r)
     const alesul = pickProfile(scoruri)
     profilCitit.value = { id: alesul.id, trasaturi: scoruri.trasaturi }
     profil.value = profilDinRaspunsuri(r)
-    fundal.value = alesul.config.fundal
     stare.value = { ...stare.value, refacere: false }
     return alesul
   }

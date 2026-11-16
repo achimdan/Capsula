@@ -3,7 +3,7 @@
 // Numele sunt obiecte sau locuri și citirile sunt la persoana a doua, ca să nu marcheze genul.
 // Regula: o scenă muzicală e un gust, nu o etichetă socială. Detalii în docs/profilare.md.
 import type { Categorie } from './fise'
-import type { Fundal } from '../composables/useFundal'
+import type { Fundal } from '../utils/setari'
 import { SCENE, type Scena, type Trasatura } from './chestionar'
 
 export const ARHETIPURI = ['nostalgie', 'rebel', 'cerebral', 'social', 'familist', 'umor'] as const satisfies readonly Trasatura[]

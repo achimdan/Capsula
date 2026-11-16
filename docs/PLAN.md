@@ -72,6 +72,8 @@ Demo: https://claude.ai/artifact/TzJWrZoDD6iTGiW1GaR9B1
 
 Codul de server rulează pe Cloudflare Workers, nu pe Node: orice bibliotecă nouă se verifică înainte.
 
+**Conturi și admin.** Intrarea e doar cu Google. `/admin` e doar pentru super admin (rolul din `app_metadata`, pus de baza de date). Tot ce se alege în `/admin` se salvează în `site_settings` și se aplică tuturor vizitatorilor. Primul exemplu e fundalul paginii, care nu mai depinde de profilul citit.
+
 ## Roadmap
 
 | Fază | Conținut | Stare |

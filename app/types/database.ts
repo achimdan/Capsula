@@ -53,6 +53,27 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          key: string
+          value: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          key: string
+          value: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          key?: string
+          value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       questionnaire_responses: {
         Row: {
           user_id: string

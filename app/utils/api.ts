@@ -1,6 +1,7 @@
-// Singurul loc care vorbește cu Supabase pentru datele contului. RLS limitează totul la utilizatorul curent.
+// Singurul loc care vorbește cu Supabase pentru datele contului și setările site-ului. RLS limitează contul la utilizatorul curent.
 import type { Json } from '../types/database'
 import { randChestionar, randProfil, stareDinRanduri, type ChestionarApp, type StareCont } from './cont'
+import { setariDinRanduri, type SetariSite } from './setari'
 
 export function contApi() {
   const client = useSupabaseClient()
@@ -49,4 +50,22 @@ export function contApi() {
   }
 
   return { citesteCont, salveazaProfil, salveazaChestionar, modificaCaseta, importa }
+}
+
+// Setările site-ului: citite de oricine, scrise doar de super admin (RLS cu is_super_admin()).
+export function setariApi() {
+  const client = useSupabaseClient()
+
+  async function citesteSetari(): Promise<SetariSite> {
+    const { data, error } = await client.from('site_settings').select('key, value').limit(50)
+    if (error) throw error
+    return setariDinRanduri(data ?? [])
+  }
+
+  async function salveazaSetare<K extends keyof SetariSite>(key: K, value: SetariSite[K]) {
+    const { error } = await client.from('site_settings').upsert({ key, value: value as Json }, { onConflict: 'key' })
+    if (error) throw error
+  }
+
+  return { citesteSetari, salveazaSetare }
 }

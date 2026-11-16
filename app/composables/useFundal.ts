@@ -1,5 +1,6 @@
-// Fundalul paginii, ales din /admin și salvat în browser până conectăm conturile.
-export type Fundal = 'clasic' | 'tapet' | 'vhs' | 'arhiva'
+// Fundalul paginii: unul pentru tot site-ul, ales din /admin și ținut în site_settings (vezi useSetari).
+// localStorage e doar cache, ca pagina să pornească direct cu ultimul fundal văzut.
+import { esteFundal, type Fundal } from '../utils/setari'
 
 export const FUNDALURI: { id: Fundal; nume: string; descriere: string }[] = [
   { id: 'clasic', nume: 'Clasic', descriere: 'Banda verde, ca la început.' },
@@ -10,7 +11,7 @@ export const FUNDALURI: { id: Fundal; nume: string; descriere: string }[] = [
 
 export function useFundal() {
   const fundal = useStocare<Fundal>('fundal', 'clasic')
-  if (!FUNDALURI.some(f => f.id === fundal.value)) fundal.value = 'clasic'
+  if (!esteFundal(fundal.value)) fundal.value = 'clasic'
   useHead({ htmlAttrs: { 'data-fundal': computed(() => fundal.value) } })
   return fundal
 }

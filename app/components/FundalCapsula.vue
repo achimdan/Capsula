@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Fundal } from '~/composables/useFundal'
+import type { Fundal } from '~/utils/setari'
 
 // `tema` + `mini` = previzualizare în /admin; altfel fundalul fix al paginii.
 const props = defineProps<{ tema?: Fundal; mini?: boolean }>()
