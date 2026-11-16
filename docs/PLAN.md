@@ -42,8 +42,8 @@ Pagini de referință (claude.ai, private):
 **Ales:** A + C.
 
 - **Zapping (A):** Random Hit nelimitat, ponderat pe anii în care aveai 10–20 de ani. Salvezi în „Caseta mea”.
-- **Ghicește anul (C):** vezi amintirea fără an și ghicești anul. 5 runde, 100 de puncte la an exact, minus 25 pe fiecare an diferență. Clasament pe generații și card de share. Folosește **doar fișe cu an exact**.
-- **Caseta zilei (B)** rămâne o idee pentru mai târziu.
+- **Ghicește anul (C):** vezi amintirea fără an și ghicești anul. 5 runde, cursorul pornește din 1997 la fiecare rundă. Puncte după distanță: 100, 80, 60, 45, 30, 20, 10 pentru 0–6 ani, apoi 0. În timpul rundei, anii din titlu, notă și sursă apar ca „____” / „’__”; fișa întreagă se vede după dezvăluire. Clasament pe generații și card de share. Folosește **doar fișe cu an exact**. Logica e în `app/utils/ghicesteAnul.ts`.
+- **Caseta zilei (B):** cinci fișe pe zi, deschise una câte una. Fața casetei alternează zilnic (Partea A, apoi Partea B); alegerea fișelor depinde de zi și de deceniul nașterii, iar pe etichetă stă anul în care aveai 15 ani. Nu are sunet: apăsarea arată fișa.
 
 Demo: https://claude.ai/artifact/9Tpnur5tdGaSCaRX1PRDwA
 
@@ -72,9 +72,9 @@ Demo: https://claude.ai/artifact/TzJWrZoDD6iTGiW1GaR9B1
 
 Codul de server rulează pe Cloudflare Workers, nu pe Node: orice bibliotecă nouă se verifică înainte.
 
-**Conturi și admin.** Intrarea e doar cu Google și e deschisă oricui. `/admin` e doar pentru super admin (rolul din `app_metadata`, pus de baza de date). Tot ce se alege în `/admin` se salvează în `site_settings` și se aplică tuturor vizitatorilor. Acum sunt două setări: fundalul paginii, care nu mai depinde de profilul citit, și felul în care se afișează „Ce era peste tot” (grilă de polaroiduri sau cronologie pe bandă, cu anii pe orizontală și categoriile ca piste).
+**Conturi și admin.** Intrarea e doar cu Google și e deschisă oricui. `/admin` e doar pentru super admin (rolul din `app_metadata`, pus de baza de date). Meniul și ruta nu se bazează doar pe JWT-ul citit local: rolul e confirmat de serverul de Auth (`getUser`) înainte să apară linkul sau pagina; scrierile le păzește RLS. Tot ce se alege în `/admin` se salvează în `site_settings` și se aplică tuturor vizitatorilor. Acum sunt două setări: fundalul paginii, care nu mai depinde de profilul citit, și felul în care se afișează „Ce era peste tot” (grilă de polaroiduri sau cronologie pe bandă, cu anii pe orizontală și categoriile ca piste).
 
-**Cronologia pe bandă.** Ocupă toată lățimea ecranului, nu doar coloana paginii. Banda trece pe sub un cap de citire fix, la mijloc: anul de sub el apare în contorul mare, cu vârsta pe care o aveai atunci și câte fișe are anul. Se derulează cu degetul (pe mobil se prinde de fiecare an), trăgând cu mouse-ul (cu inerție), din riglă (o liniuță pe an, înaltă cât fișe are), din săgeți (sar la următorul an cu fișe) sau cu „Anul meu”. La prima vedere banda derulează singură până la anul tău; fișele se leagănă pe fir după viteză, iar cele de la margini stau mai șterse. `--signal` marchează doar anul în care aveai 15 ani. Cu `prefers-reduced-motion` rămân doar salturile directe. Logica e în `app/utils/cronologie.ts`.
+**Cronologia pe bandă.** Ocupă toată lățimea ecranului, nu doar coloana paginii. Banda trece pe sub un cap de citire fix, la mijloc: anul de sub el apare în contorul mare, cu vârsta pe care o aveai atunci și câte fișe are anul. Se derulează cu degetul (pe mobil se prinde de fiecare an), trăgând cu mouse-ul (cu inerție), din riglă (o liniuță pe an, înaltă cât fișe are), din săgeți (sar la următorul an cu fișe) sau cu „Anul meu”. Banda pornește direct pe anul tău; fișele se leagănă pe fir după viteză, iar cele de la margini stau mai șterse. `--signal` marchează doar anul în care aveai 15 ani. Cu `prefers-reduced-motion` rămân doar salturile directe. Logica e în `app/utils/cronologie.ts`.
 
 **Capsula fiecăruia.** Fișele de arhivă sunt aceleași pentru toți. Profilul citit din test le schimbă ordinea: categoriile preferate de arhetip vin primele (în filtre, în grilă în cadrul fiecărui an și ca piste pe bandă), iar deasupra apare intro-ul profilului. Fără test, ordinea rămâne cea obișnuită. Fișele de muzică au o scenă (pop, rock, dance, manele) doar unde genul e evident; e o alegere editorială, nu un fapt de arhivă. Fișele din scena profilului primesc eticheta „scena ta”, fără culoarea de accent (`--signal` rămâne pentru „ești aici” și Random Hit).
 
