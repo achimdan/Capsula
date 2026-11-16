@@ -19,6 +19,8 @@ const ani = computed(() => {
 // Pistele în ordinea profilului citit (categoriile preferate sus); fără profil, ordinea obișnuită.
 const { ponderiCategorii, profilCititor } = useProfilCitit()
 const piste = computed(() => ordineCategorii(ponderiCategorii.value, ORDINE_CATEGORII.filter(c => props.fise.some(f => f.categorie === c))))
+// Pistele puse în față de profil: eticheta „pentru tine”; pe celelalte piste pozele stau decolorate până le atingi.
+const preferate = computed(() => new Set(categoriiPreferate(ponderiCategorii.value)))
 const celule = computed(() => {
   const m = new Map<string, Fisa[]>()
   for (const f of props.fise) {
@@ -361,12 +363,12 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) s
           </span>
 
           <template v-for="(p, t) in piste" :key="p">
-            <div class="pista" :style="{ gridRow: 2 + t * 2 }"><span class="k">{{ p }}</span></div>
+            <div class="pista" :class="{ pref: preferate.has(p) }" :style="{ gridRow: 2 + t * 2 }"><span class="k">{{ p }}<span v-if="preferate.has(p)" class="tine"> · pentru tine</span></span></div>
             <div
               v-for="(a, i) in ani"
               :key="a"
               class="celula"
-              :class="{ eu: a === anEu, acum: i === idx }"
+              :class="{ eu: a === anEu, acum: i === idx, rest: preferate.size > 0 && !preferate.has(p) }"
               :style="{ gridRow: 3 + t * 2, gridColumn: i + 2 }"
             >
               <button
@@ -464,6 +466,10 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) s
 .pista{grid-column:1/-1;padding-top:14px;border-top:1px dashed var(--line);pointer-events:none}
 .pista:first-of-type{border-top:0}
 .pista .k{position:sticky;left:var(--gut);display:inline-block;background:var(--paper);padding:2px 8px 2px 0}
+.pista.pref .k{color:var(--ink);font-weight:700}
+.pista .tine{font-weight:400;color:var(--muted)}
+.celula.rest .mini .img{filter:grayscale(.85);transition:filter .25s}
+.celula.rest .mini:hover .img,.celula.rest .mini:focus-visible .img{filter:none}
 .celula{border-left:1px solid var(--line);padding:22px 12px 16px;display:flex;flex-direction:column;gap:22px;min-height:56px;transition:background-color .3s}
 .celula.acum{background:color-mix(in srgb,var(--ink) 5%,transparent)}
 .celula.eu{background:color-mix(in srgb,var(--signal) 8%,transparent)}

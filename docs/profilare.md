@@ -65,7 +65,7 @@ Reguli de scor:
 
 Config pe profil:
 - `fundal` și `ton` vin din arhetip: nostalgie → tapet/cald, rebel → vhs/ironic, cerebral → arhivă/documentar, social → clasic/cald, familist → tapet/cald, umor → vhs/ironic.
-- `ponderiCategorii`: baza arhetipului, plus +2 la Muzică și +1 la o categorie legată de scenă.
+- `ponderiCategorii`: baza arhetipului, plus +1 la o categorie legată de scenă. Muzica nu primește bonus de la scenă: l-ar primi toate profilurile și ar ajunge prima pistă la aproape toți.
 - `accent`: o culoare pe scenă. Are contrast ≥ 3:1 pe toate cele 10 tonuri `--paper`/`--card`.
 - `intro`: o frază a arhetipului, urmată de una a scenei.
 
