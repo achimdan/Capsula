@@ -18,7 +18,7 @@ export function useAuth() {
   // Rolul confirmat de serverul de Auth (getUser validează token-ul), o dată pe token. Claims-urile de mai sus
   // sunt citite local, fără semnătură: ajung pentru a ascunde, nu și pentru a arăta ceva de admin.
   const confirmat = useState<{ token: string, ok: boolean } | null>('auth:admin-confirmat', () => null)
-  const superAdminConfirmat = computed(() => superAdmin.value && confirmat.value?.token === sesiune.value?.access_token && confirmat.value.ok)
+  const superAdminConfirmat = computed(() => superAdmin.value && confirmat.value?.token === sesiune.value?.access_token && !!confirmat.value?.ok)
   async function confirmaSuperAdmin(): Promise<boolean> {
     const token = sesiune.value?.access_token
     if (!superAdmin.value || !token) return false
