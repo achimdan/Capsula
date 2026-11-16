@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   devServer: { host: '127.0.0.1' },
   // Deocamdată randăm doar pe client. Revenirea la SSR (SEO, carduri de share) vine cu
-  // cache la margine, robots.txt și preset-ul cloudflare_module, ca pas separat.
+  // cache la margine pentru HTML, ca pas separat.
   ssr: false,
   css: ['~/assets/css/ui.css', '~/assets/css/banda.css'],
   // Temele vin din banda.css (fundaluri + prefers-color-scheme), nu din color mode-ul Nuxt UI.
@@ -22,7 +22,16 @@ export default defineNuxtConfig({
     redirect: false,
     types: '~/types/database.ts'
   },
-  nitro: { preset: 'cloudflare_pages' },
+  // Worker cu assets statice (Workers Builds rulează `npx wrangler deploy`). Nitro scrie configurația
+  // pentru wrangler; numele trebuie să fie cel al Worker-ului conectat la repo.
+  nitro: {
+    preset: 'cloudflare_module',
+    cloudflare: {
+      deployConfig: true,
+      nodeCompat: true,
+      wrangler: { name: 'capsula', workers_dev: true, compatibility_flags: ['nodejs_compat'], observability: { enabled: true } }
+    }
+  },
   // Lista SIRUTA se schimbă de două ori pe an: cache lung în browser și la margine.
   routeRules: {
     // Pagina de login a fost înlocuită de fereastra de pe teaser; linkurile vechi ajung acasă.

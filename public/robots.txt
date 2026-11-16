@@ -1,0 +1,14 @@
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: MJ12bot
+User-agent: DotBot
+User-agent: PetalBot
+User-agent: Bytespider
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: *
+Crawl-delay: 10
+Disallow: /admin
+Disallow: /confirm
+Disallow: /login

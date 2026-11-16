@@ -62,7 +62,7 @@ Demo: https://claude.ai/artifact/TzJWrZoDD6iTGiW1GaR9B1
 | Nevoie | Soluție |
 |---|---|
 | Aplicația | Nuxt 4 |
-| Găzduire | Cloudflare Pages |
+| Găzduire | Cloudflare Workers (Worker `capsula`, cu assets statice; deploy automat din `main` prin Workers Builds) |
 | Date, conturi, scoruri, voturi | Supabase (Postgres + Auth), într-un cont separat |
 | Imagini | Supabase Storage sau Cloudflare R2 |
 | Carduri de share | Imagini generate pe server |
@@ -86,7 +86,7 @@ Codul de server rulează pe Cloudflare Workers, nu pe Node: orice bibliotecă no
 |---|---|---|
 | **v0.1 MVP local** | Onboarding, capsula națională, banda, Zapping, Ghicește anul, strat Cluj, vot local, Caseta mea, configurator magazin + „Anunță-mă” | ✅ Gata (date în `app/data/fise.ts`, stare în browser) |
 | **v0.1.1 Conținut** | 150–200 de fișe verificate pentru Cluj și anii 1990–2008; ilustrații proprii | ⏳ |
-| **v0.1.2 Online** | Deploy pe Cloudflare Pages | ⏳ |
+| **v0.1.2 Online** | Deploy pe Cloudflare Workers, la fiecare push pe `main` | ✅ |
 | **v0.2 Supabase** | Fișe în baza de date, conturi, voturi și „Am avut asta” comune, media pe generații, panou de curator | ⏳ (așteaptă contul Supabase nou) |
 | **v0.3 Magazin A + primul drop C** | Comenzi reale prin Stripe și furnizorul de print; drop „Vara lui ’99” | ⏳ |
 | **v0.4 Membru (C)** | Abonament: acces înainte la drop-uri, clasamente pe orașe | ⏳ |
