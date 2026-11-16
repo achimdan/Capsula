@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FISE, AN_MIN, AN_MAX, type Fisa } from '~/data/fise'
+import { RUNDE, alegeRunde, puncteRunda } from '~/utils/joc'
 const { areProfil, profil } = useCapsula()
-const RUNDE = 5
 const recorduri = useStocare<number[]>('scoruri', [])
 const lista = ref<Fisa[]>([])
 const runda = ref(0)
@@ -53,16 +53,14 @@ function pornesteFlap() {
 
 function amesteca() {
   opresteFlap()
-  const exacte = FISE.filter(f => f.an_exact && (f.oras === null || f.oras === profil.value.oras))
-  lista.value = [...exacte].sort(() => Math.random() - .5).slice(0, RUNDE)
+  lista.value = alegeRunde(FISE, profil.value.oras)
   runda.value = 0; scor.value = 0; dezvaluit.value = false; terminat.value = false; ghicit.value = 1997
   afisScor.value = 0; afisPuncte.value = 0
 }
 const curenta = computed(() => lista.value[runda.value])
 function confirma() {
   if (!curenta.value) return
-  const d = Math.abs(ghicit.value - curenta.value.an)
-  puncte.value = Math.max(0, 100 - 25 * d)
+  puncte.value = puncteRunda(ghicit.value, curenta.value.an)
   const dinainte = scor.value
   scor.value += puncte.value
   dezvaluit.value = true

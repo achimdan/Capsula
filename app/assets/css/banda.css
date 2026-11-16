@@ -1,7 +1,7 @@
 /* Design system „Banda” — tokens */
 :root{
   --paper:#DCE3DA; --card:#F4F6F1; --ink:#14211B; --muted:#4F5F55; --line:#B9C6B6; --signal:#E2582F;
-  --display:"Big Shoulders Display","Arial Narrow",sans-serif;
+  --display:"Big Shoulders","Big Shoulders Display","Arial Narrow",sans-serif;
   --body:"Work Sans",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,monospace;
   --ease-ff:cubic-bezier(.15,.7,.1,1);

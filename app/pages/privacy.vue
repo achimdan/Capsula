@@ -68,7 +68,7 @@ async function sterge() {
       <ul>
         <li><strong>Supabase</strong> găzduiește baza de date și conturile.</li>
         <li><strong>Cloudflare</strong> servește site-ul. Ca orice server, înregistrează cererile (inclusiv adresa IP) în jurnale tehnice.</li>
-        <li><strong>Google</strong> se ocupă de conectare. Fonturile site-ului vin tot de la Google, care vede astfel adresa IP a browserului.</li>
+        <li><strong>Google</strong> se ocupă de conectare, doar când intri în cont. Fonturile le servim noi, nu Google.</li>
       </ul>
 
       <h2 class="d2">În browserul tău</h2>
@@ -133,10 +133,10 @@ async function sterge() {
 .nota{font-family:var(--mono, 'IBM Plex Mono', monospace);font-size:13px;color:var(--muted)}
 .actiuni{display:grid;gap:24px}
 .actiuni > div{display:grid;gap:8px;justify-items:start}
-.titlu{font-weight:700}
+.titlu{font-weight:600}
 .btn{min-height:44px}
 .btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
-.btn.sterge{border-color:var(--ink);font-weight:700}
-.eroare{color:var(--ink);font-weight:700}
+.btn.sterge{border-color:var(--ink);font-weight:600}
+.eroare{color:var(--ink);font-weight:600}
 .confirma{display:grid;gap:10px}
 </style>

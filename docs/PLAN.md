@@ -72,6 +72,8 @@ Demo: https://claude.ai/artifact/TzJWrZoDD6iTGiW1GaR9B1
 
 Codul de server rulează pe Cloudflare Workers, nu pe Node: orice bibliotecă nouă se verifică înainte.
 
+Fonturile se descarcă la build prin `@nuxt/fonts` și se servesc din `/_fonts`, nu de la Google. Google a redenumit „Big Shoulders Display” în „Big Shoulders” (variabil, cu mărime optică); în CSS rămân amândouă numele.
+
 **Conturi și admin.** Intrarea e doar cu Google și e deschisă oricui. `/admin` e doar pentru super admin (rolul din `app_metadata`, pus de baza de date). Tot ce se alege în `/admin` se salvează în `site_settings` și se aplică tuturor vizitatorilor. Acum sunt două setări: fundalul paginii, care nu mai depinde de profilul citit, și felul în care se afișează „Ce era peste tot” (grilă de polaroiduri sau cronologie pe bandă, cu anii pe orizontală și categoriile ca piste).
 
 **Confidențialitate.** `/privacy` e publică și spune ce date ținem (contul Google, profilul, testul, caseta, amintirile), cine le găzduiește (Supabase, Cloudflare, Google) și ce drepturi ai. Utilizatorul logat își descarcă de acolo toate datele într-un JSON și își poate șterge contul: funcția `delete_my_account()` din baza de date șterge rândul din `auth.users`, iar restul pleacă prin cascade; în browser se șterg cheile `capsula:*`. Textul e o ciornă: operatorul și contactul sunt de completat în `app/data/confidentialitate.ts` și urmează verificarea juridică.
@@ -102,7 +104,6 @@ Codul de server rulează pe Cloudflare Workers, nu pe Node: orice bibliotecă no
 - [ ] Materiale originale (poze, flyere) cu acordul autorilor.
 - [ ] Alegerea furnizorului de print-on-demand și prețurile.
 - [ ] Termeni, confidențialitate și GDPR: `/privacy`, exportul și ștergerea contului sunt gata; lipsesc operatorul, contactul, termenii și verificarea juridică.
-- [ ] Fonturile vin de la Google Fonts (Google vede IP-ul vizitatorilor); de găzduit local.
 - [ ] Consultanță juridică pentru Talcioc.
 
 ## Surse folosite până acum

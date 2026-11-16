@@ -38,6 +38,16 @@ export default defineNuxtConfig({
     '/login': { redirect: '/' },
     '/data/**': { headers: { 'cache-control': 'public, max-age=86400, stale-while-revalidate=604800' } }
   },
+  // Fonturile se descarcă la build și se servesc de pe domeniul nostru (/_fonts), nu de la Google:
+  // vizitatorii nu mai trimit adresa IP la Google doar ca să vadă pagina. latin-ext pentru ă, â, î, ș, ț.
+  fonts: {
+    defaults: { subsets: ['latin', 'latin-ext'], styles: ['normal'] },
+    families: [
+      { name: 'Big Shoulders', provider: 'google', global: true, weights: [500, 800] },
+      { name: 'Work Sans', provider: 'google', global: true, weights: [400, 500, 600] },
+      { name: 'IBM Plex Mono', provider: 'google', global: true, weights: [400, 500] }
+    ]
+  },
   app: {
     head: {
       htmlAttrs: { lang: 'ro' },
@@ -45,11 +55,6 @@ export default defineNuxtConfig({
       meta: [
         { name: 'description', content: 'Capsula timpului pentru cei care au crescut în România anilor 90–2000.' },
         { name: 'theme-color', content: '#14211B' }
-      ],
-      link: [
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;800&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap' }
       ]
     }
   }
