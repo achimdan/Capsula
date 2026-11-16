@@ -20,6 +20,8 @@ export interface Fisa {
   sursa?: string
   culori: [string, string]
   poza?: Poza
+  // Film scurt în loc de poză, doar în fișa deschisă: public/fise/<id>.mp4 (poza rămâne afiș și miniatură)
+  video?: Video
   // Scena muzicală, doar la fișele de muzică unde genul e evident (alegere editorială, nu fapt de arhivă)
   scena?: Scena
   // Fișă scrisă de utilizator (tabelul user_cards): doar a lui, niciodată în FISE, joc sau Random Hit
@@ -33,6 +35,13 @@ export interface Poza {
   licenta: string // ex. „CC BY-SA 4.0”, „Domeniu public”
   url?: string // pagina fișierului pe Wikimedia Commons
   generata?: boolean
+}
+
+// Filmul fișei: aceleași reguli de licență ca la poze. MP4 (H.264), scurt, sub 25 MB (limita Workers pe fișier).
+export interface Video {
+  autor: string
+  licenta: string
+  url?: string // pagina sursei
 }
 
 export const FISE: Fisa[] = [

@@ -49,13 +49,20 @@ export default defineNuxtConfig({
       { name: 'IBM Plex Mono', provider: 'google', global: true, weights: [400, 500] }
     ]
   },
+  experimental: { viewTransition: true },
   app: {
+    // Tranziție lină între pagini (View Transitions API); se oprește singură la prefers-reduced-motion.
+    viewTransition: true,
     head: {
       htmlAttrs: { lang: 'ro' },
       title: 'Capsula',
       meta: [
         { name: 'description', content: 'Capsula timpului pentru cei care au crescut în România anilor 90–2000.' },
         { name: 'theme-color', content: '#14211B' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }
       ]
     }
   }
