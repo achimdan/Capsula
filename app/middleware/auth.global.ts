@@ -19,4 +19,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   await useCont().incarca()
   const { areProfil } = useCapsula()
   if (!areProfil.value && !FARA_PROFIL.includes(to.path)) return navigateTo('/start')
+  // Paginile modulelor oprite din /admin: pentru vizitatori nu există (adminul le vede ca să le verifice).
+  if (Object.values(RUTE_MODULE).includes(to.path) && !rutaPermisa(to.path, await useSetari().citeste(), superAdmin.value)) return navigateTo('/')
 })

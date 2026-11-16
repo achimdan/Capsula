@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { FUNDALURI } from '../app/composables/useFundal'
-import { CHEI_DB, FUNDALURI_VALIDE, LISTE_FISE_VALIDE, SETARI_IMPLICITE, esteFundal, esteListaFise, setariDinRanduri } from '../app/utils/setari'
+import { CHEI_DB, orasePornite, rutaPermisa, FUNDALURI_VALIDE, LISTE_FISE_VALIDE, SETARI_IMPLICITE, esteFundal, esteListaFise, setariDinRanduri } from '../app/utils/setari'
 
 describe('setările site-ului', () => {
   it('fără rânduri: valorile implicite', () => {
@@ -24,8 +24,23 @@ describe('setările site-ului', () => {
     expect(setariDinRanduri([{ key: 'listaFise', value: 'cronologie' }]).listaFise).toBe('grila')
   })
   it('cheile din DB și valorile valide', () => {
-    expect(CHEI_DB).toEqual({ fundal: 'fundal', listaFise: 'lista_fise' })
+    expect(CHEI_DB).toMatchObject({ fundal: 'fundal', listaFise: 'lista_fise', modul_azi: 'modul_azi' })
     expect(LISTE_FISE_VALIDE.every(esteListaFise)).toBe(true)
     expect(esteListaFise('fundal')).toBe(false)
+  })
+  it('modulele pornesc oprite și citesc doar booleeni', () => {
+    expect(SETARI_IMPLICITE.modul_tv).toBe(false)
+    expect(setariDinRanduri([{ key: 'modul_tv', value: true }]).modul_tv).toBe(true)
+    expect(setariDinRanduri([{ key: 'modul_tv', value: 'true' }]).modul_tv).toBe(false)
+  })
+  it('pagina unui modul oprit e blocată, dar nu pentru super admin', () => {
+    expect(rutaPermisa('/tv', SETARI_IMPLICITE, false)).toBe(false)
+    expect(rutaPermisa('/tv', SETARI_IMPLICITE, true)).toBe(true)
+    expect(rutaPermisa('/tv', { ...SETARI_IMPLICITE, modul_tv: true }, false)).toBe(true)
+    expect(rutaPermisa('/game', SETARI_IMPLICITE, false)).toBe(true)
+  })
+  it('București apare doar cu modulul pornit', () => {
+    expect(orasePornite(['Cluj'], false)).toEqual(['Cluj'])
+    expect(orasePornite(['Cluj'], true)).toEqual(['Cluj', 'București'])
   })
 })

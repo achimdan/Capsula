@@ -1,0 +1,52 @@
+import type { Categorie } from './fise'
+
+// „Azi, demult”: evenimente cu zi exactă, fiecare cu sursa deschisă și citită.
+// Fără zi exactă sursată nu intră. `verificat: false` până confirmă curatorul.
+export interface Zi {
+  id: string
+  data: string // YYYY-MM-DD, exactă
+  titlu: string
+  nota: string
+  categorie: Categorie
+  sursa: string
+  url: string
+  verificat: boolean
+}
+
+const WP = 'Wikipedia'
+const ro = (a: string) => `https://en.wikipedia.org/wiki/${a}`
+
+export const ZILE: Zi[] = [
+  { id: 'imn-desteapta-te-1990', data: '1990-01-24', titlu: '„Deșteaptă-te, române!” devine imn', nota: 'Textul „Un răsunet” a fost ales imn de stat, sub titlul „Deșteaptă-te, române!”.', categorie: 'Evenimente', sursa: `${WP}: 1990 in Romania`, url: ro('1990_in_Romania'), verificat: false },
+  { id: 'muzeul-taranului-1990', data: '1990-02-05', titlu: 'Se înființează Muzeul Țăranului Român', nota: 'La începutul lui 1990 a luat naștere muzeul dedicat vieții satului românesc.', categorie: 'Locuri', sursa: `${WP}: 1990 in Romania`, url: ro('1990_in_Romania'), verificat: false },
+  { id: 'uniter-1990', data: '1990-02-15', titlu: 'Se întemeiază UNITER', nota: 'Uniunea Teatrală din România a fost înființată, cu actorul Ion Caramitru ca președinte.', categorie: 'Evenimente', sursa: `${WP}: 1990 in Romania`, url: ro('1990_in_Romania'), verificat: false },
+  { id: 'golaniad-1990', data: '1990-04-22', titlu: 'Începe Golaniadul din Piața Universității', nota: 'Studenți și profesori au început protestul din Piața Universității din București.', categorie: 'Evenimente', sursa: `${WP}: Golaniad`, url: ro('Golaniad'), verificat: false },
+  { id: 'alegeri-1990', data: '1990-05-20', titlu: 'Primele alegeri de după Revoluție', nota: 'Ion Iliescu a câștigat prezidențialele din 1990, în numele FSN.', categorie: 'Evenimente', sursa: `${WP}: Romanian general election, 1990`, url: ro('Romanian_general_election,_1990'), verificat: false },
+  { id: 'mineriada-1990', data: '1990-06-13', titlu: 'Începe mineriada din iunie 1990', nota: 'Cele mai violente confruntări ale mineriadei au avut loc între 13 și 15 iunie.', categorie: 'Evenimente', sursa: `${WP}: Mineriad`, url: ro('Mineriad'), verificat: false },
+  { id: 'referendum-1991', data: '1991-12-08', titlu: 'Referendumul pentru Constituție', nota: 'Votanții au aprobat noua Constituție, cu aproximativ 79% voturi pentru.', categorie: 'Evenimente', sursa: `${WP}: Romanian constitutional referendum, 1991`, url: ro('Romanian_constitutional_referendum,_1991'), verificat: false },
+  { id: 'michael-jackson-1992', data: '1992-10-01', titlu: 'Michael Jackson cântă la București', nota: 'Concertul din turneul Dangerous a avut loc pe Stadionul Național Lia Manoliu, după ce fusese programat inițial pe 29 septembrie.', categorie: 'Muzică', sursa: `${WP}: Dangerous World Tour`, url: ro('Dangerous_World_Tour'), verificat: false },
+  { id: 'antena1-1993', data: '1993-11-29', titlu: 'Pornește Antena 1', nota: 'Postul de televiziune privată a început emisia în toamna lui 1993.', categorie: 'Filme & TV', sursa: `${WP}: Antena 1 (Romania)`, url: ro('Antena_1_(Romania)'), verificat: false },
+  { id: 'protv-1994', data: '1994-03-11', titlu: 'Pornește Pro TV', nota: 'A fost lansat ca al patrulea canal de televiziune privată din țară.', categorie: 'Filme & TV', sursa: `${WP}: Pro TV`, url: ro('Pro_TV'), verificat: false },
+  { id: 'eurovision-1994', data: '1994-04-30', titlu: 'România la Eurovision, la Dublin', nota: 'Dan Bittman a cântat „Dincolo de nori” și a ieșit pe locul 21 din 25.', categorie: 'Muzică', sursa: `${WP}: Romania in the Eurovision Song Contest 1994`, url: ro('Romania_in_the_Eurovision_Song_Contest_1994'), verificat: false },
+  { id: 'mondial-colombia-1994', data: '1994-06-18', titlu: 'Colombia 1–3 România, la Mondial', nota: 'Primul meci al României la Campionatul Mondial din 1994, jucat pe Rose Bowl din Pasadena.', categorie: 'Evenimente', sursa: `${WP}: 1994 FIFA World Cup Group A`, url: ro('1994_FIFA_World_Cup_Group_A'), verificat: false },
+  { id: 'mondial-argentina-1994', data: '1994-07-03', titlu: 'România – Argentina 3–2', nota: 'Meci din optimile Mondialului, jucat pe Rose Bowl din Pasadena.', categorie: 'Evenimente', sursa: `${WP}: 1994 FIFA World Cup knockout stage`, url: ro('1994_FIFA_World_Cup_knockout_stage'), verificat: false },
+  { id: 'mondial-suedia-1994', data: '1994-07-10', titlu: 'România – Suedia, în sferturi', nota: 'Meciul s-a încheiat 2–2 după prelungiri, iar Suedia a câștigat la penalty-uri, 5–4.', categorie: 'Evenimente', sursa: 'RSSSF: World Cup 1994, sferturi', url: 'https://rsssf.org/wk94/quart.html', verificat: false },
+  { id: 'mcdonalds-1995', data: '1995-06-16', titlu: 'Se deschide primul McDonald’s din România', nota: 'Restaurantul era la parterul magazinului Unirea din București.', categorie: 'Mâncare', sursa: 'Bucharest.ro: McDonald’s Unirea', url: 'https://www.bucharest.ro/articles/mcdonald-s-unirea-the-first-fast-food-in-bucharest-now-a-landmark-meeting-spot-in-the-city-center-1458', verificat: false },
+  { id: 'cernavoda-critic-1996', data: '1996-04-16', titlu: 'Reactorul 1 de la Cernavodă devine critic', nota: 'A fost prima criticitate a primului reactor al centralei nucleare.', categorie: 'Locuri', sursa: 'Nuclearelectrica: despre noi', url: 'https://nuclearelectrica.ro/cne/en/about-us/about-us/', verificat: false },
+  { id: 'cernavoda-retea-1996', data: '1996-07-11', titlu: 'Cernavodă 1 intră în rețea', nota: 'Unitatea 1 a fost sincronizată pentru prima dată la sistemul energetic.', categorie: 'Locuri', sursa: 'Nuclearelectrica: despre noi', url: 'https://nuclearelectrica.ro/cne/en/about-us/about-us/', verificat: false },
+  { id: 'prezidentiale-1996', data: '1996-11-17', titlu: 'Constantinescu câștigă turul doi', nota: 'Emil Constantinescu l-a învins pe Ion Iliescu în turul doi al alegerilor prezidențiale.', categorie: 'Evenimente', sursa: `${WP}: Romanian presidential election, 1996`, url: ro('Romanian_presidential_election,_1996'), verificat: false },
+  { id: 'eclipsa-1999', data: '1999-08-11', titlu: 'Eclipsa totală de soare', nota: 'Zona de totalitate a trecut peste România, inclusiv peste București și Ploiești.', categorie: 'Evenimente', sursa: `${WP}: Solar eclipse of August 11, 1999`, url: ro('Solar_eclipse_of_August_11,_1999'), verificat: false },
+  { id: 'baia-mare-2000', data: '2000-01-30', titlu: 'Poluarea cu cianuri de la Baia Mare', nota: 'Un baraj de la mina Aurul a cedat, iar apa cu cianuri a ajuns în Someș, apoi în Tisa și Dunăre.', categorie: 'Evenimente', sursa: `${WP}: 2000 Baia Mare cyanide spill`, url: ro('2000_Baia_Mare_cyanide_spill'), verificat: false },
+  { id: 'euro-anglia-2000', data: '2000-06-20', titlu: 'Anglia 2–3 România, la Euro 2000', nota: 'Meci din grupe, jucat la Charleroi, după care România s-a calificat mai departe.', categorie: 'Evenimente', sursa: `${WP}: UEFA Euro 2000 Group A`, url: ro('UEFA_Euro_2000_Group_A'), verificat: false },
+  { id: 'szabo-sydney-2000', data: '2000-09-25', titlu: 'Gabriela Szabo, aur la 5000 m', nota: 'La Sydney a câștigat finala în 14:40.79, record olimpic.', categorie: 'Evenimente', sursa: `${WP}: Athletics at the 2000 Summer Olympics – Women's 5000 metres`, url: ro('Athletics_at_the_2000_Summer_Olympics_%E2%80%93_Women%27s_5000_metres'), verificat: false },
+  { id: 'nato-praga-2002', data: '2002-11-21', titlu: 'România, invitată în NATO la Praga', nota: 'Summitul de la Praga a invitat România printre cele șapte state care urmau să înceapă negocierile.', categorie: 'Evenimente', sursa: `${WP}: 2002 Prague summit`, url: ro('2002_Prague_summit'), verificat: false },
+  { id: 'nato-aderare-2004', data: '2004-03-29', titlu: 'România intră în NATO', nota: 'Aderarea a avut loc pe 29 martie, iar drapelul a fost ridicat la sediul NATO pe 2 aprilie.', categorie: 'Evenimente', sursa: `${WP}: Romania–NATO relations`, url: ro('Romania%E2%80%93NATO_relations'), verificat: false },
+  { id: 'ponor-atena-2004', data: '2004-08-23', titlu: 'Cătălina Ponor, aur la bârnă', nota: 'Finala de la bârnă a Jocurilor de la Atena a fost câștigată de gimnasta română.', categorie: 'Evenimente', sursa: `${WP}: Gymnastics at the 2004 Summer Olympics – Women's balance beam`, url: ro('Gymnastics_at_the_2004_Summer_Olympics_%E2%80%93_Women%27s_balance_beam'), verificat: false },
+  { id: 'prezidentiale-2004', data: '2004-12-12', titlu: 'Băsescu câștigă turul doi', nota: 'Traian Băsescu a obținut 51,23% împotriva lui Adrian Năstase.', categorie: 'Evenimente', sursa: `${WP}: Romanian presidential election, 2004`, url: ro('Romanian_presidential_election,_2004'), verificat: false },
+  { id: 'leu-nou-2005', data: '2005-07-01', titlu: 'Intră în circulație leul nou', nota: 'Leul a fost redenominat: 10.000 de lei vechi (ROL) au devenit 1 leu nou (RON).', categorie: 'Obiecte & Haine', sursa: `${WP}: Romanian leu`, url: ro('Romanian_leu'), verificat: false },
+  { id: 'ue-2007', data: '2007-01-01', titlu: 'România intră în Uniunea Europeană', nota: 'România și Bulgaria au devenit state membre la 1 ianuarie 2007.', categorie: 'Evenimente', sursa: `${WP}: 2007 enlargement of the European Union`, url: ro('2007_enlargement_of_the_European_Union'), verificat: false },
+  { id: 'summit-nato-2008', data: '2008-04-02', titlu: 'Începe summitul NATO de la București', nota: 'Summitul a fost găzduit între 2 și 4 aprilie la Palatul Parlamentului.', categorie: 'Evenimente', sursa: `${WP}: 2008 Bucharest summit`, url: ro('2008_Bucharest_summit'), verificat: false },
+  { id: 'euro-italia-2008', data: '2008-06-13', titlu: 'Italia 1–1 România, la Euro 2008', nota: 'Meci de grupă la Zürich, în care Buffon a apărat un penalty tras de Mutu.', categorie: 'Evenimente', sursa: 'Al Jazeera: Missed penalty saves Italy', url: 'https://www.aljazeera.com/news/2008/6/13/missed-penalty-saves-italy', verificat: false },
+  { id: 'eurovision-2010', data: '2010-05-29', titlu: 'Paula Seling și Ovi, locul 3 la Eurovision', nota: 'Cu „Playing with Fire”, România a egalat cel mai bun rezultat al ei, obținut în 2005.', categorie: 'Muzică', sursa: `${WP}: Eurovision Song Contest 2010`, url: ro('Eurovision_Song_Contest_2010'), verificat: false },
+  { id: 'revolutia-1989', data: '1989-12-22', titlu: 'Ceaușeștii fug din București', nota: 'Manifestanții au pătruns în sediul Comitetului Central, iar cuplul a fugit cu elicopterul.', categorie: 'Evenimente', sursa: `${WP}: Romanian Revolution`, url: ro('Romanian_Revolution'), verificat: false },
+]

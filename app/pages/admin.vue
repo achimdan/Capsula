@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { SetariSite } from '~/utils/setari'
+import { cheieModul, type Modul, type SetariSite } from '~/utils/setari'
 
-const { fundal, listaFise, salveaza } = useSetari()
+const setari = useSetari()
+const { fundal, listaFise, salveaza } = setari
 useHead({ title: 'Admin · Aspect', meta: [{ name: 'robots', content: 'noindex' }] })
 
 const LISTE: { id: SetariSite['listaFise']; nume: string; descriere: string }[] = [
@@ -11,7 +12,15 @@ const LISTE: { id: SetariSite['listaFise']; nume: string; descriere: string }[] 
 
 // Starea salvării, separat pentru fiecare setare.
 type Stare = '' | 'salvez' | 'salvat' | 'eroare'
-const stare = reactive<Record<keyof SetariSite, Stare>>({ fundal: '', listaFise: '' })
+const stare = reactive<Partial<Record<keyof SetariSite, Stare>>>({})
+
+// Modulele: pornesc oprite. Pagina lor o vezi tu oricum (ca super admin), ca s-o verifici înainte de pornire.
+const MODULE_ADMIN: { id: Modul; nume: string; descriere: string; ruta?: string }[] = [
+  { id: 'azi', nume: 'Azi, demult', descriere: 'Ce s-a întâmplat în ziua de azi, cu ani în urmă. Doar evenimente cu dată exactă.', ruta: '/on-this-day' },
+  { id: 'preturi', nume: 'Prețuri de atunci', descriere: 'Cât costau lucrurile de zi cu zi, an de an, cu sursă și monedă (lei vechi până în 2005).', ruta: '/prices' },
+  { id: 'tv', nume: 'La TV', descriere: 'Emisiunile, serialele și desenele fiecărui an. Doar titluri și texte proprii.', ruta: '/tv' },
+  { id: 'bucuresti', nume: 'Stratul București', descriere: 'Fișele locale din București apar celor care au ales Bucureștiul.' }
+]
 async function alege<K extends keyof SetariSite>(cheie: K, valoare: SetariSite[K], curent: SetariSite[K]) {
   if (valoare === curent || stare[cheie] === 'salvez') return
   stare[cheie] = 'salvez'
@@ -83,6 +92,27 @@ async function alege<K extends keyof SetariSite>(cheie: K, valoare: SetariSite[K
           <template v-else-if="stare.fundal === 'eroare'">Nu s-a salvat. Fundalul a rămas cel de dinainte; încearcă din nou.</template>
         </p>
       </section>
+      <section class="bloc">
+        <h2 class="d3">Module</h2>
+        <p class="desc">Conținutul nou pornește ascuns. Îl pornești când e verificat; până atunci îl vezi doar tu.</p>
+        <div class="grila module">
+          <label v-for="m in MODULE_ADMIN" :key="m.id" class="modul">
+            <input
+              type="checkbox" role="switch" :checked="setari[cheieModul(m.id)].value" :disabled="stare[cheieModul(m.id)] === 'salvez'"
+              @change="alege(cheieModul(m.id), !setari[cheieModul(m.id)].value, setari[cheieModul(m.id)].value)">
+            <span class="text">
+              <span class="nume">{{ m.nume }}</span>
+              <span class="desc">{{ m.descriere }}</span>
+              <NuxtLink v-if="m.ruta" :to="m.ruta" class="k">Vezi pagina →</NuxtLink>
+              <span class="k nota" role="status" aria-live="polite">
+                <template v-if="stare[cheieModul(m.id)] === 'salvez'">Se salvează…</template>
+                <template v-else-if="stare[cheieModul(m.id)] === 'eroare'">Nu s-a salvat. Încearcă din nou.</template>
+                <template v-else>{{ setari[cheieModul(m.id)].value ? 'Pornit pentru toți' : 'Oprit' }}</template>
+              </span>
+            </span>
+          </label>
+        </div>
+      </section>
       <template #fallback><div class="grila" style="min-height:240px" /></template>
     </ClientOnly>
   </main>
@@ -118,5 +148,16 @@ input:focus-visible + .tile{outline:3px solid var(--signal);outline-offset:3px}
 .schita.cronologie i{position:absolute;width:15%;height:30px;background:var(--line);border:3px solid var(--paper);
   left:calc(16px + var(--x) * (100% - 32px) / 5 + 2%);top:calc(56px + var(--y) * 34px)}
 .schita.cronologie u{position:absolute;top:16px;bottom:16px;width:2px;background:var(--signal);left:calc(16px + 3.5 * (100% - 32px) / 5)}
+.modul{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;padding:16px;border:2px solid var(--line);border-radius:4px;background:var(--card);cursor:pointer;min-width:0}
+.modul:has(input:checked){border-color:var(--ink)}
+.modul .text{display:grid;gap:4px;min-width:0}
+.modul .nume{margin:0}
+.modul .nota{margin-top:4px;min-height:0}
+.modul input{appearance:none;width:44px;height:26px;margin:2px 0 0;border-radius:13px;background:var(--line);position:relative;cursor:pointer;transition:background-color .2s}
+.modul input::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--card);transition:transform .2s var(--ease-ff)}
+.modul input:checked{background:var(--ink)}
+.modul input:checked::after{transform:translateX(18px)}
+.modul input:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.modul input,.modul input::after{transition:none}}
 @media (prefers-reduced-motion:reduce){.tile{transition:none}.optiune:hover .tile,.optiune:active .tile{transform:none}}
 </style>
