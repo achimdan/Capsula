@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { FISE } from '~/data/fise'
 
+const { deschide } = useIntrare()
+
 // Plăci ceață: doar culorile fișelor și anii mascați, fără titluri.
 const coloane = [0, 1, 2].map((c) => {
   const lista = FISE.filter((_, i) => i % 3 === c).slice(0, 8)
@@ -38,7 +40,7 @@ const ceas = computed(() => {
       <span class="contor"><span class="rec">●</span>&nbsp;REC {{ ceas }}</span>
       <h1 class="d1">Ceva din '9x te așteaptă.</h1>
       <p class="lead">O casetă veche, pusă deoparte pentru tine. Nu-ți spunem ce e pe ea, încă.</p>
-      <NuxtLink to="/login" class="btn semnal">Intră și te citim</NuxtLink>
+      <button type="button" class="btn semnal" aria-haspopup="dialog" @click="deschide">Intră și te citim</button>
     </div>
   </main>
 </template>

@@ -92,6 +92,8 @@ v-for="(o, i) in intrebare.optiuni" :key="o.id" type="button" class="opt" role="
 .optiuni{display:grid;gap:10px}
 .opt{display:flex;align-items:center;gap:12px;text-align:left;min-height:56px;padding:12px 16px;font:500 17px/1.3 var(--body);color:var(--ink);background:var(--card);
   border:1.5px solid var(--ink);border-radius:2px;cursor:pointer;transition:transform .2s var(--ease-ff),background-color .2s,color .2s}
+.opt{position:relative}
+.opt::before{content:"";position:absolute;inset:-2px -2px -2px -6px}
 .opt:hover:not(:disabled){transform:translateX(4px);border-color:var(--accent)}
 .opt:active:not(:disabled){transform:scale(.985)}
 .opt:disabled{opacity:.4;cursor:default}
@@ -101,6 +103,8 @@ v-for="(o, i) in intrebare.optiuni" :key="o.id" type="button" class="opt" role="
 .an input{min-height:56px;font-size:28px;font-family:var(--display);font-weight:800;max-width:220px}
 .trepte{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
 .treapta{min-height:56px;font:800 28px var(--display);color:var(--ink);background:var(--card);border:1.5px solid var(--ink);border-radius:2px;cursor:pointer;transition:transform .2s var(--ease-ff),background-color .2s,color .2s}
+.treapta{position:relative}
+.treapta::before{content:"";position:absolute;inset:-4px 0}
 .treapta:hover{transform:translateY(-3px);border-color:var(--accent)}
 .treapta:active{transform:scale(.96)}
 .treapta[aria-checked="true"]{background:var(--ink);color:var(--paper);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--accent)}

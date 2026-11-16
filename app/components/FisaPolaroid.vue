@@ -89,6 +89,8 @@ p{font-size:14px;line-height:1.45;margin:0}
   transition:transform .2s var(--ease-ff),opacity .2s var(--ease-ff)}
 .act button.sec{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
 .act button[aria-pressed="true"]{background:var(--signal);color:var(--ink);box-shadow:none}
+.act button{position:relative}
+.act button::before{content:"";position:absolute;inset:-3px}
 .act button:active{transform:scale(.95)}
 .act button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
 .banda{flex:none}

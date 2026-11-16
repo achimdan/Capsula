@@ -98,6 +98,8 @@ v-for="(f, i) in fise" :key="f.id" type="button" class="slot" :aria-pressed="cur
 @keyframes rola{to{transform:rotate(360deg)}}
 .sloturi{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding-top:2px}
 .slot{display:grid;gap:2px;place-items:center;min-height:52px;padding:6px 2px;border:0;border-radius:4px 4px 8px 8px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer;text-align:center;box-shadow:0 4px 0 var(--line);transform:translateY(0);transition:transform .12s,opacity .15s}
+.slot{position:relative}
+.slot::before{content:"";position:absolute;inset:-6px 0}
 .slot:hover:not(:disabled){transform:translateY(-2px)}
 .slot:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
 .slot:focus-visible{outline:3px solid var(--signal);outline-offset:3px}

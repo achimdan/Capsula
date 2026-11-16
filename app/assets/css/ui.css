@@ -23,3 +23,12 @@
    (butoanele au altfel fundalul browserului, iar linkurile sublinierea din banda.css). */
 [role="menuitem"]{text-decoration:none}
 button[role="menuitem"]{background:transparent;border:0;font-family:inherit;text-align:left;cursor:pointer}
+
+/* Fereastra de intrare: titlul în stilul benzii (UModal randează în afara componentei, deci stil global). */
+.intrare-titlu{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:32px;line-height:.95;letter-spacing:.01em;margin:0}
+.intrare-nota{color:var(--muted);font-size:14px;margin:6px 0 0}
+/* Butonul de închidere al ferestrelor Nuxt UI: fără preflight ar avea fundalul și bordura browserului.
+   În layer base, ca hover-ul din utilitare să rămână deasupra. */
+@layer base {
+  button[data-slot="close"]{background:transparent;border:0;cursor:pointer;font-family:inherit}
+}

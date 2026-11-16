@@ -1,9 +1,10 @@
 <script setup lang="ts">
-// Întoarcerea din linkul magic sau din Google. Clientul Supabase schimbă singur codul din URL pe o sesiune;
+// Întoarcerea din Google. Clientul Supabase schimbă singur codul din URL pe o sesiune;
 // aici doar așteptăm sesiunea și mergem mai departe.
 const { autentificat } = useAuth()
 const { areProfil } = useCapsula()
 const route = useRoute()
+const { deschide } = useIntrare()
 useHead({ title: 'Te conectăm · Capsula', meta: [{ name: 'robots', content: 'noindex' }] })
 
 function parametru(nume: string): string | null {
@@ -21,7 +22,7 @@ watchEffect(() => {
 })
 
 onMounted(() => {
-  // Fără sesiune după câteva secunde: link deschis în alt browser sau deja folosit.
+  // Fără sesiune după câteva secunde: întoarcere deschisă în alt browser sau deja folosită.
   limita = setTimeout(() => {
     if (!autentificat.value && !eroare.value) eroare.value = mesajEroareLogin('access_denied', null)
   }, 8000)
@@ -34,9 +35,9 @@ onBeforeUnmount(() => clearTimeout(limita))
     <section class="cutie" aria-live="polite">
       <template v-if="eroare">
         <span class="k">Conectare</span>
-        <h1 class="d2">Linkul nu a mers</h1>
+        <h1 class="d2">Conectarea nu a mers</h1>
         <p class="lead" role="alert">{{ eroare }}</p>
-        <NuxtLink to="/login" class="btn semnal">Cere un link nou</NuxtLink>
+        <button type="button" class="btn semnal" aria-haspopup="dialog" @click="deschide">Încearcă din nou</button>
       </template>
       <template v-else>
         <span class="k">Conectare</span>

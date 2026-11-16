@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { dateProfilCont, decodeazaJwt, emailValid, initiale, mesajEroareLogin, normalizeazaEmail, rutaDupaLogin } from '../app/utils/auth'
+import { dateProfilCont, decodeazaJwt, emailValid, esteSuperAdmin, initiale, mesajEroareLogin, normalizeazaEmail, rutaDupaLogin } from '../app/utils/auth'
 
 function jwt(payload: object): string {
   const b64 = (s: string) => btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
@@ -37,7 +37,7 @@ describe('după login', () => {
     expect(rutaDupaLogin(false)).toBe('/start')
     expect(rutaDupaLogin(true)).toBe('/')
   })
-  it('explică linkurile expirate separat de celelalte erori', () => {
+  it('explică conectările expirate separat de celelalte erori', () => {
     expect(mesajEroareLogin(null, null)).toBeNull()
     expect(mesajEroareLogin('otp_expired', 'Email link is invalid or has expired')).toMatch(/expirat/)
     expect(mesajEroareLogin('access_denied', null)).toMatch(/același browser/)
@@ -57,5 +57,18 @@ describe('profilul contului', () => {
   it('inițialele vin din nume, altfel din email', () => {
     expect(initiale('ana maria pop', 'a@b.ro')).toBe('AM')
     expect(initiale(null, ' ion@exemplu.ro')).toBe('I')
+  })
+})
+
+describe('esteSuperAdmin', () => {
+  const google = [{ method: 'oauth', timestamp: 1 }]
+  it('cere rolul din app_metadata și o sesiune Google', () => {
+    expect(esteSuperAdmin({ app_metadata: { role: 'super_admin' }, amr: google })).toBe(true)
+  })
+  it('refuză fără rol, fără Google sau fără claims', () => {
+    expect(esteSuperAdmin({ app_metadata: {}, amr: google })).toBe(false)
+    expect(esteSuperAdmin({ app_metadata: { role: 'super_admin' }, amr: [{ method: 'otp' }] })).toBe(false)
+    expect(esteSuperAdmin({ app_metadata: { role: 'super_admin' } })).toBe(false)
+    expect(esteSuperAdmin(null)).toBe(false)
   })
 })

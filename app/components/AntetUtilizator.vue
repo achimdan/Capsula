@@ -2,7 +2,7 @@
 import type { DropdownMenuItem } from '@nuxt/ui'
 
 // Avatarul din dreapta sus (poza de la Google sau inițiala) cu meniul contului.
-const { utilizator, iese } = useAuth()
+const { utilizator, superAdmin, iese } = useAuth()
 const { areProfil, caseta } = useCapsula()
 
 async function iesire() {
@@ -22,7 +22,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
   return [
     cont,
     capsula,
-    [{ label: 'Aspect', icon: 'i-lucide-palette', to: '/admin' }],
+    ...(superAdmin.value ? [[{ label: 'Admin · Aspect', icon: 'i-lucide-palette', to: '/admin' }]] : []),
     [{ label: 'Ieși', icon: 'i-lucide-log-out', color: 'error', onSelect: iesire }]
   ]
 })
@@ -46,6 +46,8 @@ const items = computed<DropdownMenuItem[][]>(() => {
 <style scoped>
 .avatar{display:grid;place-items:center;min-width:44px;min-height:44px;padding:0;background:none;border:0;border-radius:999px;cursor:pointer;transition:transform .15s}
 .avatar :deep(span){box-shadow:0 0 0 2px var(--ink)}
+.avatar{position:relative}
+.avatar::before{content:"";position:absolute;inset:-3px}
 .avatar:hover{transform:translateY(-1px)}
 .avatar:active{transform:translateY(1px)}
 .avatar:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
