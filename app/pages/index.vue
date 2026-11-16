@@ -101,6 +101,8 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 
 <style scoped>
 .erou{display:grid;gap:20px}
+/* Puțin mai mult loc între rânduri decât .d1: pe telefon „ÎN” cade pe rândul doi și căciula lui atingea rândul de sus. */
+.erou h1{line-height:.96}
 .sec{display:grid;gap:16px}
 .grila{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px;justify-items:center;margin-top:8px}
 .blocat{display:grid;gap:12px;justify-items:start}
@@ -112,7 +114,8 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 .ton-linie[data-ton="documentar"]{text-transform:uppercase;font-size:12px;letter-spacing:.1em}
 .link:active{opacity:.7}
 
-.cuv{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.06em}
+/* Masca are loc și deasupra literelor: altfel căciula din „Î” (și orice diacritic de sus) e tăiată. */
+.cuv{display:inline-block;overflow:hidden;vertical-align:top;padding:.2em 0 .06em;margin-top:-.2em}
 .cuv-i{display:inline-block;transform:translateY(105%);opacity:0}
 .odo{display:inline-flex;vertical-align:top;color:var(--accent)}
 .col{position:relative;display:inline-block;height:.9em;overflow:hidden;line-height:.9}
