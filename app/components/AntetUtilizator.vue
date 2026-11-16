@@ -2,7 +2,10 @@
 import type { DropdownMenuItem } from '@nuxt/ui'
 
 // Avatarul din dreapta sus (poza de la Google sau inițiala) cu meniul contului.
-const { utilizator, superAdmin, iese } = useAuth()
+const { utilizator, superAdmin, superAdminConfirmat, confirmaSuperAdmin, iese } = useAuth()
+// Linkul de admin apare doar după ce serverul confirmă rolul (din nou la fiecare token nou).
+const sesiune = useSupabaseSession()
+watch(() => superAdmin.value && sesiune.value?.access_token, (t) => { if (t) void confirmaSuperAdmin() }, { immediate: true })
 const { areProfil, caseta } = useCapsula()
 
 async function iesire() {
@@ -22,7 +25,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
   return [
     cont,
     capsula,
-    ...(superAdmin.value ? [[{ label: 'Admin · Aspect', icon: 'i-lucide-palette', to: '/admin' }]] : []),
+    ...(superAdminConfirmat.value ? [[{ label: 'Admin · Aspect', icon: 'i-lucide-palette', to: '/admin' }]] : []),
     [{ label: 'Ieși', icon: 'i-lucide-log-out', color: 'error', onSelect: iesire }]
   ]
 })
