@@ -227,15 +227,13 @@ function riglaTaste(e: KeyboardEvent) {
   mergi(tinta)
 }
 
-// La prima vedere banda derulează repede până la anul tău (o singură dată). Până atunci stă cu 6 ani în urmă.
-let pornit = false
-let io: IntersectionObserver | undefined
+// Banda pornește direct pe anul tău.
 let ro: ResizeObserver | undefined
 function aseaza() {
   const el = banda.value
   if (!el || !ani.value.length) return
   opreste()
-  const i = pornit || redus() ? indexEu.value : laIndex(indexEu.value - 6)
+  const i = indexEu.value
   el.scrollLeft = i * latCol()
   ultim = el.scrollLeft
   idx.value = i
@@ -244,15 +242,6 @@ onMounted(() => nextTick(() => {
   const el = banda.value
   if (!el) return
   aseaza()
-  io = new IntersectionObserver(([e]) => {
-    if (!e?.isIntersecting) return
-    io?.disconnect()
-    pornit = true
-    if (redus()) aseaza()
-    else anima(indexEu.value * latCol(), 1400)
-  // Banda e mult mai înaltă decât ecranul: pornim când marginea ei de sus a urcat în primele 70% din ecran.
-  }, { rootMargin: '0px 0px -30% 0px' })
-  io.observe(el)
   // Lățimea coloanei ține de ecran: la redimensionare păstrăm același an la mijloc.
   // Pupitrul se lipește sub antetul site-ului, deci îi trebuie înălțimea lui.
   ro = new ResizeObserver(() => {
@@ -264,7 +253,6 @@ onMounted(() => nextTick(() => {
 }))
 watch(() => [props.fise.length, props.anEu], () => { arcuri = null; nextTick(aseaza) })
 onBeforeUnmount(() => {
-  io?.disconnect()
   ro?.disconnect()
   cancelAnimationFrame(cadru)
   cancelAnimationFrame(leagan)
