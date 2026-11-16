@@ -110,10 +110,12 @@ function onResize() { seteaza(props.anulMeu ?? 1999) }
     :aria-label="`Banda anilor ${AN_MIN}–${AN_MAX}`"
     :aria-valuemin="interactiva ? AN_MIN : undefined" :aria-valuemax="interactiva ? AN_MAX : undefined"
     :aria-valuenow="interactiva ? (anSub ?? anulMeu) : undefined"
+    :aria-valuetext="interactiva ? `${anSub ?? anulMeu} · ${titlu(anSub ?? anulMeu ?? AN_MIN)}` : undefined"
     @pointerdown="jos" @pointermove="misca" @pointerup="sus" @pointercancel="sus" @keydown="tasta">
     <div class="cap" aria-hidden="true" />
     <div v-if="interactiva" class="cap-et" aria-hidden="true">{{ anSub ?? anulMeu }}</div>
-    <div ref="tambur" class="tambur" :class="{ anim, snap }" :style="{ transform: `translateX(${x}px)` }">
+    <!-- Banda vizibilă e repetată de REP ori (derulare fără capăt): e decor, cititoarele de ecran primesc doar valoarea. -->
+    <div ref="tambur" class="tambur" :class="{ anim, snap }" :style="{ transform: `translateX(${x}px)` }" aria-hidden="true">
       <template v-for="r in REP" :key="r">
         <div
 v-for="(an, i) in ani" :key="r + '-' + an" class="an"
