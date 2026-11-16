@@ -1,10 +1,11 @@
 <script setup lang="ts">
-const { areProfil, profil, fiseVizibile } = useCapsula()
+const { areProfil, profil, an15, fiseVizibile } = useCapsula()
 
 const azi = cheieZi(new Date())
 const ieri = cheieIeri(Date.now())
 const eticheta = new Date().toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })
 
+// Deceniul nașterii alege caseta (aceeași pentru toți cei născuți în el); pe etichetă stă anul tău de 15 ani, ca în rest.
 const generatie = computed(() => generatieDinAn(profil.value.anNastere))
 const fise = computed(() => alegeFise(fiseVizibile.value, azi, generatie.value))
 
@@ -44,13 +45,13 @@ onMounted(() => {
 <template>
   <main class="pagina">
     <section class="cz">
-      <div class="k">Caseta zilei · {{ eticheta }} · generația ’{{ String(generatie).slice(2) }}</div>
+      <div class="k">Caseta zilei · {{ eticheta }}</div>
       <h1 class="d1">Partea A</h1>
       <p class="lead">Cinci amintiri pe zi, una câte una. Partea B vine mâine.</p>
 
       <div class="caseta" :class="{ suna }">
         <div class="eticheta">
-          <div class="et-sus"><span>PARTEA A</span><span>{{ eticheta }} · ’{{ String(generatie).slice(2) }}</span></div>
+          <div class="et-sus"><span>PARTEA A</span><span>{{ eticheta }} · ’{{ String(an15).slice(2) }}</span></div>
           <div class="fereastra" aria-hidden="true">
             <div class="rola st"><i class="pachet" :style="{ transform: `scale(${1 - progres * 0.55})` }" /><i class="roata" /></div>
             <div class="banda-fir" />
