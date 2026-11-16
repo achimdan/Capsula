@@ -2,11 +2,13 @@
 import { FISE, AN_MIN, AN_MAX, type Fisa } from '~/data/fise'
 const { areProfil, profil } = useCapsula()
 const RUNDE = 5
+// Unde stă cursorul la începutul fiecărei runde: un an neutru, nu răspunsul de dinainte.
+const AN_START = 1997
 const recorduri = useStocare<number[]>('scoruri', [])
 const lista = ref<Fisa[]>([])
 const runda = ref(0)
 const scor = ref(0)
-const ghicit = ref(1997)
+const ghicit = ref(AN_START)
 const dezvaluit = ref(false)
 const puncte = ref(0)
 const terminat = ref(false)
@@ -55,7 +57,7 @@ function amesteca() {
   opresteFlap()
   const exacte = FISE.filter(f => f.an_exact && (f.oras === null || f.oras === profil.value.oras))
   lista.value = [...exacte].sort(() => Math.random() - .5).slice(0, RUNDE)
-  runda.value = 0; scor.value = 0; dezvaluit.value = false; terminat.value = false; ghicit.value = 1997
+  runda.value = 0; scor.value = 0; dezvaluit.value = false; terminat.value = false; ghicit.value = AN_START
   afisScor.value = 0; afisPuncte.value = 0
 }
 const curenta = computed(() => lista.value[runda.value])
@@ -79,7 +81,7 @@ function urmatoarea() {
     tween(0, scor.value, 1100, v => { afisScor.value = v }, 'scor')
     return
   }
-  runda.value++; dezvaluit.value = false
+  runda.value++; dezvaluit.value = false; ghicit.value = AN_START
 }
 const mesaj = computed(() => {
   if (!curenta.value) return ''
