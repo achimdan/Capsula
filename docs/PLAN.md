@@ -74,6 +74,10 @@ Codul de server rulează pe Cloudflare Workers, nu pe Node: orice bibliotecă no
 
 **Conturi și admin.** Intrarea e doar cu Google. `/admin` e doar pentru super admin (rolul din `app_metadata`, pus de baza de date). Tot ce se alege în `/admin` se salvează în `site_settings` și se aplică tuturor vizitatorilor. Primul exemplu e fundalul paginii, care nu mai depinde de profilul citit.
 
+**Capsula fiecăruia.** Fișele de arhivă sunt aceleași pentru toți. Profilul citit din test le schimbă ordinea: categoriile preferate de arhetip vin primele (în filtre, în grilă în cadrul fiecărui an și ca piste pe bandă), iar deasupra apare intro-ul profilului. Fără test, ordinea rămâne cea obișnuită. Fișele de muzică au o scenă (pop, rock, dance, manele) doar unde genul e evident; e o alegere editorială, nu un fapt de arhivă. Fișele din scena profilului primesc eticheta „scena ta”, fără culoarea de accent (`--signal` rămâne pentru „ești aici” și Random Hit).
+
+**Amintirile tale.** Un utilizator logat își poate scrie propriile fișe (titlu, an, categorie, notă), salvate în `user_cards` și văzute doar de el (RLS). Apar pe bandă și în grilă cu eticheta „a ta”, se pot șterge din fișă și sunt cel mult 200 pe cont. Nu intră în „Ghicește anul”, Caseta zilei, Random Hit sau caseta, fiindcă nu sunt în `FISE`. Fără cont, secțiunea cere intrarea; nu le ținem în browser.
+
 ## Roadmap
 
 | Fază | Conținut | Stare |

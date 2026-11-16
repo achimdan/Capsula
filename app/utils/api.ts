@@ -2,6 +2,7 @@
 import type { Json } from '../types/database'
 import { randChestionar, randProfil, stareDinRanduri, type ChestionarApp, type StareCont } from './cont'
 import { setariDinRanduri, type SetariSite } from './setari'
+import { LIMITE_FISA, randDinFormular, type FisaNoua, type RandFisaProprie } from './fiseProprii'
 
 export function contApi() {
   const client = useSupabaseClient()
@@ -68,4 +69,30 @@ export function setariApi() {
   }
 
   return { citesteSetari, salveazaSetare }
+}
+
+// Fișele scrise de utilizator (user_cards). RLS: fiecare vede și modifică doar rândurile lui.
+export function fiseProprii() {
+  const client = useSupabaseClient()
+
+  async function listeaza(userId: string): Promise<RandFisaProprie[]> {
+    const { data, error } = await client.from('user_cards').select('id, title, note, year, category')
+      .eq('user_id', userId).order('year').order('created_at').limit(LIMITE_FISA.peCont)
+    if (error) throw error
+    return data ?? []
+  }
+
+  async function adauga(userId: string, f: FisaNoua): Promise<RandFisaProprie> {
+    const { data, error } = await client.from('user_cards').insert({ user_id: userId, ...randDinFormular(f) })
+      .select('id, title, note, year, category').single()
+    if (error) throw error
+    return data
+  }
+
+  async function sterge(id: string) {
+    const { error } = await client.from('user_cards').delete().eq('id', id)
+    if (error) throw error
+  }
+
+  return { listeaza, adauga, sterge }
 }

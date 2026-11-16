@@ -4,6 +4,18 @@ const props = withDefaults(defineProps<{ fisa: Fisa; ascundeAn?: boolean; actiun
   ascundeAn: false, actiuni: true, developare: false
 })
 const { caseta, amAvut, comuta } = useCapsula()
+const { profilCititor } = useProfilCitit()
+const aScenei = computed(() => eDinScena(props.fisa, profilCititor.value?.scena))
+// Fișele scrise de utilizator: fără casetă / „Am avut”, doar ștergere (cu confirmare, e definitivă).
+const proprii = props.fisa.proprie ? useFiseProprii() : null
+const confirmaStergerea = ref(false)
+const seSterge = ref(false)
+async function sterge() {
+  if (!proprii) return
+  if (!confirmaStergerea.value) { confirmaStergerea.value = true; return }
+  seSterge.value = true
+  try { await proprii.sterge(props.fisa) } finally { seSterge.value = false; confirmaStergerea.value = false }
+}
 const salvata = computed(() => caseta.value.includes(props.fisa.id))
 const avut = computed(() => amAvut.value.includes(props.fisa.id))
 function comutaCaseta() { comuta(caseta, props.fisa.id) }
@@ -42,17 +54,21 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
   <article ref="card" class="fisa" :class="{ dev: developare }" @pointermove="pePointer" @pointerleave="laIesire" @pointercancel="laIesire">
     <div class="img" :style="{ background: `linear-gradient(135deg, ${fisa.culori[0]}, ${fisa.culori[1]})` }">
       <img v-if="fisa.poza" class="foto" :src="`/fise/${fisa.id}-480.webp`" :srcset="`/fise/${fisa.id}-480.webp 480w, /fise/${fisa.id}-960.webp 960w`" sizes="(max-width: 640px) 90vw, 300px" :alt="fisa.titlu" loading="lazy" decoding="async" width="480" height="480">
-      <span class="eticheta">{{ fisa.categorie }}{{ fisa.oras ? ' · ' + fisa.oras : '' }}</span>
+      <span class="eticheta">{{ fisa.categorie }}{{ fisa.oras ? ' · ' + fisa.oras : '' }}{{ aScenei ? ' · scena ta' : '' }}{{ fisa.proprie ? ' · a ta' : '' }}</span>
       <span v-if="avut" :key="stamped ? 'nou' : 'vechi'" class="stampila" :class="{ nou: stamped }" aria-hidden="true">{{ fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta' }}</span>
     </div>
-    <div class="meta"><span>NR. INV. {{ fisa.id }}</span><span :class="{ ascuns: ascundeAn }">{{ anText }}</span></div>
+    <div class="meta"><span>{{ fisa.proprie ? 'Amintirea ta' : 'NR. INV. ' + fisa.id }}</span><span :class="{ ascuns: ascundeAn }">{{ anText }}</span></div>
     <h3>{{ fisa.titlu }}</h3>
     <p>{{ fisa.nota }}</p>
     <p v-if="fisa.sursa" class="sursa">Sursă: {{ fisa.sursa }}</p>
     <p v-if="fisa.poza" class="sursa credit">
       {{ fisa.poza.generata ? "Ilustrație generată" : "Foto" }}: <a v-if="fisa.poza.url" :href="fisa.poza.url" target="_blank" rel="noopener">{{ fisa.poza.autor }}</a><template v-else>{{ fisa.poza.autor }}</template> · {{ fisa.poza.licenta }}
     </p>
-    <div v-if="actiuni" class="act">
+    <div v-if="actiuni && fisa.proprie" class="act">
+      <button type="button" class="sec" :disabled="seSterge" @click="sterge">{{ confirmaStergerea ? 'Sigur? Șterge definitiv' : 'Șterge fișa' }}</button>
+      <button v-if="confirmaStergerea" type="button" class="sec" @click="confirmaStergerea = false">Renunță</button>
+    </div>
+    <div v-else-if="actiuni" class="act">
       <button type="button" class="avut" :aria-pressed="avut" @click="apasaAvut">{{ avut ? '✓ ' + (fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta') : (fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta') }}</button>
       <button type="button" class="sec" :aria-pressed="salvata" @click="apasaCaseta">
         <svg :key="'i' + salvata" class="banda" :class="{ lipit: salvata }" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="8.5" cy="12" r="2" /><circle cx="15.5" cy="12" r="2" /><path d="M8.5 14h7" /></svg>

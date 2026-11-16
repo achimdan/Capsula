@@ -2,5 +2,7 @@
 export const queryKeys = {
   cont: (userId: string) => ['cont', userId] as const,
   conturi: ['cont'] as const,
-  setari: ['setari'] as const
+  setari: ['setari'] as const,
+  fiseProprii: (userId: string) => ['fise-proprii', userId] as const,
+  toateFiseleProprii: ['fise-proprii'] as const
 }

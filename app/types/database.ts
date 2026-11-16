@@ -122,6 +122,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_cards: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          note: string
+          year: number
+          category: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string
+          title: string
+          note?: string
+          year: number
+          category: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          note?: string
+          year?: number
+          category?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: { [_ in never]: never }
     Functions: { [_ in never]: never }

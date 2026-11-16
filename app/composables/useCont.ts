@@ -77,6 +77,7 @@ export function useCont() {
   // Dacă datele nu au ajuns niciodată în cont (de ex. tabele lipsă), nu ștergem singura lor copie.
   function reseteaza() {
     queryClient().removeQueries({ queryKey: queryKeys.conturi })
+    queryClient().removeQueries({ queryKey: queryKeys.toateFiseleProprii })
     if (!incarcat.value) return
     incarcat.value = null
     proprietar.value = null

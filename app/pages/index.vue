@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import type { Categorie } from '~/data/fise'
 const { areProfil, profil, an15, fiseVizibile, orasDeblocat, voturi } = useCapsula()
-const { ton, profilCititor } = useProfilCitit()
+const { ton, profilCititor, ponderiCategorii } = useProfilCitit()
 const linieTon = computed(() => (ton.value ? LINII_TON[ton.value] : ''))
-const categorii: Categorie[] = ['Evenimente', 'Muzică', 'Filme & TV', 'Obiecte & Haine', 'Mâncare']
+// Categoriile și fișele în ordinea profilului citit: aceleași pentru toți, dar altfel așezate.
+const categorii = computed<Categorie[]>(() => ordineCategorii(ponderiCategorii.value, ['Evenimente', 'Muzică', 'Filme & TV', 'Obiecte & Haine', 'Mâncare']))
 const filtru = ref<Categorie | null>(null)
-const nationale = computed(() => fiseVizibile.value
-  .filter(f => f.oras === null && (!filtru.value || f.categorie === filtru.value))
-  .sort((a, b) => a.an - b.an))
+// Fișele proprii ale utilizatorului stau pe bandă lângă cele naționale (doar aici, nu și în joc sau Random Hit).
+const { fise: fiseProprii } = useFiseProprii()
+const nationale = computed(() => ordoneazaFise(
+  [...fiseVizibile.value.filter(f => f.oras === null), ...fiseProprii.value].filter(f => !filtru.value || f.categorie === filtru.value),
+  ponderiCategorii.value))
 const locale = computed(() => fiseVizibile.value.filter(f => f.oras !== null).sort((a, b) => a.an - b.an))
 const aVotat = computed(() => !!profil.value.oras && voturi.value.includes(profil.value.oras))
 function voteaza() { if (profil.value.oras && !aVotat.value) voturi.value = [...voturi.value, profil.value.oras] }
@@ -62,6 +65,7 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
       <section class="sec">
         <div class="k">Capsula națională</div>
         <h2 class="d2">Ce era peste tot</h2>
+        <p v-if="profilCititor" class="lead">{{ profilCititor.config.intro }}</p>
         <div class="chips">
           <button class="chip" :aria-pressed="filtru === null" @click="filtru = null">Toate</button>
           <button v-for="c in categorii" :key="c" class="chip" :aria-pressed="filtru === c" @click="filtru = c">{{ c }}</button>
@@ -70,6 +74,8 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
           <FisaPolaroid v-for="(f, i) in nationale" :key="f.id" v-reveal="i" :fisa="f" />
         </div>
       </section>
+
+      <ClientOnly><AmintiriTale :an-implicit="an15" /></ClientOnly>
 
       <section v-if="profil.oras" class="sec">
         <div class="k">Stratul orașului</div>
