@@ -17,12 +17,11 @@ const locale = computed(() => fiseVizibile.value.filter(f => f.oras !== null).so
 const aVotat = computed(() => !!profil.value.oras && voturi.value.includes(profil.value.oras))
 function voteaza() { if (profil.value.oras && !aVotat.value) voturi.value = [...voturi.value, profil.value.oras] }
 
-// Headline: cuvinte care urcă din mască + odometru care rulează anii până la anul tău
+// Headline: cuvinte care urcă din mască, apoi cifrele anului tău. Cifrele sunt mereu cele corecte;
+// animația doar le ridică din mască, nu derulează prin alți ani.
 const cuvinte = ['Aveai', '15', 'ani', 'în']
 const cifre = computed(() => String(an15.value).split('').map(Number))
 const gata = ref(false)
-// Poziția în stripul de 20 celule (0-9 de două ori): ultimele cifre fac o tură în plus
-const tinta = (d: number, col: number) => (col >= 2 ? 10 + d : d)
 if (import.meta.client) {
   watch(areProfil, (v) => {
     gata.value = false
@@ -54,7 +53,7 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
       <section class="erou" :class="{ gata }">
         <div class="k">Născut în {{ profil.anNastere }}<template v-if="profil.oras"> · {{ profil.oras }}</template><template v-if="profilCititor"> · {{ profilCititor.nume }}</template> · <NuxtLink to="/start" class="link">refă testul</NuxtLink></div>
         <h1 class="d1" :aria-label="`Aveai 15 ani în ${an15}`">
-          <span v-for="(c, i) in cuvinte" :key="c" class="cuv" aria-hidden="true"><span class="cuv-i" :style="{ '--i': i }">{{ c }}</span>&nbsp;</span><span class="odo" aria-hidden="true"><span v-for="(d, col) in cifre" :key="col" class="col"><span class="sz">{{ d }}</span><span class="strip" :style="{ '--t': tinta(d, col), '--c': col }"><span v-for="n in 20" :key="n" class="cf">{{ (n - 1) % 10 }}</span></span></span></span>
+          <span v-for="(c, i) in cuvinte" :key="c" class="cuv" aria-hidden="true"><span class="cuv-i" :style="{ '--i': i }">{{ c }}</span>&nbsp;</span><span class="odo" aria-hidden="true"><span v-for="(d, col) in cifre" :key="col" class="col"><span class="cf" :style="{ '--c': col }">{{ d }}</span></span></span>
         </h1>
         <p v-if="linieTon" class="ton-linie" :data-ton="ton">{{ linieTon }}</p>
         <BandaAni :anul-meu="an15" interactiva />
@@ -117,12 +116,9 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 .cuv-i{display:inline-block;transform:translateY(105%);opacity:0}
 .odo{display:inline-flex;vertical-align:top;color:var(--accent)}
 .col{position:relative;display:inline-block;height:.9em;overflow:hidden;line-height:.9}
-.sz{visibility:hidden}
-.col .strip{position:absolute;inset:0 auto auto 50%;margin-left:-.5em;width:1em;text-align:center}
-.strip{display:flex;flex-direction:column;transform:translateY(0);will-change:transform}
-.cf{display:block;height:.9em;line-height:.9}
+.cf{display:block;height:.9em;line-height:.9;transform:translateY(105%)}
 .gata .cuv-i{transform:none;opacity:1;transition:transform .8s var(--ease-ff) calc(var(--i) * 90ms),opacity .5s calc(var(--i) * 90ms)}
-.gata .strip{transform:translateY(calc(var(--t) * -5%));transition:transform calc(1.1s + var(--c) * .3s) var(--ease-ff) .35s}
+.gata .cf{transform:none;transition:transform .7s var(--ease-ff) calc(.35s + var(--c) * 90ms)}
 
 :deep(.rev){opacity:0;transform:translateY(36px) rotate(-1.5deg)}
 :deep(.rev.in){opacity:1;transform:none;transition:opacity .6s calc(var(--r) * 70ms),transform .8s var(--ease-ff) calc(var(--r) * 70ms)}
@@ -133,8 +129,8 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 
 @media (prefers-reduced-motion:reduce){
   .cuv-i{transform:none;opacity:1}
-  .strip{transform:translateY(calc(var(--t) * -5%))}
-  .gata .cuv-i,.gata .strip{transition:none}
+  .cf{transform:none}
+  .gata .cuv-i,.gata .cf{transition:none}
   :deep(.rev){opacity:1;transform:none}
   .rand .btn:hover,.rand .btn:active{transform:none}
 }
