@@ -59,8 +59,9 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
     <h3>{{ fisa.titlu }}</h3>
     <p>{{ fisa.nota }}</p>
     <p v-if="fisa.sursa" class="sursa">Sursă: {{ fisa.sursa }}</p>
-    <p v-if="fisa.poza" class="sursa credit">
-      {{ fisa.poza.generata ? "Ilustrație generată" : "Foto" }}: <a v-if="fisa.poza.url" :href="fisa.poza.url" target="_blank" rel="noopener">{{ fisa.poza.autor }}</a><template v-else>{{ fisa.poza.autor }}</template> · {{ fisa.poza.licenta }}
+    <p v-if="fisa.poza?.generata" class="sursa credit">Ilustrație generată pentru Capsula</p>
+    <p v-else-if="fisa.poza" class="sursa credit">
+      Foto: <a v-if="fisa.poza.url" :href="fisa.poza.url" target="_blank" rel="noopener">{{ fisa.poza.autor }}</a><template v-else>{{ fisa.poza.autor }}</template> · {{ fisa.poza.licenta }}
     </p>
     <div v-if="actiuni && fisa.proprie" class="act">
       <button type="button" class="sec" :disabled="seSterge" @click="sterge">{{ confirmaStergerea ? 'Sigur? Șterge definitiv' : 'Șterge fișa' }}</button>
