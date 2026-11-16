@@ -4,6 +4,8 @@ const { areProfil, profil, an15, fiseVizibile } = useCapsula()
 const azi = cheieZi(new Date())
 const ieri = cheieIeri(Date.now())
 const eticheta = new Date().toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })
+const parte = parteaZilei(azi)
+const altaParte = parte === 'A' ? 'B' : 'A'
 
 // Deceniul nașterii alege caseta (aceeași pentru toți cei născuți în el); pe etichetă stă anul tău de 15 ani, ca în rest.
 const generatie = computed(() => generatieDinAn(profil.value.anNastere))
@@ -46,12 +48,12 @@ onMounted(() => {
   <main class="pagina">
     <section class="cz">
       <div class="k">Caseta zilei · {{ eticheta }}</div>
-      <h1 class="d1">Partea A</h1>
-      <p class="lead">Cinci amintiri pe zi, una câte una. Partea B vine mâine.</p>
+      <h1 class="d1">Partea {{ parte }}</h1>
+      <p class="lead">Cinci amintiri pe zi, una câte una. Mâine întorci caseta: pe partea {{ altaParte }} te așteaptă alte cinci.</p>
 
       <div class="caseta" :class="{ suna }">
         <div class="eticheta">
-          <div class="et-sus"><span>PARTEA A</span><span>{{ eticheta }} · ’{{ String(an15).slice(2) }}</span></div>
+          <div class="et-sus"><span>PARTEA {{ parte }}</span><span>{{ eticheta }} · ’{{ String(an15).slice(2) }}</span></div>
           <div class="fereastra" aria-hidden="true">
             <div class="rola st"><i class="pachet" :style="{ transform: `scale(${1 - progres * 0.55})` }" /><i class="roata" /></div>
             <div class="banda-fir" />
@@ -71,7 +73,7 @@ v-for="(f, i) in fise" :key="f.id" type="button" class="slot" :aria-pressed="cur
       <div class="k" aria-live="polite">
         <template v-if="deschise === 0">Apasă pe 1 ca să vezi prima amintire</template>
         <template v-else-if="deschise < 5">{{ deschise }}/5 · următoarea piesă te așteaptă</template>
-        <template v-else>Gata pe azi · întoarce caseta mâine pentru partea B</template>
+        <template v-else>Gata pe azi · întoarce caseta mâine pentru partea {{ altaParte }}</template>
         <template v-if="serieAfisata"> · 🔥 {{ serieAfisata }} {{ serieAfisata === 1 ? 'zi' : 'zile la rând' }}</template>
       </div>
       <div class="scena"><FisaPolaroid v-if="curenta !== null && fise[curenta]" :key="fise[curenta]!.id" :fisa="fise[curenta]!" developare /></div>
