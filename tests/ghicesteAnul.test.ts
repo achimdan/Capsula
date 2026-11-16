@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { FISE } from '../app/data/fise'
-import { fisaFaraAn, mascheazaAni } from '../app/utils/ghicesteAnul'
+import { fisaFaraAn, mascheazaAni, puncteDupaDistanta } from '../app/utils/ghicesteAnul'
 
 describe('mascheazaAni', () => {
   it('ascunde anii întregi și prescurtați', () => {
@@ -30,5 +30,19 @@ describe('fișele din joc', () => {
       const cuvinte = mascheazaAni(f.nota).split(/\s+/).filter(w => /\p{L}{3,}/u.test(w))
       expect(cuvinte.length, f.id).toBeGreaterThanOrEqual(4)
     }
+  })
+})
+
+describe('puncteDupaDistanta', () => {
+  it('dă puncte parțiale și la câțiva ani distanță', () => {
+    expect(puncteDupaDistanta(0)).toBe(100)
+    expect(puncteDupaDistanta(1)).toBe(80)
+    expect(puncteDupaDistanta(4)).toBeGreaterThan(0)
+    expect(puncteDupaDistanta(-4)).toBe(puncteDupaDistanta(4))
+    expect(puncteDupaDistanta(7)).toBe(0)
+    expect(puncteDupaDistanta(20)).toBe(0)
+  })
+  it('scade la fiecare an în plus', () => {
+    for (let d = 0; d < 7; d++) expect(puncteDupaDistanta(d)).toBeGreaterThan(puncteDupaDistanta(d + 1))
   })
 })

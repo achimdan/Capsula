@@ -62,7 +62,7 @@ const fisaAfisata = computed(() => curenta.value && (dezvaluit.value ? curenta.v
 function confirma() {
   if (!curenta.value) return
   const d = Math.abs(ghicit.value - curenta.value.an)
-  puncte.value = Math.max(0, 100 - 25 * d)
+  puncte.value = puncteDupaDistanta(d)
   const dinainte = scor.value
   scor.value += puncte.value
   dezvaluit.value = true

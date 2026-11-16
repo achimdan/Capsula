@@ -13,3 +13,9 @@ export function mascheazaAni(text: string): string {
 export function fisaFaraAn(f: Fisa): Fisa {
   return { ...f, titlu: mascheazaAni(f.titlu), nota: mascheazaAni(f.nota), sursa: f.sursa ? mascheazaAni(f.sursa) : undefined }
 }
+
+// Puncte după câți ani ai greșit: exact = 100, apoi scade treptat; de la 7 ani distanță, 0.
+const PUNCTE = [100, 80, 60, 45, 30, 20, 10]
+export function puncteDupaDistanta(ani: number): number {
+  return PUNCTE[Math.abs(Math.round(ani))] ?? 0
+}
