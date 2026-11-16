@@ -13,14 +13,17 @@ const snap = ref(false)
 const trage = ref(false)
 const activ = ref<number | null>(null)
 const titlu = (an: number) => FISE.find(f => f.an === an && f.oras === null)?.titlu ?? ''
+// Titlul fișei pe care se oprește banda (Random Hit): celula lovită arată fișa aleasă, nu prima din anul ei.
+const titluLovit = ref('')
 
 function centru(idx: number) { return (banda.value?.clientWidth ?? 0) / 2 - (idx * props.latime + props.latime / 2) }
 function seteaza(an: number) { anim.value = false; snap.value = false; x.value = centru(ani.indexOf(an)) }
 
 // Derulează rapid (cu blur) până la anul dat; se rezolvă când banda s-a oprit
-function deruleaza(an: number): Promise<void> {
+function deruleaza(an: number, titluFisa = ''): Promise<void> {
   const redus = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   lovit.value = null
+  titluLovit.value = titluFisa
   const tinta = ani.length * (REP - 1) + ani.indexOf(an)
   if (redus) { anim.value = false; x.value = centru(tinta); lovit.value = tinta; return Promise.resolve() }
   anim.value = false
@@ -115,7 +118,7 @@ function onResize() { seteaza(props.anulMeu ?? 1999) }
         <div
 v-for="(an, i) in ani" :key="r + '-' + an" class="an"
           :class="{ eu: an === anulMeu, lovit: lovit === (r - 1) * ani.length + i, activ: interactiva && activ === (r - 1) * ani.length + i }" :style="{ flexBasis: latime + 'px' }">
-          <span class="y">{{ an }}</span><span class="t">{{ titlu(an) }}</span>
+          <span class="y">{{ an }}</span><span class="t">{{ lovit === (r - 1) * ani.length + i && titluLovit ? titluLovit : titlu(an) }}</span>
         </div>
       </template>
     </div>
