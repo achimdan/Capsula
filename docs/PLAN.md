@@ -48,6 +48,12 @@ Pagini de referință (claude.ai, private):
 
 Demo: https://claude.ai/artifact/9Tpnur5tdGaSCaRX1PRDwA
 
+- **Module din /admin:** conținutul nou intră ca modul pe care super adminul îl pornește sau îl oprește (`site_settings`, chei `modul_*`, toate oprite la început). Modul oprit = link ascuns, pagina trimite vizitatorii acasă; super adminul o vede oricum, ca s-o verifice.
+  - **Azi, demult** (`/on-this-day`): evenimente cu zi exactă, din surse; altfel nu intră.
+  - **Prețuri de atunci** (`/prices`): prețuri cu sursă și monedă explicită (lei vechi până în iulie 2005).
+  - **La TV** (`/tv`): emisiuni, seriale, desene; doar titluri și texte proprii, fără clipuri.
+  - **Stratul București**: al doilea oraș deblocat, după Cluj (`app/data/fiseBucuresti.ts`).
+
 ## Etapa 4 — Magazin și monetizare
 
 **Ales:** toate trei modelele, eșalonate în timp.

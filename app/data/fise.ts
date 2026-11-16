@@ -1,3 +1,4 @@
+import { FISE_BUCURESTI } from './fiseBucuresti'
 // Fișele Capsulei. Regula: nu inventăm fapte.
 // - an_exact: true  → anul e verificabil public (doar acestea intră în „Ghicește anul”)
 // - an_exact: false → an aproximativ, afișat cu „≈”
@@ -152,7 +153,9 @@ export const FISE: Fisa[] = [
   { id: 'CJ-0002', titlu: 'Hully Gully, Mănăștur', nota: 'Uriașă pentru vremea ei, cu mii de oameni într-o seară. Toată lumea are o poveste de acolo.', an: 1996, an_exact: false, categorie: 'Locuri', oras: 'Cluj', verificat: false, sursa: 'stiridecluj.ro', culori: ['#E2582F', '#14211B'], poza: { autor: 'Ilustrație Capsula', licenta: 'Generată pentru Capsula', generata: true } },
   { id: 'CJ-0003', titlu: 'Discoteca Atlantic', nota: 'În Mănăștur. Există filmări din ’99. Tu unde stăteai: la bar sau lângă boxe?', an: 1999, an_exact: false, categorie: 'Locuri', oras: 'Cluj', verificat: false, sursa: 'stiridecluj.ro', culori: ['#2E5E8C', '#E2582F'], poza: { autor: 'Ilustrație Capsula', licenta: 'Generată pentru Capsula', generata: true } },
   { id: 'CJ-0004', titlu: 'Obsession', nota: 'Unul dintre numele mari ale nopților clujene de la începutul anilor 2000.', an: 2002, an_exact: false, categorie: 'Locuri', oras: 'Cluj', verificat: false, sursa: 'cluju.ro', culori: ['#5B3A7A', '#E2582F'] },
-  { id: 'CJ-0005', titlu: '„La Matei”', nota: 'Locul de întâlnire din centru. „Ne vedem la Matei” și apoi stăteai acolo ore întregi.', an: 2005, an_exact: false, categorie: 'Locuri', oras: 'Cluj', verificat: false, sursa: 'cluj.com', culori: ['#3D6B5A', '#F4F6F1'], poza: { autor: 'Richard_of_England', licenta: 'CC BY 2.0', url: 'https://www.flickr.com/photos/57827564@N03/8122828688' } }
+  { id: 'CJ-0005', titlu: '„La Matei”', nota: 'Locul de întâlnire din centru. „Ne vedem la Matei” și apoi stăteai acolo ore întregi.', an: 2005, an_exact: false, categorie: 'Locuri', oras: 'Cluj', verificat: false, sursa: 'cluj.com', culori: ['#3D6B5A', '#F4F6F1'], poza: { autor: 'Richard_of_England', licenta: 'CC BY 2.0', url: 'https://www.flickr.com/photos/57827564@N03/8122828688' } },
+  // ——— Stratul București (modulul „bucuresti” din /admin) ———
+  ...FISE_BUCURESTI
 ]
 
 export const ORASE_DEBLOCATE = ['Cluj']

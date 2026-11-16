@@ -13,12 +13,15 @@ export function useCapsula() {
 
   // Orașul poate rămâne null („La sat”, „Prefer să nu spun”): contează că testul a fost făcut.
   const areProfil = computed(() => !!profil.value.anNastere && (!!profil.value.oras || !!profilCitit.value))
-  const orasDeblocat = computed(() => !!profil.value.oras && ORASE_DEBLOCATE.includes(profil.value.oras))
+  const { modul_bucuresti } = useModule()
+  // București se deblochează din /admin (modulul „bucuresti”); până atunci fișele lui stau ascunse.
+  const deblocate = computed(() => orasePornite(ORASE_DEBLOCATE, modul_bucuresti.value))
+  const orasDeblocat = computed(() => !!profil.value.oras && deblocate.value.includes(profil.value.oras))
   const an15 = computed(() => (profil.value.anNastere ?? 1984) + 15)
 
   // Fișele vizibile: toate cele naționale + stratul orașului ales
   const fiseVizibile = computed<Fisa[]>(() =>
-    FISE.filter(f => f.oras === null || f.oras === profil.value.oras))
+    FISE.filter(f => f.oras === null || (f.oras === profil.value.oras && deblocate.value.includes(f.oras))))
 
   function varsta(f: Fisa) { return f.an - (profil.value.anNastere ?? 1984) }
 
