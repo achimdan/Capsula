@@ -73,14 +73,16 @@ async function sterge() {
 
       <h2 class="d2">În browserul tău</h2>
       <p>
-        Păstrăm în browser sesiunea de conectare și o copie a profilului și a casetei, ca pagina să se deschidă repede.
-        Nu folosim cookie-uri de urmărire.
+        Păstrăm în browser (localStorage) sesiunea de conectare, o copie a profilului, a testului și a casetei, ca
+        pagina să se deschidă repede, plus ce alegi pe site: fișele marcate „Am avut asta”, voturile pentru orașe,
+        scorurile din „Ghicește anul”, Caseta zilei și seria ei, interesul pentru magazin și preferințele de afișare.
+        Acestea rămân doar în browserul tău; le ștergi golind datele site-ului. Nu folosim cookie-uri de urmărire.
       </p>
 
       <h2 class="d2">Drepturile tale</h2>
       <p>
-        Poți cere oricând să vezi, să corectezi sau să ștergi datele tale. Profilul îl corectezi refăcând testul, iar
-        mai jos poți descărca tot sau șterge contul. Dacă ai o plângere, te poți adresa
+        Poți cere oricând să vezi, să corectezi sau să ștergi datele tale. Profilul îl corectezi refăcând testul. Dacă ai
+        cont, în secțiunea „Datele tale” de mai jos (vizibilă după ce intri) poți descărca tot sau șterge contul. Dacă ai o plângere, te poți adresa
         <a href="https://www.dataprotection.ro/" target="_blank" rel="noopener">ANSPDCP</a>.
       </p>
     </section>

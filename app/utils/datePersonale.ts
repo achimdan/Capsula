@@ -10,7 +10,7 @@ export function cheiLocale(chei: Iterable<string>): string[] {
 
 export interface ExportCont {
   exportat_la: string
-  cont: { id: string, email: string | null, nume: string | null }
+  cont: { id: string, email: string | null, nume: string | null, avatar: string | null }
   profil: unknown
   chestionar: unknown
   caseta: unknown[]
@@ -33,5 +33,7 @@ export function construiesteExport(
 }
 
 export function numeFisierExport(acum: Date = new Date()): string {
-  return `capsula-datele-mele-${acum.toISOString().slice(0, 10)}.json`
+  // Data locală, nu UTC: un export făcut după miezul nopții în România poartă ziua de azi.
+  const z = (n: number) => String(n).padStart(2, '0')
+  return `capsula-datele-mele-${acum.getFullYear()}-${z(acum.getMonth() + 1)}-${z(acum.getDate())}.json`
 }

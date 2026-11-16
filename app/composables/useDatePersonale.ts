@@ -9,14 +9,15 @@ export function useDatePersonale() {
     const u = utilizator.value
     if (!u) return
     const date = await api.citesteTot(u.id)
-    const exp = construiesteExport({ id: u.id, email: u.email, nume: u.nume }, date)
+    const exp = construiesteExport({ id: u.id, email: u.email, nume: u.nume, avatar: u.avatar }, date)
     const blob = new Blob([JSON.stringify(exp, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
     a.download = numeFisierExport()
     a.click()
-    URL.revokeObjectURL(url)
+    // Revocat după ce descărcarea a pornit: imediat după click, unele browsere o anulează.
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
 
   async function stergeCont() {

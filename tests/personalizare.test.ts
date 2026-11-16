@@ -37,7 +37,7 @@ describe('ordoneazaFise', () => {
     const ordini = new Set(PROFILURI.map(p => ordoneazaFise(FISE, p.config.ponderiCategorii).map(x => x.id).join()))
     expect(ordini.size).toBeGreaterThan(1)
   })
-  it('nicio categorie nu e prima pistă la majoritatea profilurilor', () => {
+  it('nicio categorie nu e prima pistă pe bandă (ordineCategorii) la majoritatea profilurilor', () => {
     const prima = new Map<string, number>()
     for (const p of PROFILURI) {
       const c = ordineCategorii(p.config.ponderiCategorii)[0]!
