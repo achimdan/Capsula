@@ -34,12 +34,12 @@ const DATE_ARHETIP: Record<Arhetip, { fundal: Fundal, ton: Ton, intro: string, c
 }
 
 const DATE_SCENA: Record<Scena, { accent: string, intro: string, plus: Partial<Ponderi6> }> = {
-  pop: { accent: '#B5651D', intro: 'Începem cu refrenele pe care le știe toată lumea.', plus: { 'Muzică': 2, 'Filme & TV': 1 } },
-  rock: { accent: '#CF4F2F', intro: 'Pe fundal, un solo de chitară.', plus: { 'Muzică': 2, 'Obiecte & Haine': 1 } },
-  hiphop: { accent: '#3E7CB1', intro: 'Pe fundal, un beat de la sfârșitul anilor 90.', plus: { 'Muzică': 2, 'Obiecte & Haine': 1 } },
-  dance: { accent: '#8E6BBF', intro: 'Pe fundal, hiturile verii.', plus: { 'Muzică': 2, 'Locuri': 1 } },
-  manele: { accent: '#C04A7A', intro: 'Pe fundal, muzica de la petrecerile tale.', plus: { 'Muzică': 2, 'Evenimente': 1 } },
-  alternativ: { accent: '#2E7D6B', intro: 'Pe fundal, piesele care nu intrau în top.', plus: { 'Muzică': 2, 'Filme & TV': 1 } }
+  pop: { accent: '#B5651D', intro: 'Începem cu refrenele pe care le știe toată lumea.', plus: { 'Filme & TV': 1 } },
+  rock: { accent: '#CF4F2F', intro: 'Pe fundal, un solo de chitară.', plus: { 'Obiecte & Haine': 1 } },
+  hiphop: { accent: '#3E7CB1', intro: 'Pe fundal, un beat de la sfârșitul anilor 90.', plus: { 'Obiecte & Haine': 1 } },
+  dance: { accent: '#8E6BBF', intro: 'Pe fundal, hiturile verii.', plus: { 'Locuri': 1 } },
+  manele: { accent: '#C04A7A', intro: 'Pe fundal, muzica de la petrecerile tale.', plus: { 'Evenimente': 1 } },
+  alternativ: { accent: '#2E7D6B', intro: 'Pe fundal, piesele care nu intrau în top.', plus: { 'Filme & TV': 1 } }
 }
 
 // [nume, citire] pentru fiecare celulă arhetip × scenă.

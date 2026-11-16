@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { AN_MIN, AN_MAX, FISE } from '~/data/fise'
-const props = withDefaults(defineProps<{ anulMeu?: number; latime?: number; inaltime?: number; interactiva?: boolean }>(), { latime: 140, inaltime: 120, interactiva: false })
+const props = withDefaults(defineProps<{ anulMeu?: number; latime?: number; inaltime?: number; interactiva?: boolean }>(), { anulMeu: undefined, latime: 140, inaltime: 120, interactiva: false })
 const ani = Array.from({ length: AN_MAX - AN_MIN + 1 }, (_, i) => AN_MIN + i)
 const REP = 3
 const banda = ref<HTMLElement>()

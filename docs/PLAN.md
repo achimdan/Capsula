@@ -65,18 +65,24 @@ Demo: https://claude.ai/artifact/TzJWrZoDD6iTGiW1GaR9B1
 | Găzduire | Cloudflare Workers (Worker `capsula`, cu assets statice; deploy automat din `main` prin Workers Builds) |
 | Date, conturi, scoruri, voturi | Supabase (Postgres + Auth), într-un cont separat |
 | Imagini | Supabase Storage sau Cloudflare R2 |
-| Carduri de share | Imagini generate pe server |
+| Carduri de share | Acum: PNG desenat în browser (canvas) la finalul „Ghicește anul”; imagini de previzualizare generate pe server, mai târziu |
 | Plăți | Stripe; Stripe Connect pentru Talcioc |
 | Print-on-demand | API-ul unui furnizor, ales după costurile reale pentru România |
 | 3D | Nu în MVP |
 
 Codul de server rulează pe Cloudflare Workers, nu pe Node: orice bibliotecă nouă se verifică înainte.
 
+Fonturile se descarcă la build prin `@nuxt/fonts` și se servesc din `/_fonts`, nu de la Google. Google a redenumit „Big Shoulders Display” în „Big Shoulders” (variabil, cu mărime optică); în CSS rămân amândouă numele.
+
 **Conturi și admin.** Intrarea e doar cu Google și e deschisă oricui. `/admin` e doar pentru super admin (rolul din `app_metadata`, pus de baza de date). Meniul și ruta nu se bazează doar pe JWT-ul citit local: rolul e confirmat de serverul de Auth (`getUser`) înainte să apară linkul sau pagina; scrierile le păzește RLS. Tot ce se alege în `/admin` se salvează în `site_settings` și se aplică tuturor vizitatorilor. Acum sunt două setări: fundalul paginii, care nu mai depinde de profilul citit, și felul în care se afișează „Ce era peste tot” (grilă de polaroiduri sau cronologie pe bandă, cu anii pe orizontală și categoriile ca piste).
+
+**Cardul de scor.** La finalul „Ghicește anul”, „Distribuie scorul” desenează în browser un PNG de 1080×1350 cu scorul pe bandă, titlul, generația și cele 5 runde (anul real și cu cât ai greșit). Pe telefon se deschide foaia de share; unde browserul nu poate trimite fișiere, imaginea se descarcă. Fără `--signal` pe card. Conținutul e în `app/utils/cardScor.ts`, desenul în `app/composables/useCardScor.ts`. Previzualizarea linkurilor (og:image) cere randare pe server și rămâne pentru când revine SSR.
+
+**Confidențialitate.** `/privacy` e publică și spune ce date ținem (contul Google, profilul, testul, caseta, amintirile), cine le găzduiește (Supabase, Cloudflare, Google) și ce drepturi ai. Utilizatorul logat își descarcă de acolo toate datele într-un JSON și își poate șterge contul: funcția `delete_my_account()` din baza de date șterge rândul din `auth.users`, iar restul pleacă prin cascade; în browser se șterg cheile `capsula:*`. Textul e o ciornă: operatorul și contactul sunt de completat în `app/data/confidentialitate.ts` și urmează verificarea juridică.
 
 **Cronologia pe bandă.** Ocupă toată lățimea ecranului, nu doar coloana paginii. Banda trece pe sub un cap de citire fix, la mijloc: anul de sub el apare în contorul mare, cu vârsta pe care o aveai atunci și câte fișe are anul. Se derulează cu degetul (pe mobil se prinde de fiecare an), trăgând cu mouse-ul (cu inerție), din riglă (o liniuță pe an, înaltă cât fișe are), din săgeți (sar la următorul an cu fișe) sau cu „Anul meu”. Banda pornește direct pe anul tău; fișele se leagănă pe fir după viteză, iar cele de la margini stau mai șterse. `--signal` marchează doar anul în care aveai 15 ani. Cu `prefers-reduced-motion` rămân doar salturile directe. Logica e în `app/utils/cronologie.ts`.
 
-**Capsula fiecăruia.** Fișele de arhivă sunt aceleași pentru toți. Profilul citit din test le schimbă ordinea: categoriile preferate de arhetip vin primele (în filtre, în grilă în cadrul fiecărui an și ca piste pe bandă), iar deasupra apare intro-ul profilului. Fără test, ordinea rămâne cea obișnuită. Fișele de muzică au o scenă (pop, rock, dance, manele) doar unde genul e evident; e o alegere editorială, nu un fapt de arhivă. Fișele din scena profilului primesc eticheta „scena ta”, fără culoarea de accent (`--signal` rămâne pentru „ești aici” și Random Hit).
+**Capsula fiecăruia.** Fișele de arhivă sunt aceleași pentru toți. Profilul citit din test le schimbă ordinea: categoriile preferate de arhetip vin primele (în filtre, în grilă în cadrul fiecărui an și ca piste pe bandă), iar deasupra apare intro-ul profilului. Pe bandă, pistele preferate au eticheta „pentru tine”, iar pozele de pe celelalte piste stau decolorate până le atingi. Fără test, ordinea rămâne cea obișnuită. Fișele de muzică au o scenă (pop, rock, dance, manele) doar unde genul e evident; e o alegere editorială, nu un fapt de arhivă. Fișele din scena profilului primesc eticheta „scena ta”, fără culoarea de accent (`--signal` rămâne pentru „ești aici” și Random Hit).
 
 **Amintirile tale.** Un utilizator logat își poate scrie propriile fișe (titlu, an, categorie, notă), salvate în `user_cards` și văzute doar de el (RLS). Apar pe bandă și în grilă cu eticheta „a ta”, se pot șterge din fișă și sunt cel mult 200 pe cont. Nu intră în „Ghicește anul”, Caseta zilei, Random Hit sau caseta, fiindcă nu sunt în `FISE`. Fără cont, secțiunea cere intrarea; nu le ținem în browser.
 
@@ -87,19 +93,19 @@ Codul de server rulează pe Cloudflare Workers, nu pe Node: orice bibliotecă no
 | **v0.1 MVP local** | Onboarding, capsula națională, banda, Zapping, Ghicește anul, strat Cluj, vot local, Caseta mea, configurator magazin + „Anunță-mă” | ✅ Gata (date în `app/data/fise.ts`, stare în browser) |
 | **v0.1.1 Conținut** | 150–200 de fișe verificate pentru Cluj și anii 1990–2008; ilustrații proprii | ⏳ |
 | **v0.1.2 Online** | Deploy pe Cloudflare Workers, la fiecare push pe `main` | ✅ |
-| **v0.2 Supabase** | Fișe în baza de date, conturi, voturi și „Am avut asta” comune, media pe generații, panou de curator | ⏳ (așteaptă contul Supabase nou) |
+| **v0.2 Supabase** | Fișe în baza de date, conturi, voturi și „Am avut asta” comune, media pe generații, panou de curator | 🔶 Conturi Google, profil, casetă, amintiri proprii, admin și confidențialitate gata; restul ⏳ |
 | **v0.3 Magazin A + primul drop C** | Comenzi reale prin Stripe și furnizorul de print; drop „Vara lui ’99” | ⏳ |
 | **v0.4 Membru (C)** | Abonament: acces înainte la drop-uri, clasamente pe orașe | ⏳ |
 | **v0.5 Talcioc (B)** | Marketplace cu Stripe Connect, după consultanță juridică | ⏳ |
 
 ## De rezolvat
 
-- [ ] Cont Supabase nou (contul actual a atins limita de 2 proiecte gratuite).
+- [x] Cont Supabase nou, separat.
 - [ ] Verificarea tuturor fișelor din `app/data/fise.ts` (toate sunt `verificat: false`).
 - [ ] Ani confirmați pentru discotecile din Cluj (sursele diferă între ele).
 - [ ] Materiale originale (poze, flyere) cu acordul autorilor.
 - [ ] Alegerea furnizorului de print-on-demand și prețurile.
-- [ ] Termeni, confidențialitate și GDPR pentru amintirile trimise de oameni.
+- [ ] Termeni, confidențialitate și GDPR: `/privacy`, exportul și ștergerea contului sunt gata; lipsesc operatorul, contactul, termenii și verificarea juridică.
 - [ ] Consultanță juridică pentru Talcioc.
 
 ## Surse folosite până acum

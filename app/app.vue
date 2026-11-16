@@ -11,7 +11,7 @@ const route = useRouter().currentRoute
 // Decizia depinde de starea din browser (sesiune, profil local): nu randăm nimic gated până la montare (fără mismatch la hidratare).
 const montat = ref(false)
 onMounted(() => { montat.value = true })
-const publica = computed(() => ['/confirm'].includes(route.value.path))
+const publica = computed(() => ['/confirm', '/privacy'].includes(route.value.path))
 </script>
 
 <template>

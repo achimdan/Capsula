@@ -35,6 +35,7 @@ async function google() {
           {{ ocupat ? 'Te ducem la Google…' : 'Continuă cu Google' }}
         </button>
         <p v-if="eroare" class="eroare" role="alert">{{ eroare }}</p>
+        <p class="legal">Ce păstrăm despre tine: <NuxtLink to="/privacy" @click="deschis = false">confidențialitate</NuxtLink>.</p>
       </div>
     </template>
   </UModal>
@@ -47,5 +48,7 @@ async function google() {
 .btn:not(:disabled):active{transform:translateY(1px)}
 .btn:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
 .eroare{margin:0;color:var(--signal);font-size:14px}
+.legal{margin:0;font-size:13px;color:var(--muted)}
+.legal a{text-decoration:underline}
 @media (prefers-reduced-motion:reduce){.btn{transition:none}}
 </style>

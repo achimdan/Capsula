@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { FISE, AN_MIN, AN_MAX, type Fisa } from '~/data/fise'
+import type { RundaJucata } from '~/utils/cardScor'
 const { areProfil, profil } = useCapsula()
-const RUNDE = 5
-// Unde stă cursorul la începutul fiecărei runde: un an neutru, nu răspunsul de dinainte.
-const AN_START = 1997
 const recorduri = useStocare<number[]>('scoruri', [])
 const lista = ref<Fisa[]>([])
 const runda = ref(0)
@@ -12,6 +10,7 @@ const ghicit = ref(AN_START)
 const dezvaluit = ref(false)
 const puncte = ref(0)
 const terminat = ref(false)
+const jucate = ref<RundaJucata[]>([])
 
 // --- animation state (presentation only) ---
 const reduce = ref(false)
@@ -51,9 +50,9 @@ function pornesteFlap() {
 
 function amesteca() {
   opresteFlap()
-  const exacte = FISE.filter(f => f.an_exact && (f.oras === null || f.oras === profil.value.oras))
-  lista.value = [...exacte].sort(() => Math.random() - .5).slice(0, RUNDE)
+  lista.value = alegeRunde(FISE, profil.value.oras)
   runda.value = 0; scor.value = 0; dezvaluit.value = false; terminat.value = false; ghicit.value = AN_START
+  jucate.value = []; mesajShare.value = ''
   afisScor.value = 0
 }
 const curenta = computed(() => lista.value[runda.value])
@@ -63,6 +62,7 @@ function confirma() {
   if (!curenta.value) return
   const d = Math.abs(ghicit.value - curenta.value.an)
   puncte.value = puncteDupaDistanta(d)
+  jucate.value = [...jucate.value, { an: curenta.value.an, ghicit: ghicit.value, puncte: puncte.value }]
   const dinainte = scor.value
   scor.value += puncte.value
   dezvaluit.value = true
@@ -98,6 +98,25 @@ const bara = computed(() => ({
   transformOrigin: pozReal.value >= pozGhicit.value ? 'left center' : 'right center',
 }))
 const diferenta = computed(() => curenta.value ? Math.abs(ghicit.value - curenta.value.an) : 0)
+// Cardul de share: PNG desenat în browser, trimis din foaia de share a telefonului sau descărcat.
+const { distribuie, pregateste, uita } = useCardScor()
+const ocupatShare = ref(false)
+const mesajShare = ref('')
+const cardCurent = () => continutCard({ scor: scor.value, max: RUNDE * 100, titlu: titlu.value, runde: jucate.value, anNastere: profil.value.anNastere, host: location.host })
+// Cardul se desenează cât apare ecranul final, ca butonul să deschidă foaia de share fără întârziere.
+watch(terminat, gata => { if (gata) pregateste(cardCurent(), scor.value, RUNDE * 100); else uita() })
+async function share() {
+  ocupatShare.value = true
+  mesajShare.value = ''
+  try {
+    const r = await distribuie(cardCurent(), scor.value, RUNDE * 100)
+    if (r === 'descarcat') mesajShare.value = 'Cardul s-a salvat ca imagine. Trimite-l cui vrei.'
+  } catch {
+    mesajShare.value = 'Nu am putut face cardul. Încearcă din nou.'
+  } finally {
+    ocupatShare.value = false
+  }
+}
 const titlu = computed(() => scor.value >= 450 ? 'Arhivar de meserie' : scor.value >= 300 ? 'Ureche bună de casetofon' : scor.value >= 150 ? 'Banda se mai derulează' : 'Casetă nouă, încă fără amintiri')
 
 onMounted(() => {
@@ -120,7 +139,8 @@ onBeforeUnmount(() => { opresteFlap(); cancelAnimationFrame(rafScor) })
           <span class="sr" role="status">Scor final {{ scor }} din {{ RUNDE * 100 }}. {{ titlu }}.</span>
           <div class="stampila" aria-hidden="true"><span>{{ titlu }}</span><b>{{ scor }} PCT</b></div>
           <p class="lead">Media generației {{ String(profil.anNastere).slice(2) }} apare după ce conectăm baza de date.</p>
-          <div class="rand"><button class="btn" @click="amesteca">Joacă din nou</button><NuxtLink to="/shop" class="btn ghost">Scorul pe tricou</NuxtLink></div>
+          <div class="rand"><button class="btn" :disabled="ocupatShare" :aria-busy="ocupatShare" @click="share">{{ ocupatShare ? 'Facem cardul…' : 'Distribuie scorul' }}</button><button class="btn ghost" @click="amesteca">Joacă din nou</button><NuxtLink to="/shop" class="btn ghost">Scorul pe tricou</NuxtLink></div>
+          <p v-if="mesajShare" class="k" role="status">{{ mesajShare }}</p>
         </div>
 
         <div v-else-if="curenta" :key="`r${runda}`" class="tabla">
