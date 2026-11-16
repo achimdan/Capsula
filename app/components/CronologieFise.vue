@@ -261,9 +261,56 @@ onBeforeUnmount(() => {
 })
 
 const selectata = ref<Fisa | null>(null)
+// Fișa rămâne desenată cât durează întoarcerea în cronologie; miniatura ei stă ascunsă în tot acest timp.
+const afisata = ref<Fisa | null>(null)
+const plecata = ref<Fisa['id'] | null>(null)
+let sursa: HTMLElement | null = null
+let tIntoarcere: ReturnType<typeof setTimeout> | undefined
+
+// Leagă fereastra de miniatură: de unde pleacă polaroidul și unde se întoarce (keyframes fisa-intra / fisa-iese din banda.css).
+function leaga() {
+  const c = document.querySelector<HTMLElement>('.fisa-modal')
+  const card = c?.querySelector<HTMLElement>('.fisa')
+  if (!c || !card || !sursa?.isConnected) return false
+  const pozaMare = card.querySelector<HTMLElement>('.img') ?? card
+  const pozaMica = sursa.querySelector<HTMLElement>('.img') ?? sursa
+  const anim = c.style.animation
+  c.style.animation = 'none'
+  const rc = c.getBoundingClientRect()
+  const rk = pozaMare.getBoundingClientRect()
+  const rs = pozaMica.getBoundingClientRect()
+  const m = new DOMMatrixReadOnly(getComputedStyle(sursa).transform)
+  const s = pozaMica.offsetWidth / (pozaMare.offsetWidth || 300)
+  const cx = rc.left + rc.width / 2
+  const cy = rc.top + rc.height / 2
+  // Poza mare pornește exact de pe poza miniaturii: același colț, aceeași lățime.
+  c.style.setProperty('--fx', `${rs.left - cx - (rk.left - cx) * s}px`)
+  c.style.setProperty('--fy', `${rs.top - cy - (rk.top - cy) * s}px`)
+  c.style.setProperty('--fs', String(s))
+  c.style.setProperty('--fr', `${Math.atan2(m.b, m.a)}rad`)
+  c.style.animation = anim
+  return true
+}
+function deschide(f: Fisa, e: MouseEvent) {
+  clearTimeout(tIntoarcere)
+  sursa = e.currentTarget as HTMLElement
+  afisata.value = f
+  plecata.value = f.id
+  selectata.value = f
+  nextTick(() => { if (!leaga()) requestAnimationFrame(leaga) })
+}
+function inchide() {
+  if (!selectata.value) return
+  leaga()
+  selectata.value = null
+  clearTimeout(tIntoarcere)
+  // Miniatura reapare sub polaroidul care se stinge (fisa-iese: opacitate 1 → 0 după 55%), deci trecerea e o încrucișare, fără cadru gol.
+  tIntoarcere = setTimeout(() => { plecata.value = null; sursa = null }, redus() ? 0 : 170)
+}
+onBeforeUnmount(() => clearTimeout(tIntoarcere))
 // O fișă proprie ștearsă din fereastră dispare din listă: închidem fereastra.
-watch(() => props.fise, (l) => { if (selectata.value && !l.some(f => f.id === selectata.value!.id)) selectata.value = null })
-const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) selectata.value = null } })
+watch(() => props.fise, (l) => { if (selectata.value && !l.some(f => f.id === selectata.value!.id)) inchide() })
+const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) inchide() } })
 </script>
 
 <template>
@@ -365,11 +412,12 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) s
                 :key="f.id"
                 type="button"
                 class="mini"
+                :class="{ plecata: plecata === f.id }"
                 :data-id="f.id"
                 :data-c="i"
                 :style="{ '--r': rotire(f.id) }"
                 :aria-label="`${f.titlu}, ${f.an}${f.an_exact ? '' : ' aproximativ'}`"
-                @click="selectata = f"
+                @click="deschide(f, $event)"
               >
                 <span class="img" :style="{ background: `linear-gradient(135deg, ${f.culori[0]}, ${f.culori[1]})` }">
                   <img v-if="f.poza" :src="`/fise/${f.id}-480.webp`" alt="" loading="lazy" decoding="async" width="480" height="480" draggable="false">
@@ -387,12 +435,12 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) s
 
   <UModal
     v-model:open="deschis"
-    :title="selectata?.titlu ?? ''"
-    :description="selectata ? `${selectata.an} · ${selectata.categorie}` : ''"
-    :ui="{ content: 'max-w-sm cron-modal', header: 'sr-only' }"
+    :title="afisata?.titlu ?? ''"
+    :description="afisata ? `${afisata.an} · ${afisata.categorie}` : ''"
+    :ui="{ overlay: 'fisa-voal bg-[#14211B]/75 data-[state=open]:animate-none data-[state=closed]:animate-none', content: 'max-w-[812px] cron-modal fisa-modal data-[state=open]:animate-none data-[state=closed]:animate-none bg-transparent ring-0 shadow-none divide-y-0', header: 'sr-only', body: 'p-2 sm:p-4 flex justify-center [scrollbar-width:none]' }"
   >
     <template #body>
-      <FisaPolaroid v-if="selectata" :fisa="selectata" />
+      <FisaPolaroid v-if="afisata" :fisa="afisata" mare @inchide="inchide" />
     </template>
   </UModal>
 </template>
@@ -471,6 +519,7 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) s
 .mini::before{content:"";position:absolute;top:-16px;left:50%;width:1px;height:16px;background:var(--muted)}
 .mini:hover{translate:0 -4px;box-shadow:0 0 0 1px var(--ink),0 10px 18px -12px color-mix(in srgb,var(--ink) 60%,transparent)}
 .mini:active{translate:0 -1px}
+.mini.plecata{visibility:hidden}
 .mini:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
 .img{position:relative;display:block;aspect-ratio:4/3;overflow:hidden}
 .img img{width:100%;height:100%;object-fit:cover;display:block;-webkit-user-drag:none}

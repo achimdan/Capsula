@@ -1,8 +1,23 @@
 <script setup lang="ts">
 import type { Fisa } from '~/data/fise'
-const props = withDefaults(defineProps<{ fisa: Fisa; ascundeAn?: boolean; actiuni?: boolean; developare?: boolean }>(), {
-  ascundeAn: false, actiuni: true, developare: false
+// `mare`: fișa deschisă din cronologie, cu detalii, video (dacă fișa are) și buton de închidere.
+const props = withDefaults(defineProps<{ fisa: Fisa; ascundeAn?: boolean; actiuni?: boolean; developare?: boolean; mare?: boolean }>(), {
+  ascundeAn: false, actiuni: true, developare: false, mare: false
 })
+defineEmits<{ inchide: [] }>()
+// Filmul pornește mut, în buclă; cu „reduce motion” așteaptă să fie pornit de cititor.
+const cuVideo = computed(() => props.mare && !!props.fisa.video)
+const film = ref<HTMLVideoElement | null>(null)
+const mut = ref(true)
+const merge = ref(false)
+const faraMiscare = ref(false)
+onMounted(() => { faraMiscare.value = matchMedia('(prefers-reduced-motion: reduce)').matches })
+function comutaFilm() {
+  const v = film.value
+  if (!v) return
+  if (v.paused) v.play().catch(() => {})
+  else v.pause()
+}
 const { caseta, amAvut, comuta } = useCapsula()
 const { profilCititor } = useProfilCitit()
 const aScenei = computed(() => eDinScena(props.fisa, profilCititor.value?.scena))
@@ -27,6 +42,7 @@ let raf = 0
 function pePointer(e: PointerEvent) {
   if (e.pointerType !== 'mouse' || !card.value) return
   const el = card.value, r = el.getBoundingClientRect(), x = e.clientX, y = e.clientY
+  el.classList.add('inclinat')
   cancelAnimationFrame(raf)
   raf = requestAnimationFrame(() => {
     const px = Math.min(1, Math.max(0, (x - r.left) / r.width)), py = Math.min(1, Math.max(0, (y - r.top) / r.height))
@@ -40,7 +56,9 @@ function laIesire() {
   cancelAnimationFrame(raf)
   const el = card.value
   if (!el) return
-  for (const k of ['--rx', '--ry', '--gx', '--gy']) el.style.removeProperty(k)
+  // Lumina rămâne pe loc cât se stinge; doar înclinarea revine, lin.
+  el.classList.remove('inclinat')
+  for (const k of ['--rx', '--ry']) el.style.removeProperty(k)
 }
 onBeforeUnmount(() => cancelAnimationFrame(raf))
 function apasaAvut() { stamped.value = !avut.value; comutaAvut() }
@@ -49,17 +67,50 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
 </script>
 
 <template>
-  <article ref="card" class="fisa" :class="{ dev: developare }" @pointermove="pePointer" @pointerleave="laIesire" @pointercancel="laIesire">
+  <article ref="card" class="fisa" :class="{ dev: developare, mare }" @pointermove="pePointer" @pointerleave="laIesire" @pointercancel="laIesire">
     <div class="img" :style="{ background: `linear-gradient(135deg, ${fisa.culori[0]}, ${fisa.culori[1]})` }">
-      <img v-if="fisa.poza" class="foto" :src="`/fise/${fisa.id}-480.webp`" :srcset="`/fise/${fisa.id}-480.webp 480w, /fise/${fisa.id}-960.webp 960w`" sizes="(max-width: 640px) 90vw, 300px" :alt="fisa.titlu" loading="lazy" decoding="async" width="480" height="480">
+      <video
+        v-if="cuVideo"
+        ref="film"
+        class="foto"
+        :src="`/fise/${fisa.id}.mp4`"
+        :poster="fisa.poza ? `/fise/${fisa.id}-960.webp` : undefined"
+        :autoplay="!faraMiscare"
+        :muted="mut"
+        loop
+        playsinline
+        preload="metadata"
+        :aria-label="`Video: ${fisa.titlu}`"
+        @play="merge = true"
+        @pause="merge = false"
+        @click="comutaFilm"
+      />
+      <img v-else-if="fisa.poza" class="foto" :src="`/fise/${fisa.id}-480.webp`" :srcset="`/fise/${fisa.id}-480.webp 480w, /fise/${fisa.id}-960.webp 960w`" :sizes="mare ? '(max-width: 800px) 92vw, 400px' : '(max-width: 640px) 90vw, 300px'" :alt="fisa.titlu" loading="lazy" decoding="async" width="480" height="480">
       <span class="eticheta">{{ fisa.categorie }}{{ fisa.oras ? ' · ' + fisa.oras : '' }}{{ aScenei ? ' · scena ta' : '' }}{{ fisa.proprie ? ' · a ta' : '' }}</span>
       <span v-if="avut" :key="stamped ? 'nou' : 'vechi'" class="stampila" :class="{ nou: stamped }" aria-hidden="true">{{ fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta' }}</span>
+      <div v-if="cuVideo" class="film-act">
+        <button type="button" :aria-label="merge ? 'Pune pauză' : 'Pornește filmul'" @click="comutaFilm">{{ merge ? 'Pauză' : 'Play' }}</button>
+        <button type="button" :aria-pressed="!mut" @click="mut = !mut">{{ mut ? 'Cu sunet' : 'Fără sunet' }}</button>
+      </div>
     </div>
+    <button v-if="mare" type="button" class="inchide" aria-label="Închide fișa" @click="$emit('inchide')">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+    </button>
     <div class="meta"><span>{{ fisa.proprie ? 'Amintirea ta' : 'NR. INV. ' + fisa.id }}</span><span :class="{ ascuns: ascundeAn }">{{ anText }}</span></div>
     <h3>{{ fisa.titlu }}</h3>
     <p>{{ fisa.nota }}</p>
+    <dl v-if="mare" class="detalii">
+      <div><dt>An</dt><dd>{{ fisa.an_exact ? fisa.an : `în jur de ${fisa.an}` }}</dd></div>
+      <div><dt>Loc</dt><dd>{{ fisa.oras ?? (fisa.proprie ? 'Nespus' : 'Toată țara') }}</dd></div>
+      <div><dt>Categorie</dt><dd>{{ fisa.categorie }}</dd></div>
+      <div v-if="fisa.scena"><dt>Scenă</dt><dd class="cap">{{ fisa.scena }}{{ aScenei ? ' · a ta' : '' }}</dd></div>
+      <div v-if="!fisa.proprie"><dt>Stare</dt><dd>{{ fisa.verificat ? 'Verificată' : 'Din amintiri, încă neverificată' }}</dd></div>
+    </dl>
     <p v-if="fisa.sursa" class="sursa">Sursă: {{ fisa.sursa }}</p>
-    <p v-if="fisa.poza?.generata" class="sursa credit">Ilustrație generată pentru Capsula</p>
+    <p v-if="cuVideo && fisa.video" class="sursa credit">
+      Video: <a v-if="fisa.video.url" :href="fisa.video.url" target="_blank" rel="noopener">{{ fisa.video.autor }}</a><template v-else>{{ fisa.video.autor }}</template> · {{ fisa.video.licenta }}
+    </p>
+    <p v-else-if="fisa.poza?.generata" class="sursa credit">Ilustrație generată pentru Capsula</p>
     <p v-else-if="fisa.poza" class="sursa credit">
       Foto: <a v-if="fisa.poza.url" :href="fisa.poza.url" target="_blank" rel="noopener">{{ fisa.poza.autor }}</a><template v-else>{{ fisa.poza.autor }}</template> · {{ fisa.poza.licenta }}
     </p>
@@ -80,7 +131,8 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
 
 <style scoped>
 .fisa{--rx:0deg;--ry:0deg;--gx:0%;--gy:0%;position:relative;background:var(--card);color:var(--ink);padding:10px 10px 14px;width:min(300px,100%);
-  box-shadow:0 18px 30px -18px rgba(0,0,0,.45);transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));transition:transform .5s var(--ease-ff),box-shadow .5s var(--ease-ff);will-change:transform}
+  box-shadow:0 18px 30px -18px rgba(0,0,0,.45);transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));transition:transform .7s cubic-bezier(.33,1,.68,1),box-shadow .5s var(--ease-ff);will-change:transform}
+.fisa.inclinat{transition:transform .18s ease-out,box-shadow .5s var(--ease-ff)}
 .img{aspect-ratio:1;position:relative;overflow:hidden}
 .foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .credit{font-size:11px;opacity:.75}
@@ -108,6 +160,35 @@ p{font-size:14px;line-height:1.45;margin:0}
 .act button:active{transform:scale(.95)}
 .act button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
 .banda{flex:none}
+
+/* Fișa deschisă din cronologie: mare, cu detalii. Pe ecran lat, poza stă în stânga și textul în dreapta. */
+.mare{width:min(780px,100%);padding:12px 12px 16px}
+.mare .img{aspect-ratio:4/3}
+.mare h3{font-size:clamp(30px,8vw,40px);margin:8px 0 10px}
+.mare p{font-size:16px;line-height:1.5}
+.mare .sursa{font-size:11px}
+.mare .stampila{right:auto;left:12px}
+.detalii{margin:14px 0 0;border-top:1px dashed var(--line)}
+.detalii div{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.detalii dt{font:400 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:2px}
+.detalii dd{margin:0;font-size:14px;line-height:1.35;overflow-wrap:anywhere}
+.cap{text-transform:capitalize}
+.mare .act{border-top:0}
+.inchide{position:absolute;z-index:4;top:18px;right:18px;display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:2px;cursor:pointer;color:var(--ink);background:var(--card);box-shadow:0 0 0 1.5px var(--ink);transition:transform .15s var(--ease-ff)}
+.inchide:active{transform:scale(.94)}
+.inchide:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+video.foto{cursor:pointer;background:#000}
+.film-act{position:absolute;z-index:3;right:8px;bottom:8px;display:flex;gap:6px}
+.film-act button{min-height:44px;min-width:44px;padding:0 12px;font:600 12px var(--body);color:var(--card);background:color-mix(in srgb,var(--ink) 78%,transparent);border:0;border-radius:2px;cursor:pointer}
+.film-act button:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+@media (min-width:800px){
+  .mare{display:grid;grid-template-columns:400px minmax(0,1fr);column-gap:22px;align-content:start;padding:14px 22px 16px 14px}
+  .mare>*{grid-column:2}
+  .mare>.img{grid-column:1;grid-row:1/span 12;aspect-ratio:auto;min-height:400px;height:100%}
+  .mare>.meta{margin-top:44px}
+  .mare>.glare{grid-column:1/-1}
+  .mare .inchide{top:10px;right:10px;box-shadow:none}
+}
 .banda.lipit{animation:snap .45s var(--ease-ff) both}
 @keyframes snap{0%{transform:translateY(-10px) rotate(-30deg) scale(1.5);opacity:0}60%{transform:translateY(1px) rotate(4deg) scale(.9);opacity:1}100%{transform:none}}
 .etichete{display:inline-grid}
@@ -134,6 +215,6 @@ p{font-size:14px;line-height:1.45;margin:0}
   .glare{display:none}
   .dev .img::before{animation:none;opacity:0}
   .dev .img::after,.stampila.nou,.banda.lipit{animation:none}
-  .act button,.act button:hover,.act button:active{transition:none;transform:none}
+  .act button,.act button:hover,.act button:active,.inchide,.inchide:active{transition:none;transform:none}
 }
 </style>

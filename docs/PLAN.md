@@ -44,6 +44,7 @@ Pagini de referință (claude.ai, private):
 - **Zapping (A):** Random Hit nelimitat, ponderat pe anii în care aveai 10–20 de ani. Salvezi în „Caseta mea”.
 - **Ghicește anul (C):** vezi amintirea fără an și ghicești anul. 5 runde, cursorul pornește din 1997 la fiecare rundă. Puncte după distanță: 100, 80, 60, 45, 30, 20, 10 pentru 0–6 ani, apoi 0. În timpul rundei, anii din titlu, notă și sursă apar ca „____” / „’__”; fișa întreagă se vede după dezvăluire. Clasament pe generații și card de share. Folosește **doar fișe cu an exact**. Logica e în `app/utils/ghicesteAnul.ts`.
 - **Caseta zilei (B):** cinci fișe pe zi, deschise una câte una. Fața casetei alternează zilnic (Partea A, apoi Partea B); alegerea fișelor depinde de zi și de deceniul nașterii, iar pe etichetă stă anul în care aveai 15 ani. Nu are sunet: apăsarea arată fișa.
+- **Fișa deschisă din cronologie:** crește din miniatură și se întoarce în ea la închidere. E mare (două coloane pe ecran lat, o coloană pe mobil), cu detalii din date: an, loc, categorie, scenă, stare de verificare. Fișele cu `video` arată un film scurt în locul pozei (`public/fise/<id>.mp4`, mut la pornire, poza rămâne afiș și miniatură).
 
 Demo: https://claude.ai/artifact/9Tpnur5tdGaSCaRX1PRDwA
 
@@ -104,6 +105,7 @@ Fonturile se descarcă la build prin `@nuxt/fonts` și se servesc din `/_fonts`,
 - [ ] Verificarea tuturor fișelor din `app/data/fise.ts` (toate sunt `verificat: false`).
 - [ ] Ani confirmați pentru discotecile din Cluj (sursele diferă între ele).
 - [ ] Materiale originale (poze, flyere) cu acordul autorilor.
+- [ ] Filme pentru fișele unde se potrivesc (câmpul `video`): nicio fișă nu are încă; aceleași reguli de licență ca la poze.
 - [ ] Alegerea furnizorului de print-on-demand și prețurile.
 - [ ] Termeni, confidențialitate și GDPR: `/privacy`, exportul și ștergerea contului sunt gata; lipsesc operatorul, contactul, termenii și verificarea juridică.
 - [ ] Consultanță juridică pentru Talcioc.
