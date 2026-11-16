@@ -43,6 +43,7 @@ onBeforeUnmount(() => clearInterval(timer))
       <NuxtLink to="/" class="btn semnal cta">Intră în capsula ta</NuxtLink>
       <button type="button" class="refa" @click="$emit('refa')">Refă testul</button>
     </div>
+    <p class="intro">Dacă refaci testul, răspunsurile de acum se șterg. Profilul ăsta rămâne până termini testul nou; poți anula oricând.</p>
   </section>
 </template>
 
