@@ -68,7 +68,7 @@ v-for="(f, i) in fise" :key="f.id" type="button" class="slot" :aria-pressed="cur
       </div>
 
       <div class="k" aria-live="polite">
-        <template v-if="deschise === 0">Apasă pe 1 ca să dai play</template>
+        <template v-if="deschise === 0">Apasă pe 1 ca să vezi prima amintire</template>
         <template v-else-if="deschise < 5">{{ deschise }}/5 · următoarea piesă te așteaptă</template>
         <template v-else>Gata pe azi · întoarce caseta mâine pentru partea B</template>
         <template v-if="serieAfisata"> · 🔥 {{ serieAfisata }} {{ serieAfisata === 1 ? 'zi' : 'zile la rând' }}</template>
