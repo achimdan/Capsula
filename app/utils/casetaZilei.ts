@@ -27,6 +27,13 @@ export function rng(a: number): () => number {
   }
 }
 
+// Partea casetei: A și B pe rând, o zi una, o zi cealaltă („Partea B vine mâine” e chiar adevărat).
+export function parteaZilei(zi: string): 'A' | 'B' {
+  const [a, l, z] = zi.split('-').map(Number)
+  const nrZi = Math.round(Date.UTC(a!, l! - 1, z!) / 864e5)
+  return nrZi % 2 === 0 ? 'A' : 'B'
+}
+
 export function generatieDinAn(anNastere: number | null | undefined): number {
   return Math.floor((anNastere ?? 1984) / 10) * 10
 }

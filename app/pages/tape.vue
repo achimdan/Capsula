@@ -10,6 +10,7 @@ onMounted(() => { if (!areProfil.value) navigateTo('/') })
     <section class="sec">
       <div class="k">Partea A · {{ salvate.length }} {{ salvate.length === 1 ? 'amintire' : 'amintiri' }}</div>
       <h1 class="d1">Caseta mea</h1>
+      <p v-if="salvate.length" class="lead">Aici păstrezi ce vrei să revezi. „Am avut asta” e separat: bifează-l pe fișă doar dacă ai avut-o cu adevărat.</p>
       <div v-if="!salvate.length" class="card gol">
         <p class="lead">Caseta e goală. Când o amintire te atinge, apasă „+ Caseta mea” pe fișă și o găsești aici.</p>
         <NuxtLink to="/random" class="btn">▶▶ Random Hit</NuxtLink>

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { FISE, AN_MIN, AN_MAX, type Fisa } from '~/data/fise'
-import { RUNDE, alegeRunde, puncteRunda } from '~/utils/joc'
 const { areProfil, profil } = useCapsula()
 const recorduri = useStocare<number[]>('scoruri', [])
 const lista = ref<Fisa[]>([])
 const runda = ref(0)
 const scor = ref(0)
-const ghicit = ref(1997)
+const ghicit = ref(AN_START)
 const dezvaluit = ref(false)
 const puncte = ref(0)
 const terminat = ref(false)
@@ -14,25 +13,21 @@ const terminat = ref(false)
 // --- animation state (presentation only) ---
 const reduce = ref(false)
 const afisScor = ref(0)
-const afisPuncte = ref(0)
 const flap = ref<string[]>(['', '', '', ''])
 const flapGata = ref<boolean[]>([false, false, false, false])
 let rafScor = 0
-let rafPuncte = 0
 let flapTimer: ReturnType<typeof setInterval> | undefined
 
-function tween(from: number, to: number, ms: number, set: (v: number) => void, slot: 'scor' | 'puncte') {
-  if (slot === 'scor') cancelAnimationFrame(rafScor); else cancelAnimationFrame(rafPuncte)
+function tween(from: number, to: number, ms: number, set: (v: number) => void) {
+  cancelAnimationFrame(rafScor)
   if (reduce.value || from === to) { set(to); return }
   const t0 = performance.now()
   const pas = (t: number) => {
     const k = Math.min(1, (t - t0) / ms)
     set(Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3))))
-    const id = k < 1 ? requestAnimationFrame(pas) : 0
-    if (slot === 'scor') rafScor = id; else rafPuncte = id
+    rafScor = k < 1 ? requestAnimationFrame(pas) : 0
   }
-  const id = requestAnimationFrame(pas)
-  if (slot === 'scor') rafScor = id; else rafPuncte = id
+  rafScor = requestAnimationFrame(pas)
 }
 function opresteFlap() { if (flapTimer) clearInterval(flapTimer); flapTimer = undefined }
 function pornesteFlap() {
@@ -54,28 +49,30 @@ function pornesteFlap() {
 function amesteca() {
   opresteFlap()
   lista.value = alegeRunde(FISE, profil.value.oras)
-  runda.value = 0; scor.value = 0; dezvaluit.value = false; terminat.value = false; ghicit.value = 1997
-  afisScor.value = 0; afisPuncte.value = 0
+  runda.value = 0; scor.value = 0; dezvaluit.value = false; terminat.value = false; ghicit.value = AN_START
+  afisScor.value = 0
 }
 const curenta = computed(() => lista.value[runda.value])
+// În timpul rundei fișa nu are voie să spună anul (titlu, notă, sursă); după dezvăluire apare întreagă.
+const fisaAfisata = computed(() => curenta.value && (dezvaluit.value ? curenta.value : fisaFaraAn(curenta.value)))
 function confirma() {
   if (!curenta.value) return
-  puncte.value = puncteRunda(ghicit.value, curenta.value.an)
+  const d = Math.abs(ghicit.value - curenta.value.an)
+  puncte.value = puncteDupaDistanta(d)
   const dinainte = scor.value
   scor.value += puncte.value
   dezvaluit.value = true
   pornesteFlap()
-  tween(0, puncte.value, 900, v => { afisPuncte.value = v }, 'puncte')
-  setTimeout(() => tween(dinainte, scor.value, 700, v => { afisScor.value = v }, 'scor'), reduce.value ? 0 : 900)
+  setTimeout(() => tween(dinainte, scor.value, 700, v => { afisScor.value = v }), reduce.value ? 0 : 900)
 }
 function urmatoarea() {
   opresteFlap()
   if (runda.value + 1 >= lista.value.length) {
     terminat.value = true; recorduri.value = [...recorduri.value, scor.value]
-    tween(0, scor.value, 1100, v => { afisScor.value = v }, 'scor')
+    tween(0, scor.value, 1100, v => { afisScor.value = v })
     return
   }
-  runda.value++; dezvaluit.value = false
+  runda.value++; dezvaluit.value = false; ghicit.value = AN_START
 }
 const mesaj = computed(() => {
   if (!curenta.value) return ''
@@ -103,13 +100,13 @@ onMounted(() => {
   reduce.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if (!areProfil.value) navigateTo('/'); else amesteca()
 })
-onBeforeUnmount(() => { opresteFlap(); cancelAnimationFrame(rafScor); cancelAnimationFrame(rafPuncte) })
+onBeforeUnmount(() => { opresteFlap(); cancelAnimationFrame(rafScor) })
 </script>
 
 <template>
   <main class="pagina">
     <section class="joc">
-      <div class="rand"><span class="contor">RUNDA {{ Math.min(runda + 1, RUNDE) }}/{{ RUNDE }} · <span class="tic">{{ afisScor }}</span> PCT</span><span v-if="record !== null" class="k">Recordul tău: {{ record }}</span></div>
+      <div class="rand"><span class="contor"><span>RUNDA {{ Math.min(runda + 1, RUNDE) }}/{{ RUNDE }} · <span class="tic">{{ afisScor }}</span> PCT</span></span><span v-if="record !== null" class="k">Recordul tău: {{ record }}</span></div>
       <h1 class="d1">Ghicește anul</h1>
 
       <Transition name="kaseta" mode="out-in">
@@ -123,7 +120,7 @@ onBeforeUnmount(() => { opresteFlap(); cancelAnimationFrame(rafScor); cancelAnim
         </div>
 
         <div v-else-if="curenta" :key="`r${runda}`" class="tabla">
-          <FisaPolaroid :key="curenta.id + dezvaluit" :fisa="curenta" :ascunde-an="!dezvaluit" :actiuni="dezvaluit" :developare="dezvaluit" />
+          <FisaPolaroid :key="curenta.id + dezvaluit" :fisa="fisaAfisata ?? curenta" :ascunde-an="!dezvaluit" :actiuni="dezvaluit" :developare="dezvaluit" />
           <div class="ghiceste">
             <output class="mare" for="an-ghicit">
               <span class="sr">{{ ghicit }}</span>
@@ -151,7 +148,7 @@ onBeforeUnmount(() => { opresteFlap(); cancelAnimationFrame(rafScor); cancelAnim
                 </div>
                 <div class="k">{{ diferenta === 0 ? 'Fix pe bandă' : `${diferenta} ${diferenta === 1 ? 'an' : 'ani'} distanță` }}</div>
               </div>
-              <p class="rez" aria-live="polite"><b>{{ mesaj }}</b><span class="sr"> +{{ puncte }} puncte</span><span aria-hidden="true">+<span class="tic">{{ afisPuncte }}</span> puncte</span></p>
+              <p class="rez" role="status"><b>{{ mesaj }}</b> +{{ puncte }} puncte</p>
               <button class="btn semnal" @click="urmatoarea">{{ runda + 1 >= lista.length ? 'Vezi scorul' : 'Următoarea ▶▶' }}</button>
             </template>
           </div>

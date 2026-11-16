@@ -23,7 +23,6 @@ function comutaAvut() { comuta(amAvut, props.fisa.id) }
 // Efecte vizuale (doar prezentare): înclinare 3D la pointer, ștampilă, sunet de bandă
 const card = ref<HTMLElement | null>(null)
 const stamped = ref(false)
-const bump = ref(0)
 let raf = 0
 function pePointer(e: PointerEvent) {
   if (e.pointerType !== 'mouse' || !card.value) return
@@ -45,8 +44,7 @@ function laIesire() {
 }
 onBeforeUnmount(() => cancelAnimationFrame(raf))
 function apasaAvut() { stamped.value = !avut.value; comutaAvut() }
-function apasaCaseta() { bump.value++; comutaCaseta() }
-const nrCaseta = computed(() => caseta.value.length)
+function apasaCaseta() { comutaCaseta() }
 const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.fisa.an_exact ? '' : ' ≈'))
 </script>
 
@@ -61,8 +59,9 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
     <h3>{{ fisa.titlu }}</h3>
     <p>{{ fisa.nota }}</p>
     <p v-if="fisa.sursa" class="sursa">Sursă: {{ fisa.sursa }}</p>
-    <p v-if="fisa.poza" class="sursa credit">
-      {{ fisa.poza.generata ? "Ilustrație generată" : "Foto" }}: <a v-if="fisa.poza.url" :href="fisa.poza.url" target="_blank" rel="noopener">{{ fisa.poza.autor }}</a><template v-else>{{ fisa.poza.autor }}</template> · {{ fisa.poza.licenta }}
+    <p v-if="fisa.poza?.generata" class="sursa credit">Ilustrație generată pentru Capsula</p>
+    <p v-else-if="fisa.poza" class="sursa credit">
+      Foto: <a v-if="fisa.poza.url" :href="fisa.poza.url" target="_blank" rel="noopener">{{ fisa.poza.autor }}</a><template v-else>{{ fisa.poza.autor }}</template> · {{ fisa.poza.licenta }}
     </p>
     <div v-if="actiuni && fisa.proprie" class="act">
       <button type="button" class="sec" :disabled="seSterge" @click="sterge">{{ confirmaStergerea ? 'Sigur? Șterge definitiv' : 'Șterge fișa' }}</button>
@@ -70,10 +69,9 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
     </div>
     <div v-else-if="actiuni" class="act">
       <button type="button" class="avut" :aria-pressed="avut" @click="apasaAvut">{{ avut ? '✓ ' + (fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta') : (fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta') }}</button>
-      <button type="button" class="sec" :aria-pressed="salvata" @click="apasaCaseta">
+      <button type="button" class="sec caseta" :aria-pressed="salvata" :title="salvata ? 'Apasă din nou ca s-o scoți din casetă' : 'Pune fișa în caseta ta'" @click="apasaCaseta">
         <svg :key="'i' + salvata" class="banda" :class="{ lipit: salvata }" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="8.5" cy="12" r="2" /><circle cx="15.5" cy="12" r="2" /><path d="M8.5 14h7" /></svg>
-        <span>{{ salvata ? '✓ În casetă' : '+ Caseta mea' }}</span>
-        <span v-if="salvata && nrCaseta" :key="bump" class="nr" aria-hidden="true">{{ nrCaseta }}</span>
+        <span class="etichete"><span class="eticheta-buton">{{ salvata ? '✓ În casetă' : '+ Caseta mea' }}</span><span v-if="salvata" class="scoate" aria-hidden="true">Scoate din casetă</span></span>
       </button>
     </div>
     <span class="glare" aria-hidden="true" />
@@ -112,8 +110,9 @@ p{font-size:14px;line-height:1.45;margin:0}
 .banda{flex:none}
 .banda.lipit{animation:snap .45s var(--ease-ff) both}
 @keyframes snap{0%{transform:translateY(-10px) rotate(-30deg) scale(1.5);opacity:0}60%{transform:translateY(1px) rotate(4deg) scale(.9);opacity:1}100%{transform:none}}
-.nr{font-family:var(--mono);font-size:11px;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:9px;background:var(--ink);color:var(--card);animation:bump .4s var(--ease-ff)}
-@keyframes bump{0%{transform:scale(.4)}60%{transform:scale(1.35)}100%{transform:scale(1)}}
+.etichete{display:inline-grid}
+.etichete>*{grid-area:1/1;text-align:center}
+.scoate{visibility:hidden}
 .glare{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s var(--ease-ff);overflow:hidden}
 .glare::before{content:"";position:absolute;left:-50%;top:-50%;width:200%;height:200%;background:radial-gradient(circle at center,rgba(255,255,255,.5),transparent 28%);
   transform:translate(var(--gx),var(--gy))}
@@ -122,6 +121,9 @@ p{font-size:14px;line-height:1.45;margin:0}
   .fisa:hover .glare{opacity:.5}
   .act button:hover{opacity:.88;transform:translateY(-1px)}
   .act button:active{transform:scale(.95)}
+  /* Pe hover, butonul spune ce face al doilea click. */
+  .caseta[aria-pressed="true"]:hover .eticheta-buton{opacity:0}
+  .caseta[aria-pressed="true"]:hover .scoate{visibility:visible}
 }
 .dev .img::before{animation:chimic 3.2s var(--ease-ff) both}
 .dev .img::after{animation:grain 3.2s ease-out both}
@@ -131,7 +133,7 @@ p{font-size:14px;line-height:1.45;margin:0}
   .fisa{transform:none!important;transition:none}
   .glare{display:none}
   .dev .img::before{animation:none;opacity:0}
-  .dev .img::after,.stampila.nou,.banda.lipit,.nr{animation:none}
+  .dev .img::after,.stampila.nou,.banda.lipit{animation:none}
   .act button,.act button:hover,.act button:active{transition:none;transform:none}
 }
 </style>

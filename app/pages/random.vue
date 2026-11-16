@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Fisa } from '~/data/fise'
 const { areProfil, an15, randomHit } = useCapsula()
-const banda = ref<{ deruleaza: (an: number) => Promise<void> }>()
+const banda = ref<{ deruleaza: (an: number, titlu?: string) => Promise<void> }>()
 const fisa = ref<Fisa | null>(null)
 const ocupat = ref(false)
 const cheie = ref(0)
@@ -20,7 +20,7 @@ async function hit() {
   ocupat.value = true
   pornesteContor()
   const urm = randomHit(fisa.value?.id)
-  try { await banda.value?.deruleaza(urm.an) } finally { opresteContor() }
+  try { await banda.value?.deruleaza(urm.an, urm.titlu) } finally { opresteContor() }
   fisa.value = urm; cheie.value++
   ocupat.value = false
 }
@@ -41,6 +41,7 @@ onMounted(() => { if (!areProfil.value) navigateTo('/') })
       <div class="rand"><button class="btn hit" :class="{ gata: !ocupat }" :disabled="ocupat" @click="hit"><span class="halou" aria-hidden="true" />▶▶ {{ fisa ? 'Altul' : 'Random Hit' }}</button>
         <span class="k" aria-live="polite">{{ ocupat ? 'Se derulează…' : fisa ? fisa.an + ' · ' + fisa.titlu : 'Apasă și vezi unde se oprește banda' }}</span></div>
       <div class="scena"><div v-if="fisa" :key="cheie" class="aterizare"><FisaPolaroid :fisa="fisa" developare /><i class="umbra" aria-hidden="true" /></div></div>
+      <div v-if="fisa" class="rand urm"><button class="btn ghost" :disabled="ocupat" @click="hit">▶▶ Încă unul</button></div>
     </section>
   </main>
 </template>
@@ -48,6 +49,8 @@ onMounted(() => { if (!areProfil.value) navigateTo('/') })
 <style scoped>
 .rh{display:grid;gap:20px}
 .scena{display:grid;place-items:center;min-height:200px;perspective:900px}
+.urm{justify-content:center}
+.urm .btn{min-height:44px}
 
 /* Deck VHS */
 .deck{position:relative;overflow:hidden;border-radius:4px;isolation:isolate}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { actualizeazaSerie, alegeFise, cheieZi } from '../app/utils/casetaZilei'
+import { actualizeazaSerie, alegeFise, cheieZi, parteaZilei } from '../app/utils/casetaZilei'
 
 const lista = Array.from({ length: 40 }, (_, i) => ({ id: `f${i}` }))
 const ids = (l: { id: string }[]) => l.map(f => f.id)
@@ -41,5 +41,14 @@ describe('actualizeazaSerie', () => {
 describe('cheieZi', () => {
   it('formatează cu zero-padding', () => {
     expect(cheieZi(new Date(2026, 0, 5))).toBe('2026-01-05')
+  })
+})
+
+describe('parteaZilei', () => {
+  it('alternează A și B de la o zi la alta, și peste granița de lună sau an', () => {
+    expect(parteaZilei('2026-11-16')).not.toBe(parteaZilei('2026-11-17'))
+    expect(parteaZilei('2026-11-30')).not.toBe(parteaZilei('2026-12-01'))
+    expect(parteaZilei('2026-12-31')).not.toBe(parteaZilei('2027-01-01'))
+    expect(parteaZilei('2026-11-16')).toBe(parteaZilei('2026-11-18'))
   })
 })

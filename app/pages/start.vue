@@ -17,6 +17,14 @@ const REPLICI: Record<CapitolId, string> = {
 }
 
 const reveal = computed(() => !!profilCitit.value && !stare.value.refacere && !!profilCititor.value)
+// Cine are deja profil poate renunța oricând: se întoarce de unde a venit, cu profilul neschimbat.
+const { areProfil } = useCapsula()
+const poateAnula = computed(() => areProfil.value)
+function anuleaza() {
+  if (stare.value.refacere) stare.value = { ...stare.value, refacere: false }
+  const deUnde = window.history.state?.back
+  navigateTo(typeof deUnde === 'string' && deUnde !== '/start' ? deUnde : '/')
+}
 const pas = computed(() => Math.min(Math.max(stare.value.pas, 0), pasi.length - 1))
 const curent = computed(() => pasi[pas.value]!)
 const contor = computed(() => numarIntrebare(pasi, pas.value))
@@ -45,7 +53,10 @@ function inainte() {
   if (ultimul.value) { aplica(); return }
   muta(1)
 }
-function inapoi() { if (pas.value > 0) muta(-1) }
+function inapoi() {
+  if (pas.value > 0) muta(-1)
+  else if (poateAnula.value) anuleaza()
+}
 
 // Tastatură: cifrele aleg opțiunea, Enter merge mai departe (dacă focusul nu e pe un buton).
 function tasta(e: KeyboardEvent) {
@@ -66,7 +77,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', tasta))
     <ClientOnly>
       <ProfilReveal v-if="reveal && profilCititor" :profil="profilCititor" @refa="refa" />
       <template v-else>
-        <ChestionarContor :curenta="contor.curenta" :total="contor.total" />
+        <div class="sus">
+          <ChestionarContor :curenta="contor.curenta" :total="contor.total" />
+          <button v-if="poateAnula" type="button" class="anuleaza" @click="anuleaza">✕ Anulează</button>
+        </div>
+        <p v-if="stare.refacere && poateAnula" class="k tasta">Refaci testul de la zero. Profilul de acum rămâne până la ultima întrebare; abia atunci îl înlocuim.</p>
         <div ref="scena" class="scena" tabindex="-1" aria-live="polite">
           <Transition name="pas" mode="out-in">
             <ChestionarCapitol
@@ -79,7 +94,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', tasta))
           </Transition>
         </div>
         <div class="nav">
-          <button type="button" class="btn ghost nav-b" :disabled="pas === 0" @click="inapoi">◀ Înapoi</button>
+          <button type="button" class="btn ghost nav-b" :disabled="pas === 0 && !poateAnula" @click="inapoi">◀ Înapoi</button>
           <button type="button" class="btn nav-b" :disabled="!poateInainte" @click="inainte">
             {{ ultimul ? 'Citește-mă' : curent.tip === 'capitol' ? 'Începem' : 'Mai departe' }} ▶
           </button>
@@ -98,6 +113,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', tasta))
 .nav-b:not(:disabled):hover{transform:translateY(-2px)}
 .nav-b:not(:disabled):active{transform:translateY(1px) scale(.98)}
 .tasta{margin:0;text-transform:none;letter-spacing:.02em}
+.sus{display:flex;align-items:center;gap:12px}
+.sus>:first-child{flex:1;min-width:0}
+.anuleaza{min-height:44px;padding:0 12px;background:none;border:0;border-radius:2px;font:500 15px var(--body);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);cursor:pointer;white-space:nowrap}
+.anuleaza:hover{background:var(--ink);color:var(--paper)}
 .pas-enter-active,.pas-leave-active{transition:opacity .22s,transform .35s var(--ease-ff)}
 .pas-enter-from.inainte,.pas-leave-to.inapoi{opacity:0;transform:translateX(28px)}
 .pas-enter-from.inapoi,.pas-leave-to.inainte{opacity:0;transform:translateX(-28px)}

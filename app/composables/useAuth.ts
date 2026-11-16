@@ -15,6 +15,23 @@ export function useAuth() {
   })
   const autentificat = computed(() => !!sesiune.value)
   const superAdmin = computed(() => !!sesiune.value && esteSuperAdmin(claims.value))
+  // Rolul confirmat de serverul de Auth (getUser validează token-ul), o dată pe token. Claims-urile de mai sus
+  // sunt citite local, fără semnătură: ajung pentru a ascunde, nu și pentru a arăta ceva de admin.
+  const confirmat = useState<{ token: string, ok: boolean } | null>('auth:admin-confirmat', () => null)
+  const superAdminConfirmat = computed(() => superAdmin.value && confirmat.value?.token === sesiune.value?.access_token && !!confirmat.value?.ok)
+  async function confirmaSuperAdmin(): Promise<boolean> {
+    const token = sesiune.value?.access_token
+    if (!superAdmin.value || !token) return false
+    if (confirmat.value?.token !== token) {
+      let ok = false
+      try {
+        const { data, error } = await client.auth.getUser()
+        ok = !error && data.user?.app_metadata?.role === 'super_admin'
+      } catch {}
+      confirmat.value = { token, ok }
+    }
+    return confirmat.value.ok
+  }
 
   function adresaConfirmare() {
     return new URL('/confirm', window.location.origin).toString()
@@ -35,5 +52,5 @@ export function useAuth() {
     claims.value = null
   }
 
-  return { utilizator, autentificat, superAdmin, intraCuGoogle, iese }
+  return { utilizator, autentificat, superAdmin, superAdminConfirmat, confirmaSuperAdmin, intraCuGoogle, iese }
 }

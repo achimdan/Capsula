@@ -13,14 +13,17 @@ const snap = ref(false)
 const trage = ref(false)
 const activ = ref<number | null>(null)
 const titlu = (an: number) => FISE.find(f => f.an === an && f.oras === null)?.titlu ?? ''
+// Titlul fișei pe care se oprește banda (Random Hit): celula lovită arată fișa aleasă, nu prima din anul ei.
+const titluLovit = ref('')
 
 function centru(idx: number) { return (banda.value?.clientWidth ?? 0) / 2 - (idx * props.latime + props.latime / 2) }
 function seteaza(an: number) { anim.value = false; snap.value = false; x.value = centru(ani.indexOf(an)) }
 
 // Derulează rapid (cu blur) până la anul dat; se rezolvă când banda s-a oprit
-function deruleaza(an: number): Promise<void> {
+function deruleaza(an: number, titluFisa = ''): Promise<void> {
   const redus = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   lovit.value = null
+  titluLovit.value = titluFisa
   const tinta = ani.length * (REP - 1) + ani.indexOf(an)
   if (redus) { anim.value = false; x.value = centru(tinta); lovit.value = tinta; return Promise.resolve() }
   anim.value = false
@@ -107,15 +110,17 @@ function onResize() { seteaza(props.anulMeu ?? 1999) }
     :aria-label="`Banda anilor ${AN_MIN}–${AN_MAX}`"
     :aria-valuemin="interactiva ? AN_MIN : undefined" :aria-valuemax="interactiva ? AN_MAX : undefined"
     :aria-valuenow="interactiva ? (anSub ?? anulMeu) : undefined"
+    :aria-valuetext="interactiva ? `${anSub ?? anulMeu} · ${titlu(anSub ?? anulMeu ?? AN_MIN)}` : undefined"
     @pointerdown="jos" @pointermove="misca" @pointerup="sus" @pointercancel="sus" @keydown="tasta">
     <div class="cap" aria-hidden="true" />
     <div v-if="interactiva" class="cap-et" aria-hidden="true">{{ anSub ?? anulMeu }}</div>
-    <div ref="tambur" class="tambur" :class="{ anim, snap }" :style="{ transform: `translateX(${x}px)` }">
+    <!-- Banda vizibilă e repetată de REP ori (derulare fără capăt): e decor, cititoarele de ecran primesc doar valoarea. -->
+    <div ref="tambur" class="tambur" :class="{ anim, snap }" :style="{ transform: `translateX(${x}px)` }" aria-hidden="true">
       <template v-for="r in REP" :key="r">
         <div
 v-for="(an, i) in ani" :key="r + '-' + an" class="an"
           :class="{ eu: an === anulMeu, lovit: lovit === (r - 1) * ani.length + i, activ: interactiva && activ === (r - 1) * ani.length + i }" :style="{ flexBasis: latime + 'px' }">
-          <span class="y">{{ an }}</span><span class="t">{{ titlu(an) }}</span>
+          <span class="y">{{ an }}</span><span class="t">{{ lovit === (r - 1) * ani.length + i && titluLovit ? titluLovit : titlu(an) }}</span>
         </div>
       </template>
     </div>
@@ -147,5 +152,6 @@ v-for="(an, i) in ani" :key="r + '-' + an" class="an"
 .cap-et{position:absolute;top:0;left:50%;z-index:4;transform:translate(-50%,-100%);font-family:var(--mono);font-size:11px;background:var(--signal);color:var(--ink);padding:2px 6px;border-radius:0 0 2px 2px;opacity:0;transition:opacity .2s,transform .3s var(--ease-ff);pointer-events:none}
 .trage .cap-et,.inter:focus-visible .cap-et{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){.tambur.snap,.cap,.cap-et{transition:none}.trage .cap{transform:none}}
-.cap{position:absolute;top:0;bottom:0;left:50%;width:2px;background:#E2582F;z-index:3}
+/* Capul de citire: două liniuțe sus și jos, nu o linie întreagă care taie anul și titlul celulei din mijloc. */
+.cap{position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1px;z-index:3;background:linear-gradient(#E2582F 0 8px,transparent 8px calc(100% - 8px),#E2582F calc(100% - 8px))}
 </style>

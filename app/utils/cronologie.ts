@@ -8,7 +8,8 @@ function cuNumar(n: number, unu: string, multe: string): string {
 }
 
 export const catiAni = (n: number) => cuNumar(n, 'un an', 'ani')
-export const cateFise = (n: number) => (n === 0 ? 'nicio fișă' : cuNumar(n, 'o fișă', 'fișe'))
+// Cu cifre, ca pe un contor: „0 fișe”, „1 fișă”, „3 fișe”, „24 de fișe”.
+export const cateFise = (n: number) => cuNumar(n, '1 fișă', 'fișe')
 
 // anEu = anul în care aveai 15 ani.
 const varsta = (an: number, anEu: number) => 15 + an - anEu
