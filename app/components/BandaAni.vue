@@ -150,5 +150,6 @@ v-for="(an, i) in ani" :key="r + '-' + an" class="an"
 .cap-et{position:absolute;top:0;left:50%;z-index:4;transform:translate(-50%,-100%);font-family:var(--mono);font-size:11px;background:var(--signal);color:var(--ink);padding:2px 6px;border-radius:0 0 2px 2px;opacity:0;transition:opacity .2s,transform .3s var(--ease-ff);pointer-events:none}
 .trage .cap-et,.inter:focus-visible .cap-et{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){.tambur.snap,.cap,.cap-et{transition:none}.trage .cap{transform:none}}
-.cap{position:absolute;top:0;bottom:0;left:50%;width:2px;background:#E2582F;z-index:3}
+/* Capul de citire: două liniuțe sus și jos, nu o linie întreagă care taie anul și titlul celulei din mijloc. */
+.cap{position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1px;z-index:3;background:linear-gradient(#E2582F 0 8px,transparent 8px calc(100% - 8px),#E2582F calc(100% - 8px))}
 </style>

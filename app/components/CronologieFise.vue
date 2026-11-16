@@ -271,6 +271,7 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) s
         <p class="contor-an">
           <span class="sr">Anul {{ an }}</span>
           <span v-for="(c, i) in cifre" :key="i" class="cifra" aria-hidden="true">
+            <span class="loc">{{ c }}</span>
             <span class="sul" :style="{ transform: `translateY(${-c * 10}%)` }"><span v-for="d in 10" :key="d">{{ d - 1 }}</span></span>
           </span>
         </p>
@@ -402,9 +403,12 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) s
 /* Pupitrul: contorul anului, rigla și tastele. */
 .pupitru{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:end;gap:20px 32px;padding:0 var(--gut) 18px}
 .anul-curent{display:flex;align-items:flex-end;gap:16px;min-width:0}
-.contor-an{margin:0;display:flex;font-family:var(--display);font-weight:800;font-size:clamp(72px,9cqi,128px);line-height:.82;font-variant-numeric:tabular-nums}
-.cifra{display:block;height:.82em;overflow:hidden}
-.sul{display:flex;flex-direction:column;transition:transform .6s var(--ease-ff)}
+/* Fiecare coloană e lată cât cifra pe care o arată (.loc, invizibilă), nu cât cea mai lată din rolă: altfel „1” stă într-o
+   coloană de „0” și anul se citește „1 999”. Rola e centrată peste ea. */
+.contor-an{margin:0;display:flex;font-family:var(--display);font-weight:800;font-size:clamp(72px,9cqi,128px);line-height:.82;font-variant-numeric:proportional-nums}
+.cifra{position:relative;display:block;height:.82em;overflow:hidden}
+.loc{display:block;visibility:hidden}
+.sul{position:absolute;top:0;left:50%;width:1em;margin-left:-.5em;text-align:center;display:flex;flex-direction:column;transition:transform .6s var(--ease-ff)}
 .sul span{height:.82em}
 .cifra:nth-child(3) .sul{transition-delay:.03s}.cifra:nth-child(4) .sul{transition-delay:.06s}.cifra:nth-child(5) .sul{transition-delay:.09s}
 .stare{margin:0;display:grid;gap:2px;padding-bottom:4px;min-width:0}
