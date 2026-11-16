@@ -99,15 +99,17 @@ const bara = computed(() => ({
 }))
 const diferenta = computed(() => curenta.value ? Math.abs(ghicit.value - curenta.value.an) : 0)
 // Cardul de share: PNG desenat în browser, trimis din foaia de share a telefonului sau descărcat.
-const { distribuie } = useCardScor()
+const { distribuie, pregateste, uita } = useCardScor()
 const ocupatShare = ref(false)
 const mesajShare = ref('')
+const cardCurent = () => continutCard({ scor: scor.value, max: RUNDE * 100, titlu: titlu.value, runde: jucate.value, anNastere: profil.value.anNastere, host: location.host })
+// Cardul se desenează cât apare ecranul final, ca butonul să deschidă foaia de share fără întârziere.
+watch(terminat, gata => { if (gata) pregateste(cardCurent(), scor.value, RUNDE * 100); else uita() })
 async function share() {
   ocupatShare.value = true
   mesajShare.value = ''
   try {
-    const c = continutCard({ scor: scor.value, max: RUNDE * 100, titlu: titlu.value, runde: jucate.value, anNastere: profil.value.anNastere, host: location.host })
-    const r = await distribuie(c, scor.value, RUNDE * 100)
+    const r = await distribuie(cardCurent(), scor.value, RUNDE * 100)
     if (r === 'descarcat') mesajShare.value = 'Cardul s-a salvat ca imagine. Trimite-l cui vrei.'
   } catch {
     mesajShare.value = 'Nu am putut face cardul. Încearcă din nou.'

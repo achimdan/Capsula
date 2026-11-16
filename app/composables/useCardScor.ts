@@ -8,12 +8,15 @@ const DISPLAY = '"Big Shoulders", "Big Shoulders Display", "Arial Narrow", sans-
 const BODY = '"Work Sans", system-ui, sans-serif'
 const MONO = '"IBM Plex Mono", ui-monospace, monospace'
 
+// Fără text de probă, browserul cere doar subsetul latin; ă, â, î, ș, ț sunt în latin-ext.
+const PROBA = 'AaĂăÂâÎîȘșȚț0123456789'
+
 async function fonturiGata() {
   if (!document.fonts) return
   await Promise.all([
-    document.fonts.load(`800 100px ${DISPLAY}`),
-    document.fonts.load(`500 40px ${BODY}`),
-    document.fonts.load(`500 28px ${MONO}`)
+    document.fonts.load(`800 100px ${DISPLAY}`, PROBA),
+    document.fonts.load(`500 40px ${BODY}`, PROBA),
+    document.fonts.load(`500 28px ${MONO}`, PROBA)
   ]).catch(() => {})
 }
 
@@ -126,11 +129,34 @@ export function useCardScor() {
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
 
-  // 'trimis' = foaia de share s-a deschis; 'descarcat' = browserul nu știe să trimită fișiere, am salvat PNG-ul.
-  async function distribuie(c: ContinutCard, scor: number, max: number): Promise<'trimis' | 'anulat' | 'descarcat'> {
+  type Pregatit = { fisier: File; date: ShareData }
+  let pregatit: Pregatit | null = null
+  let inLucru: Promise<Pregatit> | null = null
+
+  async function construieste(c: ContinutCard, scor: number, max: number): Promise<Pregatit> {
     const blob = await imagine(c)
     const fisier = new File([blob], numeFisierCard(scor), { type: 'image/png' })
-    const date = { files: [fisier], text: textShare(scor, max), url: `${location.origin}/game` }
+    return { fisier, date: { files: [fisier], text: textShare(scor, max), url: `${location.origin}/game` } }
+  }
+
+  // Desenăm cardul cât se vede ecranul final, ca navigator.share să fie chemat direct din click:
+  // după un await lung, browserul poate considera gestul expirat și refuză foaia de share (NotAllowedError).
+  function pregateste(c: ContinutCard, scor: number, max: number) {
+    pregatit = null
+    const p = construieste(c, scor, max)
+    inLucru = p
+    p.then(r => { if (inLucru === p) pregatit = r }).catch(() => {})
+  }
+
+  function uita() {
+    pregatit = null
+    inLucru = null
+  }
+
+  // 'trimis' = foaia de share s-a deschis; 'descarcat' = browserul nu știe să trimită fișiere, am salvat PNG-ul.
+  async function distribuie(c: ContinutCard, scor: number, max: number): Promise<'trimis' | 'anulat' | 'descarcat'> {
+    // Fără await când cardul e gata: share-ul pleacă în același gest al utilizatorului.
+    const { fisier, date } = pregatit ?? await (inLucru ?? construieste(c, scor, max)).catch(() => construieste(c, scor, max))
     if (navigator.canShare?.({ files: [fisier] })) {
       try {
         await navigator.share(date)
@@ -139,9 +165,9 @@ export function useCardScor() {
         if ((e as DOMException)?.name === 'AbortError') return 'anulat'
       }
     }
-    descarcaBlob(blob, fisier.name)
+    descarcaBlob(fisier, fisier.name)
     return 'descarcat'
   }
 
-  return { imagine, distribuie }
+  return { imagine, pregateste, uita, distribuie }
 }
