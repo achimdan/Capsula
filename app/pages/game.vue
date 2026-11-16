@@ -59,6 +59,8 @@ function amesteca() {
   afisScor.value = 0; afisPuncte.value = 0
 }
 const curenta = computed(() => lista.value[runda.value])
+// În timpul rundei fișa nu are voie să spună anul (titlu, notă, sursă); după dezvăluire apare întreagă.
+const fisaAfisata = computed(() => curenta.value && (dezvaluit.value ? curenta.value : fisaFaraAn(curenta.value)))
 function confirma() {
   if (!curenta.value) return
   const d = Math.abs(ghicit.value - curenta.value.an)
@@ -125,7 +127,7 @@ onBeforeUnmount(() => { opresteFlap(); cancelAnimationFrame(rafScor); cancelAnim
         </div>
 
         <div v-else-if="curenta" :key="`r${runda}`" class="tabla">
-          <FisaPolaroid :key="curenta.id + dezvaluit" :fisa="curenta" :ascunde-an="!dezvaluit" :actiuni="dezvaluit" :developare="dezvaluit" />
+          <FisaPolaroid :key="curenta.id + dezvaluit" :fisa="fisaAfisata ?? curenta" :ascunde-an="!dezvaluit" :actiuni="dezvaluit" :developare="dezvaluit" />
           <div class="ghiceste">
             <output class="mare" for="an-ghicit">
               <span class="sr">{{ ghicit }}</span>
