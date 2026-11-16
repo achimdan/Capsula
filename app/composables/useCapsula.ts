@@ -1,6 +1,7 @@
 import { FISE, ORASE_DEBLOCATE, type Fisa } from '~/data/fise'
 
-export interface Profil { anNastere: number | null; oras: string | null }
+// localitate: codul SIRUTA, când a fost căutată în chestionar (vezi utils/localitati.ts)
+export interface Profil { anNastere: number | null; oras: string | null; localitate?: number | null }
 
 export function useCapsula() {
   const profil = useStocare<Profil>('profil', { anNastere: null, oras: null })
@@ -8,7 +9,10 @@ export function useCapsula() {
   const amAvut = useStocare<string[]>('amavut', [])
   const voturi = useStocare<string[]>('voturi', [])
 
-  const areProfil = computed(() => !!profil.value.anNastere && !!profil.value.oras)
+  const profilCitit = useStocare<{ id: string } | null>('profilcitit', null)
+
+  // Orașul poate rămâne null („La sat”, „Prefer să nu spun”): contează că testul a fost făcut.
+  const areProfil = computed(() => !!profil.value.anNastere && (!!profil.value.oras || !!profilCitit.value))
   const orasDeblocat = computed(() => !!profil.value.oras && ORASE_DEBLOCATE.includes(profil.value.oras))
   const an15 = computed(() => (profil.value.anNastere ?? 1984) + 15)
 
@@ -18,10 +22,11 @@ export function useCapsula() {
 
   function varsta(f: Fisa) { return f.an - (profil.value.anNastere ?? 1984) }
 
-  // Random Hit ponderat pe vârstă: 10–20 de ani contează de 3 ori mai mult
+  // Random Hit ponderat pe vârstă (10–20 de ani ×3) și pe categoriile profilului
   function randomHit(exclude?: string): Fisa {
     const lista = fiseVizibile.value.filter(f => f.id !== exclude)
-    const ponderi = lista.map(f => { const v = varsta(f); return v >= 10 && v <= 20 ? 3 : 1 })
+    const cat = profilDupaId(profilCitit.value?.id ?? '')?.config.ponderiCategorii
+    const ponderi = lista.map(f => pondereFisa(varsta(f), f.categorie, cat))
     let r = Math.random() * ponderi.reduce((a, b) => a + b, 0)
     for (let i = 0; i < lista.length; i++) { r -= ponderi[i]!; if (r <= 0) return lista[i]! }
     return lista[lista.length - 1]!

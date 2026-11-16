@@ -1,0 +1,34 @@
+/* Nuxt UI fără preflight-ul Tailwind: banda.css rămâne baza paginii. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "@nuxt/ui";
+
+/* Culorile Nuxt UI urmează tokenurile benzii, deci și fundalurile din /admin. */
+:root {
+  --ui-bg: var(--card);
+  --ui-bg-elevated: var(--paper);
+  --ui-bg-accented: var(--line);
+  --ui-text: var(--ink);
+  --ui-text-highlighted: var(--ink);
+  --ui-text-muted: var(--muted);
+  --ui-text-dimmed: var(--muted);
+  --ui-border: var(--line);
+  --ui-primary: var(--signal);
+  --ui-error: var(--signal);
+  --ui-radius: 2px;
+}
+
+/* Fără preflight: reset minim doar pentru elementele din meniurile Nuxt UI
+   (butoanele au altfel fundalul browserului, iar linkurile sublinierea din banda.css). */
+[role="menuitem"]{text-decoration:none}
+button[role="menuitem"]{background:transparent;border:0;font-family:inherit;text-align:left;cursor:pointer}
+
+/* Fereastra de intrare: titlul în stilul benzii (UModal randează în afara componentei, deci stil global). */
+.intrare-titlu{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:32px;line-height:.95;letter-spacing:.01em;margin:0}
+.intrare-nota{color:var(--muted);font-size:14px;margin:6px 0 0}
+/* Butonul de închidere al ferestrelor Nuxt UI: fără preflight ar avea fundalul și bordura browserului.
+   În layer base, ca hover-ul din utilitare să rămână deasupra. */
+@layer base {
+  button[data-slot="close"]{background:transparent;border:0;cursor:pointer;font-family:inherit}
+}

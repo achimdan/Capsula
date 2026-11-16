@@ -1,11 +1,34 @@
+import { queryDefaults } from './app/utils/queryDefaults'
+
 export default defineNuxtConfig({
+  modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxtjs/supabase', '@peterbud/nuxt-query'],
   compatibilityDate: '2026-10-01',
   devtools: { enabled: false },
-  // Faza locală: datele stau în browser, deci randăm doar pe client.
-  // Când conectăm Supabase, revenim la SSR pentru SEO și carduri de share.
+  devServer: { host: '127.0.0.1' },
+  // Deocamdată randăm doar pe client. Revenirea la SSR (SEO, carduri de share) vine cu
+  // cache la margine, robots.txt și preset-ul cloudflare_module, ca pas separat.
   ssr: false,
-  css: ['~/assets/css/banda.css'],
+  css: ['~/assets/css/ui.css', '~/assets/css/banda.css'],
+  // Temele vin din banda.css (fundaluri + prefers-color-scheme), nu din color mode-ul Nuxt UI.
+  ui: { colorMode: false },
+  nuxtQuery: {
+    autoImports: ['useQuery', 'useMutation', 'useQueryClient'],
+    devtools: false,
+    queryClientOptions: queryDefaults
+  },
+  supabase: {
+    // URL-ul și cheia publishable vin din NUXT_PUBLIC_SUPABASE_URL / NUXT_PUBLIC_SUPABASE_KEY (.env).
+    // Rutele protejate le decide middleware-ul nostru (auth.global.ts), nu modulul.
+    redirect: false,
+    types: '~/types/database.ts'
+  },
   nitro: { preset: 'cloudflare_pages' },
+  // Lista SIRUTA se schimbă de două ori pe an: cache lung în browser și la margine.
+  routeRules: {
+    // Pagina de login a fost înlocuită de fereastra de pe teaser; linkurile vechi ajung acasă.
+    '/login': { redirect: '/' },
+    '/data/**': { headers: { 'cache-control': 'public, max-age=86400, stale-while-revalidate=604800' } }
+  },
   app: {
     head: {
       htmlAttrs: { lang: 'ro' },

@@ -1,4 +1,4 @@
-// Stare salvată în browser până conectăm Supabase.
+// Stare în browser (useState + localStorage). Pentru contul conectat e cache local; sursa e Supabase (vezi useCont).
 export function useStocare<T>(cheie: string, implicit: T) {
   const stare = useState<T>(cheie, () => implicit)
   const gata = useState<boolean>(cheie + ':gata', () => false)
