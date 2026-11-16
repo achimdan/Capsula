@@ -29,7 +29,8 @@ export default defineNuxtConfig({
     cloudflare: {
       deployConfig: true,
       nodeCompat: true,
-      wrangler: { name: 'capsula', workers_dev: true, compatibility_flags: ['nodejs_compat'], observability: { enabled: true } }
+      // previews: {} cerut de `wrangler preview`, pe care Workers Builds îl rulează pentru ramurile care nu sunt main (PR-uri).
+      wrangler: { name: 'capsula', workers_dev: true, compatibility_flags: ['nodejs_compat'], observability: { enabled: true }, ...({ previews: {} } as object) }
     }
   },
   // Lista SIRUTA se schimbă de două ori pe an: cache lung în browser și la margine.
