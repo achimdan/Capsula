@@ -1,7 +1,7 @@
 // Singurul loc care vorbește cu Supabase pentru datele contului și setările site-ului. RLS limitează contul la utilizatorul curent.
 import type { Json } from '../types/database'
 import { randChestionar, randProfil, stareDinRanduri, type ChestionarApp, type StareCont } from './cont'
-import { setariDinRanduri, type SetariSite } from './setari'
+import { CHEI_DB, setariDinRanduri, type SetariSite } from './setari'
 import { LIMITE_FISA, randDinFormular, type FisaNoua, type RandFisaProprie } from './fiseProprii'
 
 export function contApi() {
@@ -64,7 +64,7 @@ export function setariApi() {
   }
 
   async function salveazaSetare<K extends keyof SetariSite>(key: K, value: SetariSite[K]) {
-    const { error } = await client.from('site_settings').upsert({ key, value: value as Json }, { onConflict: 'key' })
+    const { error } = await client.from('site_settings').upsert({ key: CHEI_DB[key], value: value as Json }, { onConflict: 'key' })
     if (error) throw error
   }
 

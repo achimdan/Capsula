@@ -6,6 +6,8 @@ const linieTon = computed(() => (ton.value ? LINII_TON[ton.value] : ''))
 // Categoriile și fișele în ordinea profilului citit: aceleași pentru toți, dar altfel așezate.
 const categorii = computed<Categorie[]>(() => ordineCategorii(ponderiCategorii.value, ['Evenimente', 'Muzică', 'Filme & TV', 'Obiecte & Haine', 'Mâncare']))
 const filtru = ref<Categorie | null>(null)
+// Grila sau cronologia pe bandă: setare de site, aleasă din /admin.
+const listaFise = useListaFise()
 // Fișele proprii ale utilizatorului stau pe bandă lângă cele naționale (doar aici, nu și în joc sau Random Hit).
 const { fise: fiseProprii } = useFiseProprii()
 const nationale = computed(() => ordoneazaFise(
@@ -70,9 +72,13 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
           <button class="chip" :aria-pressed="filtru === null" @click="filtru = null">Toate</button>
           <button v-for="c in categorii" :key="c" class="chip" :aria-pressed="filtru === c" @click="filtru = c">{{ c }}</button>
         </div>
-        <div class="grila">
-          <FisaPolaroid v-for="(f, i) in nationale" :key="f.id" v-reveal="i" :fisa="f" />
-        </div>
+        <ClientOnly>
+          <CronologieFise v-if="listaFise === 'cronologie'" :fise="nationale" :an-eu="an15" />
+          <div v-else class="grila">
+            <FisaPolaroid v-for="(f, i) in nationale" :key="f.id" v-reveal="i" :fisa="f" />
+          </div>
+          <template #fallback><div class="grila" /></template>
+        </ClientOnly>
       </section>
 
       <ClientOnly><AmintiriTale :an-implicit="an15" /></ClientOnly>
