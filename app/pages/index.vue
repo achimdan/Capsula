@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { progresPin } from '~/utils/ecranTv'
 import type { Categorie } from '~/data/fise'
 const { areProfil, profil, an15, fiseVizibile, orasDeblocat, voturi } = useCapsula()
 const { ton, profilCititor, ponderiCategorii } = useProfilCitit()
@@ -19,6 +20,30 @@ function voteaza() { if (profil.value.oras && !aVotat.value) voturi.value = [...
 
 // Headline: cuvinte care urcă din mască, apoi cifrele anului tău. Cifrele sunt mereu cele corecte;
 // animația doar le ridică din mască, nu derulează prin alți ani.
+// Intro fixat doar cu fundalul televizor și fără „mișcare redusă” (atunci televizorul stă direct pe loc).
+const fundal = useStocare<string>('fundal', 'clasic')
+const calm = ref(false)
+onMounted(() => { calm.value = matchMedia('(prefers-reduced-motion:reduce)').matches })
+const cuPin = computed(() => import.meta.client && !calm.value && fundal.value.startsWith('televizor'))
+// Snapping ca la MemoryQuest: dacă scroll-ul se oprește în mijlocul retragerii, merge lin la capătul cel mai apropiat.
+const pista = ref<HTMLElement>()
+let ceas: ReturnType<typeof setTimeout> | undefined
+let seAseaza = false
+function asazaPin() {
+  const el = pista.value
+  if (!el || seAseaza) return
+  const r = el.getBoundingClientRect()
+  const p = progresPin(r.top, r.height, innerHeight)
+  if (p <= 0.02 || p >= 0.98) return
+  const sus = scrollY + r.top
+  seAseaza = true
+  scrollTo({ top: p < 0.35 ? sus : sus + r.height - innerHeight, behavior: 'smooth' })
+  setTimeout(() => { seAseaza = false }, 700)
+}
+function laOprire() { clearTimeout(ceas); ceas = setTimeout(asazaPin, 140) }
+onMounted(() => addEventListener('scroll', laOprire, { passive: true }))
+onBeforeUnmount(() => { removeEventListener('scroll', laOprire); clearTimeout(ceas) })
+
 const cuvinte = ['Aveai', '15', 'ani', 'în']
 const cifre = computed(() => String(an15.value).split('').map(Number))
 const gata = ref(false)
@@ -48,6 +73,15 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 
 <template>
   <main class="pagina">
+    <!-- Cu fundalul televizor: pornești din ecran, scena stă fixată și camera se retrage până se vede tot televizorul. -->
+    <div v-if="cuPin" ref="pista" class="tv-pin" data-tv-pin>
+      <div class="tv-pin-scena">
+        <div class="tv-pin-titlu">
+          <div class="d1">Capsula</div>
+          <div class="k">Derulează ca să intri ↓</div>
+        </div>
+      </div>
+    </div>
     <section v-if="!areProfil" class="erou">
       <div class="k">Capsula · arhiva anilor tăi</div>
       <h1 class="d1">Ceva din ’9x te așteaptă.</h1>
@@ -107,6 +141,11 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 </template>
 
 <style scoped>
+.tv-pin{height:170vh;height:170svh}
+.tv-pin-scena{position:sticky;top:0;height:100vh;height:100svh;display:grid;place-items:center;pointer-events:none}
+.tv-pin-titlu{display:grid;gap:10px;justify-items:center;text-align:center;padding:18px 26px;border-radius:14px;
+  background:rgb(0 0 0/.55);color:#F4F1FA;opacity:calc(1 - var(--tvp, 0) * 4);transform:scale(calc(1 - var(--tvp, 0) * .6))}
+.tv-pin-titlu .k{color:#D9D4E6}
 .erou{display:grid;gap:20px}
 /* Puțin mai mult loc între rânduri decât .d1: pe telefon „ÎN” cade pe rândul doi și căciula lui atingea rândul de sus. */
 .erou h1{line-height:.96}

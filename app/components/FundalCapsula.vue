@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import type { Fundal } from '~/utils/setari'
+import { camera, ECRAN_TV, progresPin } from '~/utils/ecranTv'
 
 // `tema` + `mini` = previzualizare în /admin; altfel fundalul fix al paginii.
 const props = defineProps<{ tema?: Fundal; mini?: boolean }>()
 const activ = useStocare<Fundal>('fundal', 'clasic')
 const tema = computed(() => props.tema ?? activ.value)
+// Ecranul televizorului arată epoca vizitatorului (anul în care avea 15 ani).
+const { areProfil, an15 } = useCapsula()
+// Lumina din cameră urmează ecranul: culoarea medie a imaginii, câteva ori pe secundă.
+const luminaTv = ref('rgb(90 120 255)')
 
 const lampa = ref<HTMLElement>()
 let rafId = 0
@@ -36,8 +41,30 @@ function acordeaza() {
 // „Bloc la apus”: straturile se mișcă diferit la scroll (soarele apune, blocurile coboară puțin, cele din față mai mult). Doar o variabilă CSS, pe rAF.
 const radacina = ref<HTMLElement>()
 let rafScroll = 0
+const tv = ref<HTMLElement>()
+const esteTv = computed(() => tema.value === 'televizor' || tema.value === 'televizor-90')
+// Televizorul: camera se retrage cât ține pista fixată de pe prima pagină (vezi index.vue). Pe celelalte pagini, retras și estompat.
+function aseazaTv() {
+  const el = tv.value
+  if (!el || props.mini) return
+  const pista = document.querySelector<HTMLElement>('[data-tv-pin]')
+  const vp = { w: window.innerWidth, h: window.innerHeight }
+  let p = 1
+  let dupa = 1
+  if (pista) {
+    const r = pista.getBoundingClientRect()
+    p = progresPin(r.top, r.height, vp.h)
+    // După pin, conținutul urcă peste televizor: îl estompăm pe încă o jumătate de ecran.
+    dupa = Math.min(1, Math.max(0, (vp.h - r.bottom) / (vp.h * 0.5)))
+  }
+  const c = camera(p, { w: el.offsetWidth, h: el.offsetHeight }, ECRAN_TV[tema.value as keyof typeof ECRAN_TV], vp)
+  el.style.transform = `translate(-50%,-50%) translate3d(${c.x}px,${c.y}px,0) scale(${c.scara})`
+  el.style.opacity = String(1 - dupa * 0.62)
+  document.documentElement.style.setProperty('--tvp', String(p))
+}
 function citesteScroll() {
   rafScroll = 0
+  if (esteTv.value) return aseazaTv()
   radacina.value?.style.setProperty('--sc', String(Math.min(window.scrollY / 1600, 1)))
 }
 function laScroll() {
@@ -45,11 +72,18 @@ function laScroll() {
 }
 function paralaxa() {
   window.removeEventListener('scroll', laScroll)
+  window.removeEventListener('resize', laScroll)
   radacina.value?.style.removeProperty('--sc')
-  if (props.mini || tema.value !== 'bloc' || matchMedia('(prefers-reduced-motion:reduce)').matches) return
+  if (props.mini || !['bloc', 'televizor', 'televizor-90'].includes(tema.value)) return
+  // Cu mișcare redusă, televizorul stă retras și estompat (pista nu mai apare), fără ascultători.
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) { if (esteTv.value) nextTick(aseazaTv); return }
   window.addEventListener('scroll', laScroll, { passive: true })
-  citesteScroll()
+  window.addEventListener('resize', laScroll, { passive: true })
+  nextTick(citesteScroll)
 }
+// Pista există doar pe prima pagină: la schimbarea paginii recalculăm poziția.
+const ruta = useRoute()
+watch(() => ruta.path, () => nextTick(() => requestAnimationFrame(citesteScroll)))
 // Preferința se poate schimba cu pagina deschisă: atunci repornim (sau oprim) paralaxa.
 let miscare: MediaQueryList | undefined
 // Și tapetul (urmărirea mouse-ului) depinde de preferință, deci refacem ambele efecte.
@@ -63,6 +97,7 @@ watch(tema, () => nextTick(() => { acordeaza(); paralaxa() }))
 onBeforeUnmount(() => {
   miscare?.removeEventListener('change', laSchimbareMiscare)
   window.removeEventListener('scroll', laScroll)
+  window.removeEventListener('resize', laScroll)
   cancelAnimationFrame(rafScroll)
   window.removeEventListener('pointermove', mutaMouse)
   cancelAnimationFrame(rafId)
@@ -149,23 +184,75 @@ onBeforeUnmount(() => {
       <div class="pp p4"><svg viewBox="0 0 120 120"><path d="M10 10H92L110 28V110H10Z" fill="#8FD3FF" /><rect x="32" y="10" width="48" height="30" fill="#D9D9E3" /><rect x="66" y="15" width="8" height="20" fill="#1E1B2E" /><rect x="24" y="60" width="72" height="50" rx="3" fill="#fff" /><path d="M34 78h52M34 92h36" /></svg></div>
       <div class="pp p5"><svg viewBox="0 0 120 120"><rect x="12" y="14" width="96" height="92" rx="14" fill="#FFD43B" /><rect x="26" y="26" width="68" height="40" rx="6" fill="#8FD3FF" /><path d="M34 78v18M25 87h18" /><circle cx="80" cy="84" r="6" fill="#FF6FA8" /><circle cx="94" cy="94" r="6" fill="#FF6FA8" /></svg></div>
     </template>
-    <template v-else-if="tema === 'televizor'">
-      <i class="tv-h tv-h0" /><i class="tv-h tv-h1" /><i class="tv-h tv-h2" />
-      <div class="tv">
-        <svg viewBox="0 0 360 320">
-          <g fill="none" stroke="#8A8794" stroke-width="5" stroke-linecap="round"><path d="M130 70L64 12M130 70L200 8" /></g>
-          <circle cx="64" cy="12" r="5" fill="#8A8794" /><circle cx="200" cy="8" r="5" fill="#8A8794" />
-          <path d="M100 72a30 22 0 0 1 60 0z" fill="#2B2630" />
-          <rect x="30" y="300" width="30" height="18" rx="3" fill="#1A1620" /><rect x="300" y="300" width="30" height="18" rx="3" fill="#1A1620" />
-          <rect x="10" y="70" width="340" height="232" rx="18" fill="#6B4423" />
-          <path d="M20 100H340M20 130H340M20 160H340M20 190H340M20 220H340M20 250H340M20 280H340" stroke="#4E3017" stroke-width="2" opacity=".6" />
-          <rect x="20" y="76" width="232" height="190" rx="22" fill="#17120D" />
-          <circle cx="302" cy="124" r="19" fill="#C9C2B4" /><circle cx="302" cy="124" r="19" fill="none" stroke="#2B2118" stroke-width="3" /><path d="M302 108v12" stroke="#2B2118" stroke-width="3" />
-          <circle cx="302" cy="178" r="19" fill="#C9C2B4" /><circle cx="302" cy="178" r="19" fill="none" stroke="#2B2118" stroke-width="3" /><path d="M312 168l-8 10" stroke="#2B2118" stroke-width="3" />
-          <path d="M280 214h44M280 224h44M280 234h44M280 244h44" stroke="#2B2118" stroke-width="3" stroke-linecap="round" />
-          <circle cx="322" cy="276" r="4" fill="#FF5A3C" />
+    <template v-else-if="tema === 'televizor' || tema === 'televizor-90'">
+      <i class="tv-h" :style="{ color: luminaTv }" />
+      <div ref="tv" class="tv" :class="{ 'tv-90': tema === 'televizor-90' }" :style="{ color: luminaTv }">
+        <!-- Podeaua și umbra se mișcă odată cu televizorul, ca să pară o cameră în care camera de filmat se retrage. -->
+        <i class="tv-podea" />
+        <svg v-if="tema === 'televizor-90'" viewBox="0 0 360 320" aria-hidden="true">
+          <defs>
+            <linearGradient id="t9-corp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A3C42" /><stop offset=".08" stop-color="#2A2C31" /><stop offset=".7" stop-color="#1C1D21" /><stop offset="1" stop-color="#101114" /></linearGradient>
+            <linearGradient id="t9-lat" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".55" /><stop offset=".08" stop-color="#000" stop-opacity="0" /><stop offset=".92" stop-color="#000" stop-opacity="0" /><stop offset="1" stop-color="#000" stop-opacity=".6" /></linearGradient>
+            <linearGradient id="t9-spate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26272B" /><stop offset="1" stop-color="#1A1B1E" /></linearGradient>
+            <linearGradient id="t9-rama" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#08080A" /><stop offset=".5" stop-color="#16171A" /><stop offset="1" stop-color="#2C2E33" /></linearGradient>
+            <linearGradient id="t9-luciu" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22" /><stop offset=".35" stop-color="#fff" stop-opacity="0" /></linearGradient>
+            <radialGradient id="t9-umbra" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".75" /><stop offset="1" stop-color="#000" stop-opacity="0" /></radialGradient>
+            <pattern id="t9-grila" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".9" fill="#050506" /></pattern>
+          </defs>
+          <ellipse cx="180" cy="306" rx="190" ry="16" fill="url(#t9-umbra)" />
+          <path d="M70 34h220l-14 -18H84z" fill="url(#t9-spate)" />
+          <path d="M84 16h192" stroke="#3B3D43" stroke-width="1" />
+          <rect x="10" y="32" width="340" height="270" rx="16" fill="url(#t9-corp)" />
+          <rect x="10" y="32" width="340" height="270" rx="16" fill="url(#t9-lat)" />
+          <rect x="10" y="32" width="340" height="270" rx="16" fill="url(#t9-luciu)" />
+          <path d="M26 33h308" stroke="#6A6D75" stroke-width="1.2" stroke-linecap="round" opacity=".8" />
+          <rect x="28" y="48" width="304" height="194" rx="14" fill="url(#t9-rama)" />
+          <rect x="28.5" y="48.5" width="303" height="193" rx="13.5" fill="none" stroke="#000" stroke-opacity=".7" />
+          <path d="M42 241.5h276" stroke="#4A4C52" stroke-width="1" opacity=".7" />
+          <rect x="38" y="58" width="284" height="174" rx="18" fill="#060708" />
+          <rect x="30" y="254" width="300" height="34" rx="6" fill="#141518" />
+          <rect x="34" y="258" width="104" height="26" rx="4" fill="url(#t9-grila)" />
+          <rect x="222" y="258" width="104" height="26" rx="4" fill="url(#t9-grila)" />
+          <rect x="150" y="262" width="60" height="7" rx="2" fill="#2A2C31" />
+          <text x="180" y="281" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="7" letter-spacing="2.4" fill="#8C8F98">STEREO</text>
+          <circle cx="206" cy="281" r="1.8" fill="#38D06A" class="tv-standby" />
+          <circle cx="206" cy="281" r="5" fill="#38D06A" opacity=".18" />
+          <rect x="300" y="290" width="38" height="4" rx="2" fill="#0B0B0D" /><rect x="22" y="290" width="38" height="4" rx="2" fill="#0B0B0D" />
         </svg>
-        <div class="tv-ec"><i class="tv-c tv-c0" /><i class="tv-c tv-c1" /><i class="tv-c tv-c2" /><i class="tv-linii" /></div>
+        <svg v-else viewBox="0 0 360 320" aria-hidden="true">
+          <defs>
+            <linearGradient id="t8-lemn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A5428" /><stop offset=".15" stop-color="#6E3F1C" /><stop offset=".85" stop-color="#4E2B12" /><stop offset="1" stop-color="#36200D" /></linearGradient>
+            <linearGradient id="t8-lat" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".5" /><stop offset=".07" stop-color="#000" stop-opacity="0" /><stop offset=".93" stop-color="#000" stop-opacity="0" /><stop offset="1" stop-color="#000" stop-opacity=".55" /></linearGradient>
+            <linearGradient id="t8-luciu" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE2BC" stop-opacity=".2" /><stop offset=".4" stop-color="#FFE2BC" stop-opacity="0" /></linearGradient>
+            <linearGradient id="t8-crom" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDE8DE" /><stop offset=".5" stop-color="#9A9488" /><stop offset=".55" stop-color="#C9C3B7" /><stop offset="1" stop-color="#6E685D" /></linearGradient>
+            <linearGradient id="t8-rama" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050404" /><stop offset="1" stop-color="#2A2420" /></linearGradient>
+            <radialGradient id="t8-buton" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#F4EEE2" /><stop offset=".55" stop-color="#A39B8C" /><stop offset="1" stop-color="#4C463D" /></radialGradient>
+            <radialGradient id="t8-umbra" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".75" /><stop offset="1" stop-color="#000" stop-opacity="0" /></radialGradient>
+            <filter id="t8-fibra"><feTurbulence type="fractalNoise" baseFrequency=".012 .4" numOctaves="3" seed="4" /><feColorMatrix values="0 0 0 0 .2  0 0 0 0 .1  0 0 0 0 .03  0 0 0 .5 0" /><feComposite in2="SourceGraphic" operator="in" /></filter>
+          </defs>
+          <ellipse cx="180" cy="312" rx="190" ry="12" fill="url(#t8-umbra)" />
+          <g fill="none" stroke="url(#t8-crom)" stroke-width="3" stroke-linecap="round"><path d="M172 58L100 4M188 58L258 0" /></g>
+          <path d="M146 70a34 18 0 0 1 68 0z" fill="#1C191C" />
+          <path d="M44 294h14l-3 22h-8zM302 294h14l-3 22h-8z" fill="#1E120A" />
+          <rect x="8" y="66" width="344" height="232" rx="12" fill="url(#t8-lemn)" />
+          <rect x="8" y="66" width="344" height="232" rx="12" fill="#000" filter="url(#t8-fibra)" opacity=".9" />
+          <rect x="8" y="66" width="344" height="232" rx="12" fill="url(#t8-lat)" />
+          <rect x="8" y="66" width="344" height="232" rx="12" fill="url(#t8-luciu)" />
+          <path d="M18 67h324" stroke="#C48A52" stroke-width="1.3" stroke-linecap="round" opacity=".7" />
+          <rect x="26" y="84" width="230" height="190" rx="20" fill="url(#t8-rama)" />
+          <rect x="26" y="84" width="230" height="190" rx="20" fill="none" stroke="url(#t8-crom)" stroke-width="2.4" />
+          <rect x="38" y="96" width="204" height="166" rx="24" fill="#060505" />
+          <rect x="266" y="84" width="76" height="190" rx="5" fill="#1A1512" />
+          <rect x="266" y="84" width="76" height="190" rx="5" fill="none" stroke="url(#t8-crom)" stroke-width="1.6" />
+          <rect x="274" y="94" width="60" height="34" rx="3" fill="url(#t8-crom)" />
+          <g fill="#2B2722"><rect x="280" y="100" width="12" height="10" rx="1.5" /><rect x="298" y="100" width="12" height="10" rx="1.5" /><rect x="316" y="100" width="12" height="10" rx="1.5" /><rect x="280" y="114" width="12" height="10" rx="1.5" /><rect x="298" y="114" width="12" height="10" rx="1.5" /><rect x="316" y="114" width="12" height="10" rx="1.5" /></g>
+          <circle cx="304" cy="160" r="18" fill="#0C0A09" /><circle cx="304" cy="158" r="15" fill="url(#t8-buton)" /><path d="M304 146v9" stroke="#3A332C" stroke-width="2.5" stroke-linecap="round" />
+          <circle cx="292" cy="198" r="10" fill="#0C0A09" /><circle cx="292" cy="197" r="8" fill="url(#t8-buton)" />
+          <circle cx="316" cy="198" r="10" fill="#0C0A09" /><circle cx="316" cy="197" r="8" fill="url(#t8-buton)" />
+          <g fill="#070605"><rect x="276" y="220" width="56" height="2.4" rx="1.2" /><rect x="276" y="226" width="56" height="2.4" rx="1.2" /><rect x="276" y="232" width="56" height="2.4" rx="1.2" /><rect x="276" y="238" width="56" height="2.4" rx="1.2" /><rect x="276" y="244" width="56" height="2.4" rx="1.2" /><rect x="276" y="250" width="56" height="2.4" rx="1.2" /><rect x="276" y="256" width="56" height="2.4" rx="1.2" /></g>
+          <circle cx="334" cy="140" r="2.4" fill="#E2483A" class="tv-standby" /><circle cx="334" cy="140" r="6" fill="#E2483A" opacity=".2" />
+        </svg>
+        <div class="tv-ec"><ClientOnly><EcranTv :an="areProfil ? an15 : null" @lumina="luminaTv = $event" /></ClientOnly><i class="tv-linii" /><i class="tv-bara" /><i class="tv-sticla" /></div>
       </div>
     </template>
   </div>
@@ -247,28 +334,29 @@ onBeforeUnmount(() => {
 }
 
 /* Televizor în întuneric */
-.tv{right:6vw;bottom:0;width:min(46vw,420px);aspect-ratio:360/320}
+/* Centrat; camera (zoom + deplasare) o pune aseazaTv() din script, ca transform. */
+.tv{left:50%;top:50%;width:min(70vw,100vh);aspect-ratio:360/320;transform-origin:50% 50%;will-change:transform,opacity;transform:translate(-50%,-50%)}
 .tv svg{position:absolute;inset:0;width:100%;height:100%}
-.tv-ec{position:absolute;left:7.8%;top:26.3%;width:59.4%;height:54.4%;border-radius:12% / 14%;overflow:hidden;background:#1D2A55;box-shadow:0 0 40px 6px rgb(120 150 255/.35)}
-.tv-c{position:absolute;inset:0;opacity:0;animation:tv-fade 20s ease-in-out infinite}
-.tv-c0{background:linear-gradient(135deg,#3B82F6,#8B5CF6);opacity:1}
-.tv-c1{background:linear-gradient(160deg,#F97316,#EC4899);animation-delay:-6.6s}
-.tv-c2{background:linear-gradient(120deg,#10B981,#22D3EE);animation-delay:-13.3s}
-.tv-linii{position:absolute;inset:0;background:repeating-linear-gradient(to bottom,rgb(0 0 0/.3) 0 1px,transparent 1px 3px)}
-.tv-h{right:-30vw;bottom:-40vh;width:100vw;height:100vh;border-radius:50%;opacity:0;animation:tv-fade 20s ease-in-out infinite}
-.tv-h0{background:radial-gradient(closest-side,rgb(90 120 255/.42),transparent);opacity:1}
-.tv-h1{background:radial-gradient(closest-side,rgb(255 110 60/.38),transparent);animation-delay:-6.6s}
-.tv-h2{background:radial-gradient(closest-side,rgb(40 220 190/.34),transparent);animation-delay:-13.3s}
-@keyframes tv-fade{0%,5%{opacity:0}20%,45%{opacity:1}60%,100%{opacity:0}}
-.mini .tv{right:6%;width:58%}
-.mini .tv-h{right:-30%;bottom:-40%;width:110%;height:110%}
-@media (max-width:480px){
-  .tv,.mini .tv{right:auto;left:50%;margin-left:max(-35vw,-150px);width:min(70vw,300px)}
-  .fundal:not(.mini) .tv{opacity:.35}
-  .mini .tv{margin-left:-29%;width:58%}
-  .tv-h{right:-25vw;bottom:-30vh;width:150vw;height:90vh}
-  .mini .tv-h{right:-30%;bottom:-40%;width:110%;height:110%}
-}
+.tv-ec{position:absolute;left:10.56%;top:30%;width:56.67%;height:51.88%;border-radius:16% / 19%;overflow:hidden;background:#1D2A55;box-shadow:0 0 60px 14px color-mix(in srgb,currentColor 30%,transparent)}
+.tv-linii{position:absolute;inset:0;background:repeating-linear-gradient(to bottom,rgb(0 0 0/.28) 0 1px,transparent 1px 3px)}
+.tv-bara{position:absolute;left:0;right:0;top:-20%;height:20%;background:linear-gradient(to bottom,transparent,rgb(255 255 255/.09),transparent);animation:tv-rulaj 7s linear infinite}
+/* Sticla bombată a tubului: întunecată pe margini, cu o reflexie curbă sus-stânga și una slabă jos-dreapta. */
+.tv-sticla{position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 40px 14px rgb(0 0 0/.7),inset 0 0 6px 3px rgb(0 0 0/.6);
+  background:radial-gradient(90% 55% at 28% 8%,rgb(255 255 255/.2),rgb(255 255 255/.05) 40%,transparent 60%),radial-gradient(60% 40% at 82% 96%,rgb(255 255 255/.06),transparent 70%),radial-gradient(ellipse at center,transparent 50%,rgb(0 0 0/.4))}
+/* Camera: podea de parchet închis, luminată de ecran, care se întinde mult în jurul televizorului. */
+.tv-podea{position:absolute;left:-260%;width:620%;top:94%;height:260%;
+  background:radial-gradient(40% 18% at 50% 0,color-mix(in srgb,currentColor 22%,transparent),transparent 70%),linear-gradient(to bottom,#1A1512,#0B0908 40%);
+  -webkit-mask-image:radial-gradient(50% 60% at 50% 0,#000 40%,transparent);mask-image:radial-gradient(50% 60% at 50% 0,#000 40%,transparent)}
+.tv svg{filter:drop-shadow(0 0 30px color-mix(in srgb,currentColor 18%,transparent))}
+/* Televizorul de plastic din anii '90, pe un video */
+.tv-90 .tv-ec{left:10.56%;top:18.13%;width:78.89%;height:54.38%;border-radius:7% / 10%}
+.tv-standby{animation:tv-clipire 2.4s steps(1) infinite}
+@keyframes tv-clipire{50%{opacity:0}}
+@keyframes tv-rulaj{to{transform:translateY(600%)}}
+.tv-h{left:-25vw;top:-25vh;width:150vw;height:150vh;border-radius:50%;opacity:.3;background:radial-gradient(closest-side,currentColor,transparent);transition:color .35s linear}
+.mini .tv{width:64%}
+.mini .tv-h{left:-20%;top:-20%;width:140%;height:140%}
+@media (max-width:480px){.tv{width:88vw}.mini .tv{width:64%}}
 
-@media (prefers-reduced-motion:reduce){.zgomot,.bl-sol,.bl-nori,.pp,.tv-c,.tv-h{animation:none}}
+@media (prefers-reduced-motion:reduce){.tv-h{transition:none}.zgomot,.bl-sol,.bl-nori,.pp,.tv-bara,.tv-standby{animation:none}}
 </style>
