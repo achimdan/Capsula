@@ -7,7 +7,10 @@ export const FUNDALURI: { id: Fundal; nume: string; descriere: string }[] = [
   { id: 'tapet', nume: 'Tapet de bloc', descriere: 'Perete cald, lampă de living.' },
   { id: 'vhs', nume: 'Sufragerie VHS', descriere: 'Ecran CRT, linii și zgomot.' },
   { id: 'arhiva', nume: 'Hârtie de arhivă', descriere: 'Carton crem, fișe și bandă adezivă.' },
-  { id: 'ceata', nume: 'Fișe în ceață', descriere: 'Fișele plutesc încet, ca înainte de intrare.' }
+  { id: 'ceata', nume: 'Fișe în ceață', descriere: 'Fișele plutesc încet, ca înainte de intrare.' },
+  { id: 'bloc', nume: 'Bloc la apus', descriere: 'Blocuri de pe vremuri, soare jos, ferestre aprinse.' },
+  { id: 'pop', nume: 'Pop anii \'90', descriere: 'Casetă, Tamagotchi, telefon cu fir și dischetă.' },
+  { id: 'televizor', nume: 'Televizor în întuneric', descriere: 'Un CRT într-o cameră neluminată, cu ecranul care se schimbă.' }
 ]
 
 export function useFundal() {

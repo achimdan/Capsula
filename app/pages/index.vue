@@ -48,54 +48,61 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 
 <template>
   <main class="pagina">
-    <!-- Fără profil, middleware-ul trimite la /start; până atunci nu randăm nimic. -->
-    <template v-if="areProfil">
-      <section class="erou" :class="{ gata }">
-        <div class="k">Născut în {{ profil.anNastere }}<template v-if="profil.oras"> · {{ profil.oras }}</template><template v-if="profilCititor"> · {{ profilCititor.nume }}</template> · <NuxtLink to="/start" class="link">refă testul</NuxtLink></div>
-        <h1 class="d1" :aria-label="`Aveai 15 ani în ${an15}`">
-          <span v-for="(c, i) in cuvinte" :key="c" class="cuv" aria-hidden="true"><span class="cuv-i" :style="{ '--i': i }">{{ c }}</span>&nbsp;</span><span class="odo" aria-hidden="true"><span v-for="(d, col) in cifre" :key="col" class="col"><span class="cf" :style="{ '--c': col }">{{ d }}</span></span></span>
-        </h1>
-        <p v-if="linieTon" class="ton-linie" :data-ton="ton">{{ linieTon }}</p>
-        <BandaAni :anul-meu="an15" interactiva />
-        <div class="rand">
-          <NuxtLink to="/random" class="btn">▶▶ Random Hit</NuxtLink>
-          <NuxtLink to="/game" class="btn ghost">Ghicește anul</NuxtLink>
-        </div>
-      </section>
+    <section v-if="!areProfil" class="erou">
+      <div class="k">Capsula · arhiva anilor tăi</div>
+      <h1 class="d1">Ceva din ’9x te așteaptă.</h1>
+      <p class="lead">Răsfoiește liber. Dacă vrei, un test scurt îți arată anul în care aveai 15 ani.</p>
+      <div class="rand">
+        <NuxtLink to="/start" class="btn">Fă testul, e opțional</NuxtLink>
+        <NuxtLink to="/random" class="btn ghost">▶▶ Random Hit</NuxtLink>
+        <NuxtLink to="/game" class="btn ghost">Ghicește anul</NuxtLink>
+      </div>
+    </section>
+    <section v-else class="erou" :class="{ gata }">
+      <div class="k">Născut în {{ profil.anNastere }}<template v-if="profil.oras"> · {{ profil.oras }}</template><template v-if="profilCititor"> · {{ profilCititor.nume }}</template> · <NuxtLink to="/start" class="link">refă testul</NuxtLink></div>
+      <h1 class="d1" :aria-label="`Aveai 15 ani în ${an15}`">
+        <span v-for="(c, i) in cuvinte" :key="c" class="cuv" aria-hidden="true"><span class="cuv-i" :style="{ '--i': i }">{{ c }}</span>&nbsp;</span><span class="odo" aria-hidden="true"><span v-for="(d, col) in cifre" :key="col" class="col"><span class="cf" :style="{ '--c': col }">{{ d }}</span></span></span>
+      </h1>
+      <p v-if="linieTon" class="ton-linie" :data-ton="ton">{{ linieTon }}</p>
+      <BandaAni :anul-meu="an15" interactiva />
+      <div class="rand">
+        <NuxtLink to="/random" class="btn">▶▶ Random Hit</NuxtLink>
+        <NuxtLink to="/game" class="btn ghost">Ghicește anul</NuxtLink>
+      </div>
+    </section>
 
-      <section class="sec">
-        <div class="k">Capsula națională</div>
-        <h2 class="d2">Ce era peste tot</h2>
-        <p v-if="profilCititor" class="lead">{{ profilCititor.config.intro }}</p>
-        <div class="chips">
-          <button class="chip" :aria-pressed="filtru === null" @click="filtru = null">Toate</button>
-          <button v-for="c in categorii" :key="c" class="chip" :aria-pressed="filtru === c" @click="filtru = c">{{ c }}</button>
+    <section class="sec">
+      <div class="k">Capsula națională</div>
+      <h2 class="d2">Ce era peste tot</h2>
+      <p v-if="profilCititor" class="lead">{{ profilCititor.config.intro }}</p>
+      <div class="chips">
+        <button class="chip" :aria-pressed="filtru === null" @click="filtru = null">Toate</button>
+        <button v-for="c in categorii" :key="c" class="chip" :aria-pressed="filtru === c" @click="filtru = c">{{ c }}</button>
+      </div>
+      <ClientOnly>
+        <CronologieFise v-if="listaFise === 'cronologie'" :fise="nationale" :an-eu="areProfil ? an15 : null" />
+        <div v-else class="grila">
+          <FisaPolaroid v-for="(f, i) in nationale" :key="f.id" v-reveal="i" :fisa="f" />
         </div>
-        <ClientOnly>
-          <CronologieFise v-if="listaFise === 'cronologie'" :fise="nationale" :an-eu="an15" />
-          <div v-else class="grila">
-            <FisaPolaroid v-for="(f, i) in nationale" :key="f.id" v-reveal="i" :fisa="f" />
-          </div>
-          <template #fallback><div class="grila" /></template>
-        </ClientOnly>
-      </section>
+        <template #fallback><div class="grila" /></template>
+      </ClientOnly>
+    </section>
 
-      <ClientOnly><AmintiriTale :an-implicit="an15" /></ClientOnly>
+    <ClientOnly><AmintiriTale :an-implicit="areProfil ? an15 : null" /></ClientOnly>
 
-      <section v-if="profil.oras" class="sec">
-        <div class="k">Stratul orașului</div>
-        <template v-if="orasDeblocat">
-          <h2 class="d2">{{ profil.oras }}, noaptea</h2>
-          <p class="lead">Locurile vin din presa locală și din amintiri publicate. Datele exacte diferă de la o sursă la alta, așa că anii sunt aproximativi.</p>
-          <div class="grila"><FisaPolaroid v-for="(f, i) in locale" :key="f.id" v-reveal="i" :fisa="f" /></div>
-        </template>
-        <div v-else class="card blocat">
-          <h2 class="d2">{{ profil.oras }} încă nu e deblocat</h2>
-          <p class="lead">Deblocăm orașele în ordinea voturilor. Votul tău se salvează deocamdată doar în browser; numărătoarea comună vine când conectăm baza de date.</p>
-          <button class="btn" :disabled="aVotat" @click="voteaza">{{ aVotat ? '✓ Ai votat' : 'Votează ' + profil.oras }}</button>
-        </div>
-      </section>
-    </template>
+    <section v-if="profil.oras" class="sec">
+      <div class="k">Stratul orașului</div>
+      <template v-if="orasDeblocat">
+        <h2 class="d2">{{ profil.oras }}, noaptea</h2>
+        <p class="lead">Locurile vin din presa locală și din amintiri publicate. Datele exacte diferă de la o sursă la alta, așa că anii sunt aproximativi.</p>
+        <div class="grila"><FisaPolaroid v-for="(f, i) in locale" :key="f.id" v-reveal="i" :fisa="f" /></div>
+      </template>
+      <div v-else class="card blocat">
+        <h2 class="d2">{{ profil.oras }} încă nu e deblocat</h2>
+        <p class="lead">Deblocăm orașele în ordinea voturilor. Votul tău se salvează deocamdată doar în browser; numărătoarea comună vine când conectăm baza de date.</p>
+        <button class="btn" :disabled="aVotat" @click="voteaza">{{ aVotat ? '✓ Ai votat' : 'Votează ' + profil.oras }}</button>
+      </div>
+    </section>
   </main>
 </template>
 

@@ -3,7 +3,7 @@
 import { LIMITE_FISA, valideazaFisa, type FisaNoua } from '~/utils/fiseProprii'
 import { ORDINE_CATEGORII } from '~/utils/personalizare'
 
-const props = defineProps<{ anImplicit: number }>()
+const props = defineProps<{ anImplicit: number | null }>()
 const { userId, fise, adauga, salveaza } = useFiseProprii()
 const { deschide } = useIntrare()
 

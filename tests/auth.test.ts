@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { dateProfilCont, decodeazaJwt, emailValid, esteSuperAdmin, initiale, mesajEroareLogin, normalizeazaEmail, rutaDupaLogin } from '../app/utils/auth'
+import { dateProfilCont, decodeazaJwt, emailValid, esteSuperAdmin, initiale, mesajEroareLogin, normalizeazaCale, normalizeazaEmail, rutaDupaLogin } from '../app/utils/auth'
 
 function jwt(payload: object): string {
   const b64 = (s: string) => btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
@@ -33,9 +33,15 @@ describe('decodeazaJwt', () => {
 })
 
 describe('după login', () => {
-  it('trimite la test doar dacă lipsește profilul', () => {
-    expect(rutaDupaLogin(false)).toBe('/start')
-    expect(rutaDupaLogin(true)).toBe('/')
+  it('întoarce pe pagina de plecare, fără să forțeze testul', () => {
+    expect(rutaDupaLogin('/game?an=1998#scor')).toBe('/game?an=1998#scor')
+    expect(rutaDupaLogin('/daily')).toBe('/daily')
+    expect(rutaDupaLogin('/start')).toBe('/start')
+  })
+  it('acceptă doar căi interne', () => {
+    for (const rau of [null, undefined, 42, '', 'game', 'https://rau.ro', '//rau.ro', '/\\rau.ro', '/\trau', 'javascript:alert(1)', '/..//rau.ro', '/.//rau.ro', '/a/..//rau.ro', '/%2e%2e//rau.ro', '/confirm', '/confirm?x=1', '/confirm/', '/Confirm', '/' + 'a'.repeat(600)]) {
+      expect(rutaDupaLogin(rau)).toBe('/')
+    }
   })
   it('explică conectările expirate separat de celelalte erori', () => {
     expect(mesajEroareLogin(null, null)).toBeNull()
@@ -70,5 +76,13 @@ describe('esteSuperAdmin', () => {
     expect(esteSuperAdmin({ app_metadata: { role: 'super_admin' }, amr: [{ method: 'otp' }] })).toBe(false)
     expect(esteSuperAdmin({ app_metadata: { role: 'super_admin' } })).toBe(false)
     expect(esteSuperAdmin(null)).toBe(false)
+  })
+})
+
+describe('normalizeazaCale', () => {
+  it('scoate slash-ul final și literele mari', () => {
+    expect(normalizeazaCale('/ADMIN/')).toBe('/admin')
+    expect(normalizeazaCale('/tv//')).toBe('/tv')
+    expect(normalizeazaCale('/')).toBe('/')
   })
 })

@@ -24,22 +24,22 @@ async function hit() {
   fisa.value = urm; cheie.value++
   ocupat.value = false
 }
-onMounted(() => { if (!areProfil.value) navigateTo('/') })
 </script>
 
 <template>
   <main class="pagina">
     <section class="rh">
-      <div class="k">Random Hit · ponderat pe anii tăi de 10–20</div>
+      <div class="k">Random Hit{{ areProfil ? ' · ponderat pe anii tăi de 10–20' : '' }}</div>
       <h1 class="d1">Ce tare o fost</h1>
       <div class="deck" :class="{ ff: ocupat }">
-        <BandaAni ref="banda" :anul-meu="an15" />
+        <BandaAni ref="banda" :anul-meu="areProfil ? an15 : undefined" />
         <div class="vhs" aria-hidden="true"><i class="linii" /><i class="track" /></div>
         <div class="osd" aria-hidden="true"><b>▶▶ FF</b><span>{{ timecod }}</span></div>
         <i v-if="cheie" :key="cheie" class="flash" aria-hidden="true" />
       </div>
       <div class="rand"><button class="btn hit" :class="{ gata: !ocupat }" :disabled="ocupat" @click="hit"><span class="halou" aria-hidden="true" />▶▶ {{ fisa ? 'Altul' : 'Random Hit' }}</button>
         <span class="k" aria-live="polite">{{ ocupat ? 'Se derulează…' : fisa ? fisa.an + ' · ' + fisa.titlu : 'Apasă și vezi unde se oprește banda' }}</span></div>
+      <p v-if="!areProfil" class="lead invita">Anii tăi de 10–20 fac jocul mai personal. <NuxtLink to="/start">Fă testul</NuxtLink></p>
       <div class="scena"><div v-if="fisa" :key="cheie" class="aterizare"><FisaPolaroid :fisa="fisa" developare /><i class="umbra" aria-hidden="true" /></div></div>
       <div v-if="fisa" class="rand urm"><button class="btn ghost" :disabled="ocupat" @click="hit">▶▶ Încă unul</button></div>
     </section>

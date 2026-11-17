@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { profil, an15, areProfil } = useCapsula()
+const anNastere = computed(() => profil.value.anNastere ?? 1984)
 const scoruri = useStocare<number[]>('scoruri', [])
 const interes = useStocare<string[]>('interes-magazin', [])
 const produs = ref<'tricou' | 'poster'>('tricou')
@@ -11,7 +12,6 @@ const oras = computed(() => profil.value.oras === 'Alt oraș' ? 'România' : (pr
 const cheie = computed(() => `${produs.value}-${an15.value}`)
 const notat = computed(() => interes.value.includes(cheie.value))
 function anunta() { if (!notat.value) interes.value = [...interes.value, cheie.value] }
-onMounted(() => { if (!areProfil.value) navigateTo('/') })
 </script>
 
 <template>
@@ -20,17 +20,18 @@ onMounted(() => { if (!areProfil.value) navigateTo('/') })
       <div class="k">Magazin · în curând</div>
       <h1 class="d1">Anul tău, tipărit</h1>
       <p class="lead">Fiecare produs se face pe comandă, cu anul, orașul și scorul tău. Încă nu vindem: spune-ne ce ți-ar plăcea și te anunțăm la lansare.</p>
+      <p v-if="!areProfil" class="lead invita">Fără test, tipărim pentru 1984. <NuxtLink to="/start">Fă testul</NuxtLink></p>
       <div class="cfg card">
         <div class="mock">
           <div v-if="produs === 'tricou'" class="tee">
             <svg viewBox="0 0 200 210" aria-hidden="true"><path d="M60 10 L80 4 Q100 18 120 4 L140 10 L196 40 L178 78 L156 68 L156 206 L44 206 L44 68 L22 78 L4 40 Z" fill="#14211B" /></svg>
-            <div class="print"><span class="s">Capsula · {{ oras }}</span><span class="y">’{{ String(an15).slice(2) }}</span><span class="bar" /><span class="s">Aveai 15 ani<br>Născut {{ profil.anNastere }}<template v-if="puneScor"><br>Scor {{ record }}/500</template></span></div>
+            <div class="print"><span class="s">Capsula · {{ oras }}</span><span class="y">’{{ String(an15).slice(2) }}</span><span class="bar" /><span class="s">Aveai 15 ani<br>Născut {{ anNastere }}<template v-if="puneScor"><br>Scor {{ record }}/500</template></span></div>
           </div>
           <div v-else class="poster">
-            <span class="m">CAPSULA · {{ oras.toUpperCase() }} · {{ profil.anNastere }}–{{ an15 }}</span>
+            <span class="m">CAPSULA · {{ oras.toUpperCase() }} · {{ anNastere }}–{{ an15 }}</span>
             <div><div class="py">{{ an15 }}</div><div class="cap" /></div>
             <div class="pt">Aveai 15 ani.<br>Ce tare o fost.</div>
-            <span class="m">{{ puneScor ? 'GHICEȘTE ANUL · ' + record + '/500' : 'NĂSCUT ' + profil.anNastere }}</span>
+            <span class="m">{{ puneScor ? 'GHICEȘTE ANUL · ' + record + '/500' : 'NĂSCUT ' + anNastere }}</span>
           </div>
         </div>
         <div class="opt">

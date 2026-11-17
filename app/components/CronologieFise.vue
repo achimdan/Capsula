@@ -6,14 +6,15 @@
 import type { Fisa } from '~/data/fise'
 import { anVecinCuFise, cateFise, indexDinScroll, varstaInAn, varstaScurta } from '~/utils/cronologie'
 
-const props = defineProps<{ fise: Fisa[]; anEu: number }>()
+const props = defineProps<{ fise: Fisa[]; anEu: number | null }>()
 
 const { caseta, amAvut } = useCapsula()
 
 const ani = computed(() => {
   if (!props.fise.length) return []
   const anii = props.fise.map(f => f.an)
-  const min = Math.min(...anii, props.anEu), max = Math.max(...anii, props.anEu)
+  const min = Math.min(...anii, ...(props.anEu === null ? [] : [props.anEu]))
+  const max = Math.max(...anii, ...(props.anEu === null ? [] : [props.anEu]))
   return Array.from({ length: max - min + 1 }, (_, i) => min + i)
 })
 // Pistele în ordinea profilului citit (categoriile preferate sus); fără profil, ordinea obișnuită.
@@ -35,13 +36,14 @@ const perAn = computed(() => {
   return m
 })
 const aniCuFise = computed(() => [...perAn.value.keys()].sort((a, b) => a - b))
-const indexEu = computed(() => Math.max(0, ani.value.indexOf(props.anEu)))
+// Fără an al utilizatorului (fără profil) banda pornește de la primul an.
+const indexEu = computed(() => (props.anEu === null ? 0 : Math.max(0, ani.value.indexOf(props.anEu))))
 // Înclinare mică, stabilă pe fișă (aceeași la fiecare randare).
 const rotire = (id: string) => ((Number(id.replace(/\D/g, '')) * 37) % 9 - 4) * 0.6 + 'deg'
 
 // Anul de sub capul de citire.
 const idx = ref(0)
-const an = computed(() => ani.value[idx.value] ?? props.anEu)
+const an = computed(() => ani.value[idx.value] ?? props.anEu ?? 0)
 const cifre = computed(() => String(an.value).split('').map(Number))
 const inapoi = computed(() => anVecinCuFise(aniCuFise.value, an.value, -1))
 const inainte = computed(() => anVecinCuFise(aniCuFise.value, an.value, 1))
@@ -325,7 +327,7 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) i
           </span>
         </p>
         <p class="stare">
-          <span class="varsta" :class="{ eu: an === anEu }">{{ varstaInAn(an, anEu) }}</span>
+          <span v-if="anEu !== null" class="varsta" :class="{ eu: an === anEu }">{{ varstaInAn(an, anEu) }}</span>
           <span class="k">{{ cateFise(perAn.get(an) ?? 0) }}</span>
         </p>
       </div>
@@ -349,7 +351,7 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) i
           v-for="(a, i) in ani"
           :key="a"
           class="lin"
-          :class="{ eu: a === anEu, acum: i === idx }"
+          :class="{ eu: anEu !== null && a === anEu, acum: i === idx }"
           :style="{ '--h': Math.min(4, perAn.get(a) ?? 0) }"
         >
           <i />
@@ -361,7 +363,7 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) i
         <button type="button" class="tasta" :disabled="inapoi === null" :aria-label="inapoi === null ? 'Niciun an cu fișe înainte' : `Înapoi la ${inapoi}`" @click="mergiLaAn(inapoi)">
           <UIcon name="i-lucide-chevron-left" />
         </button>
-        <button type="button" class="tasta lat" :disabled="an === anEu" @click="mergi(indexEu)">Anul meu</button>
+        <button v-if="anEu !== null" type="button" class="tasta lat" :disabled="an === anEu" @click="mergi(indexEu)">Anul meu</button>
         <button type="button" class="tasta" :disabled="inainte === null" :aria-label="inainte === null ? 'Niciun an cu fișe după' : `Înainte la ${inainte}`" @click="mergiLaAn(inainte)">
           <UIcon name="i-lucide-chevron-right" />
         </button>
@@ -391,11 +393,11 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) i
             v-for="(a, i) in ani"
             :key="a"
             class="an"
-            :class="{ eu: a === anEu, acum: i === idx }"
+            :class="{ eu: anEu !== null && a === anEu, acum: i === idx }"
             :style="{ gridColumn: i + 2 }"
           >
             <span class="nr">{{ a }}</span>
-            <span class="v">{{ a === anEu ? 'Aveai 15 ani' : varstaScurta(a, anEu) }}</span>
+            <span class="v">{{ anEu === null ? '' : a === anEu ? 'Aveai 15 ani' : varstaScurta(a, anEu) }}</span>
           </span>
 
           <template v-for="(p, t) in piste" :key="p">
@@ -404,7 +406,7 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) i
               v-for="(a, i) in ani"
               :key="a"
               class="celula"
-              :class="{ eu: a === anEu, acum: i === idx, rest: preferate.size > 0 && !preferate.has(p) }"
+              :class="{ eu: anEu !== null && a === anEu, acum: i === idx, rest: preferate.size > 0 && !preferate.has(p) }"
               :style="{ gridRow: 3 + t * 2, gridColumn: i + 2 }"
             >
               <button

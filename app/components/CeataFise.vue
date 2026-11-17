@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { FISE } from '~/data/fise'
 
-// Fișe în ceață: doar culorile fișelor și anii mascați, fără titluri. Folosit de teaser (puternic)
-// și ca fundal de pagină ales din /admin (`fundal`: mai șters, cu voal peste tot, ca textul să se citească).
+// Fișe în ceață: doar culorile fișelor și anii mascați, fără titluri. Folosit ca fundal de pagină ales din /admin (`fundal`: mai șters, cu voal peste tot, ca textul să se citească).
 defineProps<{ fundal?: boolean; mini?: boolean }>()
 
 const coloane = [0, 1, 2].map((c) => {

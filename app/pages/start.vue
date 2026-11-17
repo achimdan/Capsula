@@ -19,6 +19,8 @@ const REPLICI: Record<CapitolId, string> = {
 const reveal = computed(() => !!profilCitit.value && !stare.value.refacere && !!profilCititor.value)
 // Cine are deja profil poate renunța oricând: se întoarce de unde a venit, cu profilul neschimbat.
 const { areProfil } = useCapsula()
+const { autentificat } = useAuth()
+const { deschide } = useIntrare()
 const poateAnula = computed(() => areProfil.value)
 function anuleaza() {
   if (stare.value.refacere) stare.value = { ...stare.value, refacere: false }
@@ -75,7 +77,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', tasta))
 <template>
   <main class="pagina start">
     <ClientOnly>
-      <ProfilReveal v-if="reveal && profilCititor" :profil="profilCititor" @refa="refa" />
+      <template v-if="reveal && profilCititor">
+        <ProfilReveal :profil="profilCititor" @refa="refa" />
+        <div v-if="!autentificat" class="local">
+          <p class="k tasta">Rezultatul stă pe acest dispozitiv. Intră cu Google ca să-l păstrezi în cont, dacă contul nu are deja un test.</p>
+          <button type="button" class="btn ghost nav-b" @click="deschide">Intră cu Google</button>
+        </div>
+      </template>
       <template v-else>
         <div class="sus">
           <ChestionarContor :curenta="contor.curenta" :total="contor.total" />
@@ -112,6 +120,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', tasta))
 .nav-b{min-height:44px;justify-content:center;transition:transform .2s var(--ease-ff),background-color .2s,color .2s}
 .nav-b:not(:disabled):hover{transform:translateY(-2px)}
 .nav-b:not(:disabled):active{transform:translateY(1px) scale(.98)}
+.local{display:grid;gap:10px;justify-items:start}
 .tasta{margin:0;text-transform:none;letter-spacing:.02em}
 .sus{display:flex;align-items:center;gap:12px}
 .sus>:first-child{flex:1;min-width:0}

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 // Intrarea în capsulă, doar cu Google, într-o fereastră peste pagina curentă. Întoarcerea se face pe /confirm.
-const { intraCuGoogle, autentificat } = useAuth()
-const { deschis } = useIntrare()
+const { autentificat } = useAuth()
+const { deschis, pastreaza, pleaca } = useIntrare()
+// Deschisă de o acțiune care păstrează ceva: spunem de ce cerem contul, exact în momentul acela.
+const descriere = computed(() => pastreaza.value ? TEXT_PASTREAZA : 'Te conectezi cu contul tău Google. Fără parolă nouă.')
 
 const eroare = ref('')
 const ocupat = ref(false)
@@ -14,7 +16,7 @@ async function google() {
   eroare.value = ''
   ocupat.value = true
   try {
-    await intraCuGoogle()
+    await pleaca()
   } catch {
     eroare.value = 'Nu am putut porni conectarea cu Google. Încearcă din nou.'
     ocupat.value = false
@@ -26,7 +28,7 @@ async function google() {
   <UModal
     v-model:open="deschis"
     title="Intră în capsulă"
-    description="Te conectezi cu contul tău Google. Fără parolă nouă."
+    :description="descriere"
     :ui="{ content: 'max-w-sm', title: 'intrare-titlu', description: 'intrare-nota' }"
   >
     <template #body>

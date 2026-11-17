@@ -15,6 +15,9 @@
 [data-fundal="tapet"]:is(:root,.previzualizare){--paper:#1E1A12;--card:#2B251A;--ink:#EADFC8;--muted:#B9AB90;--line:#4A3F2C;--signal:#F0A030;color-scheme:dark}
 [data-fundal="vhs"]:is(:root,.previzualizare){--paper:#08090A;--card:#131617;--ink:#E6E2D6;--muted:#A5A194;--line:#2A2E30;--signal:#FF7A2E;color-scheme:dark}
 [data-fundal="arhiva"]:is(:root,.previzualizare){--paper:#EFE6D0;--card:#FBF6E8;--ink:#2A2218;--muted:#5C503F;--line:#CFC2A3;--signal:#D2501F;color-scheme:light}
+[data-fundal="bloc"]:is(:root,.previzualizare){--paper:#F3E3C8;--card:#FBF1DE;--ink:#2E2018;--muted:#66503C;--line:#DDC3A0;--signal:#C4471C;color-scheme:light}
+[data-fundal="pop"]:is(:root,.previzualizare){--paper:#FFF1CF;--card:#FFFAEA;--ink:#1E1B2E;--muted:#55506B;--line:#E8D3A0;--signal:#D6336C;color-scheme:light}
+[data-fundal="televizor"]:is(:root,.previzualizare){--paper:#0B0A10;--card:#16141D;--ink:#E8E4F0;--muted:#A39FB3;--line:#2B2836;--signal:#FF8A4C;color-scheme:dark}
 /* Pe fundal decorat, pagina lasă fundalul să se vadă; antetul rămâne plin. */
 :root[data-fundal]:not([data-fundal="clasic"]) body{background:transparent}
 :root[data-fundal]:not([data-fundal="clasic"]){background:var(--paper)}
@@ -39,6 +42,7 @@ img{max-width:100%}
 /* Zonă de click stabilă: butoanele urcă la hover și coboară la apăsare. Fără marja asta, un click lângă
    margine pornește pe buton și se termină lângă el (butonul a fugit de sub cursor), iar browserul îl ignoră. */
 .btn::before{content:"";position:absolute;inset:-4px 0}
+.invita a{display:inline-flex;align-items:center;min-height:44px;color:var(--ink);font-weight:600}
 .btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
 .btn.semnal{background:var(--signal);color:#14211B}
 .btn:disabled{opacity:.35;cursor:default}

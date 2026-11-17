@@ -121,7 +121,7 @@ const titlu = computed(() => scor.value >= 450 ? 'Arhivar de meserie' : scor.val
 
 onMounted(() => {
   reduce.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  if (!areProfil.value) navigateTo('/'); else amesteca()
+  amesteca()
 })
 onBeforeUnmount(() => { opresteFlap(); cancelAnimationFrame(rafScor) })
 </script>
@@ -131,6 +131,7 @@ onBeforeUnmount(() => { opresteFlap(); cancelAnimationFrame(rafScor) })
     <section class="joc">
       <div class="rand"><span class="contor"><span>RUNDA {{ Math.min(runda + 1, RUNDE) }}/{{ RUNDE }} · <span class="tic">{{ afisScor }}</span> PCT</span></span><span v-if="record !== null" class="k">Recordul tău: {{ record }}</span></div>
       <h1 class="d1">Ghicește anul</h1>
+      <p v-if="!areProfil" class="lead invita">Anii tăi de 10–20 fac jocul mai personal. <NuxtLink to="/start">Fă testul</NuxtLink></p>
 
       <Transition name="kaseta" mode="out-in">
         <div v-if="terminat" key="final" class="card final">
@@ -138,7 +139,7 @@ onBeforeUnmount(() => { opresteFlap(); cancelAnimationFrame(rafScor) })
           <p class="d1 scorfinal"><span class="tic">{{ afisScor }}</span><span class="din">/{{ RUNDE * 100 }}</span></p>
           <span class="sr" role="status">Scor final {{ scor }} din {{ RUNDE * 100 }}. {{ titlu }}.</span>
           <div class="stampila" aria-hidden="true"><span>{{ titlu }}</span><b>{{ scor }} PCT</b></div>
-          <p class="lead">Media generației {{ String(profil.anNastere).slice(2) }} apare după ce conectăm baza de date.</p>
+          <p v-if="profil.anNastere" class="lead">Media generației {{ String(profil.anNastere).slice(2) }} apare după ce conectăm baza de date.</p>
           <div class="rand"><button class="btn" :disabled="ocupatShare" :aria-busy="ocupatShare" @click="share">{{ ocupatShare ? 'Facem cardul…' : 'Distribuie scorul' }}</button><button class="btn ghost" @click="amesteca">Joacă din nou</button><NuxtLink to="/shop" class="btn ghost">Scorul pe tricou</NuxtLink></div>
           <p v-if="mesajShare" class="k" role="status">{{ mesajShare }}</p>
         </div>
