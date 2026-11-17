@@ -267,6 +267,11 @@ const selectata = ref<Fisa | null>(null)
 const afisata = ref<Fisa | null>(null)
 const plecata = ref<Fisa['id'] | null>(null)
 let sursa: HTMLElement | null = null
+// Efectul la deschidere cu fundal televizor: 'tv-vine' (televizorul zboară spre vizitator) sau 'tv-zoom' (camera se repede în ecran, hiperspațiu).
+const EFECT_TV: 'tv-vine' | 'tv-zoom' = 'tv-vine'
+// Cu „vine”, o fișă cu poză (fără video sau embed) își pune poza pe ecranul televizorului; fereastra arată doar descrierea, sub televizor.
+const fisaPeTv = useState<{ id: string; titlu: string } | null>('fisa-pe-tv', () => null)
+const peTv = ref(false)
 let tIntoarcere: ReturnType<typeof setTimeout> | undefined
 
 // Leagă fereastra de miniatură: de unde pleacă polaroidul și unde se întoarce (keyframes fisa-intra / fisa-iese din banda.css).
@@ -281,6 +286,48 @@ function leaga() {
   const rc = c.getBoundingClientRect()
   const rk = pozaMare.getBoundingClientRect()
   const rs = pozaMica.getBoundingClientRect()
+  // Cu fundalul televizor, fișa iese din ecranul din spate, spre vizitator (fisa-din-tv în banda.css).
+  const ec = document.querySelector<HTMLElement>('.fundal .tv-ec')
+  const re = ec?.getBoundingClientRect()
+  if (re && re.width > 40 && re.bottom > 0 && re.top < innerHeight && +getComputedStyle(ec!.closest('.tv') ?? ec!).opacity !== 0) {
+    c.classList.add('din-tv')
+    // Camera se repede spre televizor: tot fundalul crește din centrul ecranului (html.tv-zoom în banda.css).
+    const f = ec!.closest<HTMLElement>('.fundal')
+    const tv = ec!.closest<HTMLElement>('.tv')
+    if (f && tv && selectata.value) {
+      f.style.setProperty('--tvx', `${re.left + re.width / 2}px`)
+      f.style.setProperty('--tvy', `${re.top + re.height / 2}px`)
+      // Varianta „vine”: doar televizorul zboară în centrul ecranului, până îi umple ecranul lățimea.
+      const f0 = selectata.value
+      const cuPoza = EFECT_TV === 'tv-vine' && !!f0.poza && !f0.video && !f0.embed
+      // Cu poza pe ecran, televizorul vine mai aproape și stă sus; descrierea ocupă partea de jos.
+      const tinta = cuPoza ? Math.min(innerWidth * 0.94, innerHeight * 0.5, 900) : Math.min(innerWidth * 0.92, 860)
+      const sc = Math.min(5, Math.max(1, tinta / re.width))
+      // Centrul ecranului coboară destul cât să încapă și partea de sus a televizorului.
+      const sus = (re.top + re.height / 2 - tv.getBoundingClientRect().top) * sc
+      const yEc = cuPoza ? Math.max(sus + 8, innerHeight * 0.3) : innerHeight / 2
+      tv.style.setProperty('--tvdx', `${innerWidth / 2 - (re.left + re.width / 2)}px`)
+      tv.style.setProperty('--tvdy', `${yEc - (re.top + re.height / 2)}px`)
+      tv.style.setProperty('--tvs', String(sc))
+      fisaPeTv.value = cuPoza ? { id: f0.id, titlu: f0.titlu } : null
+      peTv.value = cuPoza
+      c.classList.toggle('pe-tv', cuPoza)
+      document.documentElement.classList.add(EFECT_TV)
+      if (EFECT_TV === 'tv-vine') {
+        c.style.setProperty('--fx', '0px')
+        c.style.setProperty('--fy', '0px')
+        c.style.setProperty('--fs', '.35')
+        c.classList.add('vine')
+      }
+    }
+    c.style.setProperty('--fx', `${re.left + re.width / 2 - (rc.left + rc.width / 2)}px`)
+    c.style.setProperty('--fy', `${re.top + re.height / 2 - (rc.top + rc.height / 2)}px`)
+    c.style.setProperty('--fs', String(Math.min(0.5, Math.max(0.06, re.width / rc.width * 0.6))))
+    c.style.setProperty('--fr', '0rad')
+    c.style.animation = anim
+    return true
+  }
+  c.classList.remove('din-tv')
   const m = new DOMMatrixReadOnly(getComputedStyle(sursa).transform)
   const s = pozaMica.offsetWidth / (pozaMare.offsetWidth || 300)
   const cx = rc.left + rc.width / 2
@@ -305,11 +352,13 @@ function inchide() {
   if (!selectata.value) return
   leaga()
   selectata.value = null
+  document.documentElement.classList.remove('tv-zoom', 'tv-vine')
+  fisaPeTv.value = null
   clearTimeout(tIntoarcere)
   // Miniatura reapare sub polaroidul care se stinge (fisa-iese: opacitate 1 → 0 după 55%), deci trecerea e o încrucișare, fără cadru gol.
-  tIntoarcere = setTimeout(() => { plecata.value = null; sursa = null }, redus() ? 0 : 170)
+  tIntoarcere = setTimeout(() => { plecata.value = null; sursa = null; peTv.value = false }, redus() ? 0 : 170)
 }
-onBeforeUnmount(() => clearTimeout(tIntoarcere))
+onBeforeUnmount(() => { clearTimeout(tIntoarcere); fisaPeTv.value = null; document.documentElement.classList.remove('tv-zoom', 'tv-vine') })
 // O fișă proprie ștearsă din fereastră dispare din listă: închidem fereastra.
 watch(() => props.fise, (l) => { if (selectata.value && !l.some(f => f.id === selectata.value!.id)) inchide() })
 const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) inchide() } })
@@ -442,7 +491,7 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) i
     :ui="{ overlay: 'fisa-voal bg-[#14211B]/75 data-[state=open]:animate-none data-[state=closed]:animate-none', content: 'max-w-[812px] cron-modal fisa-modal data-[state=open]:animate-none data-[state=closed]:animate-none bg-transparent ring-0 shadow-none divide-y-0', header: 'sr-only', body: 'p-2 sm:p-4 flex justify-center [scrollbar-width:none]' }"
   >
     <template #body>
-      <FisaPolaroid v-if="afisata" :fisa="afisata" mare @inchide="inchide" />
+      <FisaPolaroid v-if="afisata" :fisa="afisata" mare :fara-poza="peTv" @inchide="inchide" />
     </template>
   </UModal>
 </template>

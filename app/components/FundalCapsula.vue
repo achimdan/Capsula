@@ -10,6 +10,8 @@ const tema = computed(() => props.tema ?? activ.value)
 const { areProfil, an15 } = useCapsula()
 // Lumina din cameră urmează ecranul: culoarea medie a imaginii, câteva ori pe secundă.
 const luminaTv = ref('rgb(90 120 255)')
+// Fișa deschisă din cronologie își arată poza pe ecranul televizorului (vezi CronologieFise).
+const fisaPeTv = useState<{ id: string; titlu: string } | null>('fisa-pe-tv', () => null)
 
 const lampa = ref<HTMLElement>()
 let rafId = 0
@@ -252,7 +254,7 @@ onBeforeUnmount(() => {
           <g fill="#070605"><rect x="276" y="220" width="56" height="2.4" rx="1.2" /><rect x="276" y="226" width="56" height="2.4" rx="1.2" /><rect x="276" y="232" width="56" height="2.4" rx="1.2" /><rect x="276" y="238" width="56" height="2.4" rx="1.2" /><rect x="276" y="244" width="56" height="2.4" rx="1.2" /><rect x="276" y="250" width="56" height="2.4" rx="1.2" /><rect x="276" y="256" width="56" height="2.4" rx="1.2" /></g>
           <circle cx="334" cy="140" r="2.4" fill="#E2483A" class="tv-standby" /><circle cx="334" cy="140" r="6" fill="#E2483A" opacity=".2" />
         </svg>
-        <div class="tv-ec"><ClientOnly><EcranTv :an="areProfil ? an15 : null" @lumina="luminaTv = $event" /></ClientOnly><i class="tv-linii" /><i class="tv-bara" /><i class="tv-sticla" /></div>
+        <div class="tv-ec"><ClientOnly><EcranTv :an="areProfil ? an15 : null" @lumina="luminaTv = $event" /></ClientOnly><img v-if="fisaPeTv && !mini" :key="fisaPeTv.id" class="tv-poza" :src="`/fise/${fisaPeTv.id}-960.webp`" alt="" decoding="async"><i class="tv-linii" /><i class="tv-bara" /><i class="tv-sticla" /></div>
       </div>
     </template>
   </div>
@@ -349,6 +351,9 @@ onBeforeUnmount(() => {
   -webkit-mask-image:radial-gradient(50% 60% at 50% 0,#000 40%,transparent);mask-image:radial-gradient(50% 60% at 50% 0,#000 40%,transparent)}
 .tv svg{filter:drop-shadow(0 0 30px color-mix(in srgb,currentColor 18%,transparent))}
 /* Televizorul de plastic din anii '90, pe un video */
+.tv-poza{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.15) contrast(1.05);animation:tv-poza-intra .5s .55s steps(6,end) both}
+@keyframes tv-poza-intra{from{opacity:0;transform:scaleY(.02)}50%{opacity:1;transform:scaleY(.02) scaleX(1)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.tv-poza{animation:none}}
 .tv-90 .tv-ec{left:10.56%;top:18.13%;width:78.89%;height:54.38%;border-radius:7% / 10%}
 .tv-standby{animation:tv-clipire 2.4s steps(1) infinite}
 @keyframes tv-clipire{50%{opacity:0}}
