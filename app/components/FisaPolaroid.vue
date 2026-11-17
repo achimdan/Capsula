@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { Fisa } from '~/data/fise'
+// `faraPoza`: poza stă pe ecranul televizorului din fundal, fișa arată doar descrierea.
 // `mare`: fișa deschisă din cronologie, cu detalii, video (dacă fișa are) și buton de închidere.
-const props = withDefaults(defineProps<{ fisa: Fisa; ascundeAn?: boolean; actiuni?: boolean; developare?: boolean; mare?: boolean }>(), {
-  ascundeAn: false, actiuni: true, developare: false, mare: false
+const props = withDefaults(defineProps<{ fisa: Fisa; ascundeAn?: boolean; actiuni?: boolean; developare?: boolean; mare?: boolean; faraPoza?: boolean }>(), {
+  ascundeAn: false, actiuni: true, developare: false, mare: false, faraPoza: false
 })
 defineEmits<{ inchide: [] }>()
 // Filmul pornește mut, în buclă; cu „reduce motion” așteaptă să fie pornit de cititor.
@@ -77,8 +78,8 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
 </script>
 
 <template>
-  <article ref="card" class="fisa" :class="{ dev: developare, mare }" @pointermove="pePointer" @pointerleave="laIesire" @pointercancel="laIesire">
-    <div class="img" :style="{ background: `linear-gradient(135deg, ${fisa.culori[0]}, ${fisa.culori[1]})` }">
+  <article ref="card" class="fisa" :class="{ dev: developare, mare, 'fara-poza': faraPoza }" @pointermove="pePointer" @pointerleave="laIesire" @pointercancel="laIesire">
+    <div v-if="!faraPoza" class="img" :style="{ background: `linear-gradient(135deg, ${fisa.culori[0]}, ${fisa.culori[1]})` }">
       <video
         v-if="cuVideo"
         ref="film"
@@ -211,7 +212,14 @@ video.foto{cursor:pointer;background:#000}
   .mare>.meta{margin-top:44px}
   .mare>.glare{grid-column:1/-1}
   .mare .inchide{top:10px;right:10px;box-shadow:none}
+  .mare.fara-poza{display:block;padding:14px 22px 16px}
+  .mare.fara-poza>.meta{margin-top:0}
 }
+/* Descrierea de sub televizor: mai scundă, ca să încapă sub ecran. */
+.fara-poza{width:min(640px,100%)}
+.fara-poza>.meta,.fara-poza h3{padding-right:52px}
+.fara-poza h3{font-size:clamp(24px,6vw,32px)}
+.fara-poza .detalii div{padding:5px 0}
 .banda.lipit{animation:snap .45s var(--ease-ff) both}
 @keyframes snap{0%{transform:translateY(-10px) rotate(-30deg) scale(1.5);opacity:0}60%{transform:translateY(1px) rotate(4deg) scale(.9);opacity:1}100%{transform:none}}
 .etichete{display:inline-grid}
