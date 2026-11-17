@@ -23,9 +23,12 @@ let limita: ReturnType<typeof setTimeout> | undefined
 // o lăsăm în sessionStorage și oferim reîncercarea.
 let plecat = false
 const contNeincarcat = ref(false)
+// Butonul rămâne pe pagină cât reîncercăm (doar dezactivat), ca focusul de la tastatură să nu se piardă.
+const seIncarca = ref(false)
 async function continua() {
-  contNeincarcat.value = false
+  seIncarca.value = true
   await cont.incarca()
+  seIncarca.value = false
   if (cont.eroare.value) { contNeincarcat.value = true; return }
   navigateTo(reia(), { replace: true })
 }
@@ -57,7 +60,7 @@ onBeforeUnmount(() => clearTimeout(limita))
         <span class="k">Conectare</span>
         <h1 class="d2">Ești conectat, dar datele nu au venit</h1>
         <p class="lead" role="alert">Nu am putut încărca datele contului. Ce ai vrut să păstrezi te așteaptă; încearcă din nou.</p>
-        <button type="button" class="btn semnal" @click="continua">Încearcă din nou</button>
+        <button type="button" class="btn semnal" :disabled="seIncarca" :aria-busy="seIncarca" @click="continua">{{ seIncarca ? 'Încercăm…' : 'Încearcă din nou' }}</button>
       </template>
       <template v-else>
         <span class="k">Conectare</span>
