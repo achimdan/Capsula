@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buclaTv, camera, durataBucla, ECRAN_TV, epocaPentruAn, progresPin, programLa } from '../app/utils/ecranTv'
+import { buclaTv, camera, durataBucla, ECRAN_TV, epocaPentruAn, tintaSnap, progresPin, programLa } from '../app/utils/ecranTv'
 
 describe('epocaPentruAn', () => {
   it('alege epoca după an', () => {
@@ -54,5 +54,19 @@ describe('pin și cameră', () => {
     expect(tv.w * ECRAN_TV.televizor.w * s.scara).toBeGreaterThanOrEqual(vp.w)
     expect(tv.h * ECRAN_TV.televizor.h * s.scara).toBeGreaterThanOrEqual(vp.h)
     expect(camera(1, tv, ECRAN_TV.televizor, vp)).toMatchObject({ scara: 1 })
+  })
+})
+
+describe('tintaSnap', () => {
+  it('urmează direcția derulării', () => {
+    expect(tintaSnap(0.13, 1)).toBe('jos')
+    expect(tintaSnap(0.6, -1)).toBe('sus')
+    expect(tintaSnap(0.9, -1)).toBe('sus')
+  })
+  it('fără direcție alege capătul mai apropiat, iar la capete nu mișcă nimic', () => {
+    expect(tintaSnap(0.3, 0)).toBe('sus')
+    expect(tintaSnap(0.7, 0)).toBe('jos')
+    expect(tintaSnap(0, 1)).toBeNull()
+    expect(tintaSnap(1, -1)).toBeNull()
   })
 })

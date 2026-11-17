@@ -142,7 +142,7 @@ function cadru(acum: number) {
 function porneste() {
   cancelAnimationFrame(raf)
   raf = 0
-  if (document.hidden || matchMedia('(prefers-reduced-motion:reduce)').matches) {
+  if (document.hidden || miscareRedusa()) {
     deseneaza(0)
     return
   }

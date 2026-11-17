@@ -34,7 +34,7 @@ onMounted(async () => {
   if (!props.autofocus || !input.value) return
   input.value.focus({ preventScroll: true })
   // Câmpul e sub 13 opțiuni: îl aducem la mijloc, ca sugestiile să aibă loc dedesubt.
-  const lin = matchMedia('(prefers-reduced-motion: reduce)').matches
+  const lin = miscareRedusa()
   input.value.scrollIntoView({ block: 'center', behavior: lin ? 'auto' : 'smooth' })
 })
 

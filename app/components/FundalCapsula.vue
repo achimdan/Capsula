@@ -34,7 +34,7 @@ function acordeaza() {
   rafId = 0
   if (props.mini || tema.value !== 'tapet') return
   const fin = matchMedia('(pointer:fine)').matches
-  const calm = matchMedia('(prefers-reduced-motion:reduce)').matches
+  const calm = miscareRedusa()
   poz = { x: window.innerWidth * 0.3, y: window.innerHeight * 0.25 }
   tinta = { ...poz }
   if (lampa.value) lampa.value.style.transform = `translate3d(${poz.x}px,${poz.y}px,0)`
@@ -78,7 +78,7 @@ function paralaxa() {
   radacina.value?.style.removeProperty('--sc')
   if (props.mini || !['bloc', 'televizor', 'televizor-90'].includes(tema.value)) return
   // Cu mișcare redusă, televizorul stă retras și estompat (pista nu mai apare), fără ascultători.
-  if (matchMedia('(prefers-reduced-motion:reduce)').matches) { if (esteTv.value) nextTick(aseazaTv); return }
+  if (miscareRedusa()) { if (esteTv.value) nextTick(aseazaTv); return }
   window.addEventListener('scroll', laScroll, { passive: true })
   window.addEventListener('resize', laScroll, { passive: true })
   nextTick(citesteScroll)

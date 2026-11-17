@@ -174,3 +174,8 @@ html.tv-vine .fisa-voal,html.tv-zoom .fisa-voal{background-color:rgb(20 33 27 / 
   html.tv-zoom .fundal{transform:none;filter:none}
   .fisa-modal[data-state],.fisa-voal[data-state]{animation-duration:.01ms}
 }
+
+/* Mod „lite” (dispozitive slabe, vezi utils/dispozitiv.ts): ca la mișcare redusă, plus fără efecte scumpe de randare. */
+html.lite *,html.lite *::before,html.lite *::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important;scroll-behavior:auto!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html.lite .fundal .zgomot,html.lite .fundal .vhs-lumina,html.lite .fundal::after{display:none!important}
+html.lite .fundal *{will-change:auto!important}

@@ -51,7 +51,7 @@ const pasEtichete = computed(() => (ani.value.length > 36 ? 10 : 5))
 
 const banda = ref<HTMLElement>()
 const pe = ref<HTMLElement>()
-const redus = () => matchMedia('(prefers-reduced-motion: reduce)').matches
+const redus = () => miscareRedusa()
 // Lățimea exactă (poate fi fracționară pe mobil), ca anul să cadă fix sub capul de citire.
 const latCol = () => banda.value?.querySelector<HTMLElement>('.an')?.getBoundingClientRect().width || 1
 const laIndex = (i: number) => Math.min(ani.value.length - 1, Math.max(0, i))

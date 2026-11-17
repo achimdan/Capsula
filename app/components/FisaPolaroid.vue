@@ -14,7 +14,7 @@ const embedPornit = ref(false)
 const embedSrc = computed(() => props.fisa.embed ? `https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(props.fisa.embed.url)}&show_text=false&width=500` : '')
 const merge = ref(false)
 const faraMiscare = ref(false)
-onMounted(() => { faraMiscare.value = matchMedia('(prefers-reduced-motion: reduce)').matches })
+onMounted(() => { faraMiscare.value = miscareRedusa() })
 function comutaFilm() {
   const v = film.value
   if (!v) return
