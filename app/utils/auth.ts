@@ -26,6 +26,11 @@ export function decodeazaJwt<T = Record<string, unknown>>(token: string): T | nu
   }
 }
 
+// Calea fără slash final și cu litere mici, ca `/Admin/` să fie tratată ca `/admin`.
+export function normalizeazaCale(cale: string): string {
+  return cale.toLowerCase().replace(/\/+$/, '') || '/'
+}
+
 // Unde trimitem utilizatorul după /confirm: înapoi pe pagina de pe care a pornit spre Google.
 // Doar căi interne (fără `//alt-site`, `/\alt-site` sau scheme), altfel acasă. Testul e opțional: nu mai forțăm /start.
 export function rutaDupaLogin(inapoi: unknown): string {
@@ -39,7 +44,7 @@ export function rutaDupaLogin(inapoi: unknown): string {
     return '/'
   }
   // `/..//alt-site` se normalizează în `//alt-site` (adresă către alt domeniu), deci verificăm și după normalizare.
-  if (url.origin !== 'https://capsula.invalid' || url.pathname.startsWith('//') || url.pathname === '/confirm') return '/'
+  if (url.origin !== 'https://capsula.invalid' || url.pathname.startsWith('//') || normalizeazaCale(url.pathname) === '/confirm') return '/'
   return url.pathname + url.search + url.hash
 }
 

@@ -43,6 +43,10 @@ const serieAfisata = computed(() => autentificat.value && [azi, ieri].includes(s
 onMounted(() => {
   if (deschise.value) curenta.value = deschise.value - 1
 })
+// Caseta terminată fără cont, apoi intrare din antet: seria de azi se numără tot o dată.
+watch(autentificat, (da) => {
+  if (da && deschise.value === 5 && serie.value.ultima !== azi) serie.value = actualizeazaSerie(serie.value, azi, ieri)
+}, { immediate: true })
 </script>
 
 <template>
@@ -79,7 +83,7 @@ v-for="(f, i) in fise" :key="f.id" type="button" class="slot" :aria-pressed="cur
       </div>
       <div class="scena"><FisaPolaroid v-if="curenta !== null && fise[curenta]" :key="fise[curenta]!.id" :fisa="fise[curenta]!" developare /></div>
       <div v-if="deschise === 5 && !autentificat" class="rand">
-        <p class="lead">Vrei să-ți numărăm zilele la rând? Intră cu Google și seria te urmărește.</p>
+        <p class="lead">Vrei să-ți numărăm zilele la rând? Intră cu Google și o ținem în acest browser.</p>
         <button type="button" class="btn ghost" @click="cereCont({ tip: 'serie', zi: azi })">Păstrează seria</button>
       </div>
       <div v-if="deschise === 5" class="rand"><NuxtLink to="/tape" class="btn ghost">Caseta mea</NuxtLink><NuxtLink to="/random" class="btn ghost">▶▶ Random Hit</NuxtLink></div>

@@ -80,7 +80,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', tasta))
       <template v-if="reveal && profilCititor">
         <ProfilReveal :profil="profilCititor" @refa="refa" />
         <div v-if="!autentificat" class="local">
-          <p class="k tasta">Rezultatul stă pe acest dispozitiv. Intră cu Google ca să-l păstrezi în cont.</p>
+          <p class="k tasta">Rezultatul stă pe acest dispozitiv. Intră cu Google ca să-l păstrezi în cont, dacă contul nu are deja un test.</p>
           <button type="button" class="btn ghost nav-b" @click="deschide">Intră cu Google</button>
         </div>
       </template>

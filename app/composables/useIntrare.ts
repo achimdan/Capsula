@@ -3,7 +3,7 @@
 import { CHEIE_INTRARE, adaugaUnic, citesteIntrare, type ActiuneAmanata } from '~/utils/intrare'
 import { actualizeazaSerie } from '~/utils/casetaZilei'
 
-export const TEXT_PASTREAZA = 'Ca să păstrezi caseta, intră cu Google.'
+export const TEXT_PASTREAZA = 'Ca să păstrezi ce ai ales, intră cu Google.'
 
 export function useIntrare() {
   const deschis = useState('intrare-deschis', () => false)
@@ -36,6 +36,8 @@ export function useIntrare() {
   async function pleaca() {
     try {
       const inapoi = router.currentRoute.value.fullPath
+      // Reîncercare din /confirm: păstrăm pagina și acțiunea de la prima plecare.
+      if (normalizeazaCale(router.currentRoute.value.path) === '/confirm' && sessionStorage.getItem(CHEIE_INTRARE)) throw 0
       sessionStorage.setItem(CHEIE_INTRARE, JSON.stringify({ inapoi, actiune: actiune.value }))
     } catch {}
     await intraCuGoogle()

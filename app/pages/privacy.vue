@@ -76,7 +76,7 @@ async function sterge() {
         Păstrăm în browser (localStorage) sesiunea de conectare, o copie a profilului, a testului și a casetei, ca
         pagina să se deschidă repede, plus ce alegi pe site: fișele marcate „Am avut asta”, voturile pentru orașe,
         scorurile din „Ghicește anul”, Caseta zilei și seria ei, interesul pentru magazin și preferințele de afișare.
-        Acestea rămân doar în browserul tău; le ștergi golind datele site-ului. Fără cont, rezultatul testului, profilul și setările stau doar în acest browser (localStorage), până când intri în cont. Nu folosim cookie-uri de urmărire.
+        Acestea rămân doar în browserul tău; le ștergi golind datele site-ului. Fără cont, rezultatul testului, profilul și setările stau doar în acest browser (localStorage), până când intri în cont. Dacă acel cont are deja profil sau test, rămân cele din cont și copia din browser e înlocuită. Nu folosim cookie-uri de urmărire.
       </p>
 
       <h2 class="d2">Drepturile tale</h2>

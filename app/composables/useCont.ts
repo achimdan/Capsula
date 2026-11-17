@@ -13,6 +13,8 @@ export function useCont() {
   const profilCitit = useStocare<ProfilCitit | null>('profilcitit', null)
   const chestionar = useStocare<StareChestionar>('chestionar', { raspunsuri: {}, pas: 0, refacere: false })
   const proprietar = useStocare<string | null>('cont-local', null)
+  const serie = useStocare<{ ultima: string, zile: number }>('serie', { ultima: '', zile: 0 })
+  const casetaZilei = useStocare<{ data: string, deschise: number }>('caseta-zilei', { data: '', deschise: 0 })
   // id-ul contului ale cărui date sunt încărcate în refs; null = nimic încărcat, scrierile stau.
   const incarcat = useState<string | null>('cont:incarcat', () => null)
   const eroare = useState<boolean>('cont:eroare', () => false)
@@ -82,6 +84,9 @@ export function useCont() {
     incarcat.value = null
     proprietar.value = null
     aplica({ profil: PROFIL_GOL, profilCitit: null, chestionar: CHESTIONAR_GOL, caseta: [] })
+    // Seria și caseta zilei nu sunt în cont: la ieșire le ștergem, ca următorul cont să nu le preia.
+    serie.value = { ultima: '', zile: 0 }
+    casetaZilei.value = { data: '', deschise: 0 }
   }
 
   return { userId, incarcat, eroare, profilCitit, chestionar, incarca, reseteaza, actualizeazaCache }

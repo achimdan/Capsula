@@ -3,9 +3,9 @@
 import { LIMITE_FISA, valideazaFisa, type FisaNoua } from '~/utils/fiseProprii'
 import { ORDINE_CATEGORII } from '~/utils/personalizare'
 
-const props = defineProps<{ anImplicit: number }>()
+const props = defineProps<{ anImplicit: number | null }>()
 const { userId, fise, adauga, salveaza } = useFiseProprii()
-const { cereCont } = useIntrare()
+const { deschide } = useIntrare()
 
 const { profil } = useCapsula()
 const anMax = new Date().getFullYear()
@@ -38,7 +38,7 @@ async function trimite() {
 
     <template v-if="!userId">
       <p class="lead">Scrie ce ți-a rămas din anii aceia: un obiect, o melodie, un loc. Fișele tale stau pe bandă lângă celelalte și le vezi doar tu, din contul tău.</p>
-      <div><button type="button" class="btn ghost" @click="cereCont()">Intră ca să scrii</button></div>
+      <div><button type="button" class="btn ghost" @click="deschide">Intră ca să scrii</button></div>
     </template>
 
     <form v-else class="card forma" novalidate @submit.prevent="trimite">

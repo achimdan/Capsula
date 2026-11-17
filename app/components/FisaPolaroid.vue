@@ -35,11 +35,11 @@ const salvata = computed(() => caseta.value.includes(props.fisa.id))
 const avut = computed(() => amAvut.value.includes(props.fisa.id))
 const { cereCont } = useIntrare()
 function comutaCaseta() {
-  if (!cereCont({ tip: 'caseta', id: props.fisa.id })) return
+  if (!salvata.value && !cereCont({ tip: 'caseta', id: props.fisa.id })) return
   comuta(caseta, props.fisa.id)
 }
 function comutaAvut(): boolean {
-  if (!cereCont({ tip: 'amavut', id: props.fisa.id })) return false
+  if (!avut.value && !cereCont({ tip: 'amavut', id: props.fisa.id })) return false
   comuta(amAvut, props.fisa.id)
   return true
 }

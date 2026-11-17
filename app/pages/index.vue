@@ -88,7 +88,7 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
       </ClientOnly>
     </section>
 
-    <ClientOnly><AmintiriTale :an-implicit="an15" /></ClientOnly>
+    <ClientOnly><AmintiriTale :an-implicit="areProfil ? an15 : null" /></ClientOnly>
 
     <section v-if="profil.oras" class="sec">
       <div class="k">Stratul orașului</div>

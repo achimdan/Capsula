@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { dateProfilCont, decodeazaJwt, emailValid, esteSuperAdmin, initiale, mesajEroareLogin, normalizeazaEmail, rutaDupaLogin } from '../app/utils/auth'
+import { dateProfilCont, decodeazaJwt, emailValid, esteSuperAdmin, initiale, mesajEroareLogin, normalizeazaCale, normalizeazaEmail, rutaDupaLogin } from '../app/utils/auth'
 
 function jwt(payload: object): string {
   const b64 = (s: string) => btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
@@ -39,7 +39,7 @@ describe('după login', () => {
     expect(rutaDupaLogin('/start')).toBe('/start')
   })
   it('acceptă doar căi interne', () => {
-    for (const rau of [null, undefined, 42, '', 'game', 'https://rau.ro', '//rau.ro', '/\\rau.ro', '/\trau', 'javascript:alert(1)', '/..//rau.ro', '/.//rau.ro', '/a/..//rau.ro', '/%2e%2e//rau.ro', '/confirm', '/confirm?x=1', '/' + 'a'.repeat(600)]) {
+    for (const rau of [null, undefined, 42, '', 'game', 'https://rau.ro', '//rau.ro', '/\\rau.ro', '/\trau', 'javascript:alert(1)', '/..//rau.ro', '/.//rau.ro', '/a/..//rau.ro', '/%2e%2e//rau.ro', '/confirm', '/confirm?x=1', '/confirm/', '/Confirm', '/' + 'a'.repeat(600)]) {
       expect(rutaDupaLogin(rau)).toBe('/')
     }
   })
@@ -76,5 +76,13 @@ describe('esteSuperAdmin', () => {
     expect(esteSuperAdmin({ app_metadata: { role: 'super_admin' }, amr: [{ method: 'otp' }] })).toBe(false)
     expect(esteSuperAdmin({ app_metadata: { role: 'super_admin' } })).toBe(false)
     expect(esteSuperAdmin(null)).toBe(false)
+  })
+})
+
+describe('normalizeazaCale', () => {
+  it('scoate slash-ul final și literele mari', () => {
+    expect(normalizeazaCale('/ADMIN/')).toBe('/admin')
+    expect(normalizeazaCale('/tv//')).toBe('/tv')
+    expect(normalizeazaCale('/')).toBe('/')
   })
 })
