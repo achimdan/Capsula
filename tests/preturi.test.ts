@@ -37,13 +37,13 @@ describe('preturi', () => {
     expect(etichetaAn(1998, true)).toBe('1998')
   })
 
-  it('datele respectă regulile: sursă cu URL, neverificat, ROL înainte de 2005', () => {
+  it('datele respectă regulile: sursă cu URL, ROL înainte de 2005', () => {
     const ids = new Set(PRETURI.map(p => p.id))
     expect(ids.size).toBe(PRETURI.length)
     for (const p of PRETURI) {
       expect(p.url).toMatch(/^https:\/\//)
       expect(p.sursa.length).toBeGreaterThan(5)
-      expect(p.verificat).toBe(false)
+      expect(typeof p.verificat).toBe("boolean")
       if (p.an < 2005) expect(p.moneda).toBe('ROL')
       if (p.an > 2005) expect(p.moneda).toBe('RON')
     }

@@ -108,7 +108,7 @@ Fonturile se descarcă la build prin `@nuxt/fonts` și se servesc din `/_fonts`,
 ## De rezolvat
 
 - [x] Cont Supabase nou, separat.
-- [ ] Verificarea tuturor fișelor din `app/data/fise.ts` (toate sunt `verificat: false`).
+- [ ] Verificarea fișelor din `app/data/fise.ts`: 91 au surse; 13 rămân `verificat: false`, amintiri fără sursă publică: RO-0101, 0108, 0124, 0128, 0130, 0133, 0134, 0136, 0138, 0140, 0141, 0148, 0159.
 - [ ] Ani confirmați pentru discotecile din Cluj (sursele diferă între ele).
 - [ ] Materiale originale (poze, flyere) cu acordul autorilor.
 - [ ] Filme pentru fișele unde se potrivesc (câmpul `video`): nicio fișă nu are încă; aceleași reguli de licență ca la poze.

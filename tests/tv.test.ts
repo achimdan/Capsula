@@ -3,11 +3,11 @@ import { EMISIUNI } from '../app/data/tv'
 import { eticheteAni, filtreazaTv, grupeazaPeDecade } from '../app/utils/tv'
 
 describe('date La TV', () => {
-  it('toate fișele sunt neverificate, cu sursă și id unic', () => {
+  it('toate fișele au sursă și id unic', () => {
     expect(EMISIUNI.length).toBeGreaterThanOrEqual(14)
     expect(new Set(EMISIUNI.map(e => e.id)).size).toBe(EMISIUNI.length)
     for (const e of EMISIUNI) {
-      expect(e.verificat).toBe(false)
+      expect(typeof e.verificat).toBe("boolean")
       expect(e.url).toMatch(/^https:\/\//)
     }
   })
