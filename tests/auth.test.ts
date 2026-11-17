@@ -33,9 +33,15 @@ describe('decodeazaJwt', () => {
 })
 
 describe('după login', () => {
-  it('trimite la test doar dacă lipsește profilul', () => {
-    expect(rutaDupaLogin(false)).toBe('/start')
-    expect(rutaDupaLogin(true)).toBe('/')
+  it('întoarce pe pagina de plecare, fără să forțeze testul', () => {
+    expect(rutaDupaLogin('/game?an=1998#scor')).toBe('/game?an=1998#scor')
+    expect(rutaDupaLogin('/daily')).toBe('/daily')
+    expect(rutaDupaLogin('/start')).toBe('/start')
+  })
+  it('acceptă doar căi interne', () => {
+    for (const rau of [null, undefined, 42, '', 'game', 'https://rau.ro', '//rau.ro', '/\\rau.ro', '/\trau', 'javascript:alert(1)', '/confirm', '/confirm?x=1', '/' + 'a'.repeat(600)]) {
+      expect(rutaDupaLogin(rau)).toBe('/')
+    }
   })
   it('explică conectările expirate separat de celelalte erori', () => {
     expect(mesajEroareLogin(null, null)).toBeNull()

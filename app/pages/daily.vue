@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { areProfil, profil, an15, fiseVizibile } = useCapsula()
+const { profil, an15, fiseVizibile } = useCapsula()
+const { autentificat } = useAuth()
+const { cereCont } = useIntrare()
 
 const azi = cheieZi(new Date())
 const ieri = cheieIeri(Date.now())
@@ -20,7 +22,7 @@ function deschide(i: number) {
   if (i > deschise.value) return
   if (i === deschise.value) {
     zi.value = { data: azi, deschise: i + 1 }
-    if (i === 4 && serie.value.ultima !== azi) {
+    if (i === 4 && autentificat.value && serie.value.ultima !== azi) {
       serie.value = actualizeazaSerie(serie.value, azi, ieri)
     }
   }
@@ -37,9 +39,8 @@ function pornesteCaseta() {
 }
 onBeforeUnmount(() => clearTimeout(oprire))
 const progres = computed(() => deschise.value / 5)
-const serieAfisata = computed(() => [azi, ieri].includes(serie.value.ultima) ? serie.value.zile : 0)
+const serieAfisata = computed(() => autentificat.value && [azi, ieri].includes(serie.value.ultima) ? serie.value.zile : 0)
 onMounted(() => {
-  if (!areProfil.value) return navigateTo('/')
   if (deschise.value) curenta.value = deschise.value - 1
 })
 </script>
@@ -77,6 +78,10 @@ v-for="(f, i) in fise" :key="f.id" type="button" class="slot" :aria-pressed="cur
         <template v-if="serieAfisata"> · 🔥 {{ serieAfisata }} {{ serieAfisata === 1 ? 'zi' : 'zile la rând' }}</template>
       </div>
       <div class="scena"><FisaPolaroid v-if="curenta !== null && fise[curenta]" :key="fise[curenta]!.id" :fisa="fise[curenta]!" developare /></div>
+      <div v-if="deschise === 5 && !autentificat" class="rand">
+        <p class="lead">Vrei să-ți numărăm zilele la rând? Intră cu Google și seria te urmărește.</p>
+        <button type="button" class="btn ghost" @click="cereCont({ tip: 'serie', zi: azi })">Păstrează seria</button>
+      </div>
       <div v-if="deschise === 5" class="rand"><NuxtLink to="/tape" class="btn ghost">Caseta mea</NuxtLink><NuxtLink to="/random" class="btn ghost">▶▶ Random Hit</NuxtLink></div>
     </section>
   </main>

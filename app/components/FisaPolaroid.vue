@@ -33,8 +33,16 @@ async function sterge() {
 }
 const salvata = computed(() => caseta.value.includes(props.fisa.id))
 const avut = computed(() => amAvut.value.includes(props.fisa.id))
-function comutaCaseta() { comuta(caseta, props.fisa.id) }
-function comutaAvut() { comuta(amAvut, props.fisa.id) }
+const { cereCont } = useIntrare()
+function comutaCaseta() {
+  if (!cereCont({ tip: 'caseta', id: props.fisa.id })) return
+  comuta(caseta, props.fisa.id)
+}
+function comutaAvut(): boolean {
+  if (!cereCont({ tip: 'amavut', id: props.fisa.id })) return false
+  comuta(amAvut, props.fisa.id)
+  return true
+}
 // Efecte vizuale (doar prezentare): înclinare 3D la pointer, ștampilă, sunet de bandă
 const card = ref<HTMLElement | null>(null)
 const stamped = ref(false)
@@ -61,7 +69,7 @@ function laIesire() {
   for (const k of ['--rx', '--ry']) el.style.removeProperty(k)
 }
 onBeforeUnmount(() => cancelAnimationFrame(raf))
-function apasaAvut() { stamped.value = !avut.value; comutaAvut() }
+function apasaAvut() { const va = !avut.value; if (comutaAvut()) stamped.value = va }
 function apasaCaseta() { comutaCaseta() }
 const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.fisa.an_exact ? '' : ' ≈'))
 </script>

@@ -11,7 +11,6 @@ const oras = computed(() => profil.value.oras === 'Alt oraș' ? 'România' : (pr
 const cheie = computed(() => `${produs.value}-${an15.value}`)
 const notat = computed(() => interes.value.includes(cheie.value))
 function anunta() { if (!notat.value) interes.value = [...interes.value, cheie.value] }
-onMounted(() => { if (!areProfil.value) navigateTo('/') })
 </script>
 
 <template>
@@ -20,6 +19,7 @@ onMounted(() => { if (!areProfil.value) navigateTo('/') })
       <div class="k">Magazin · în curând</div>
       <h1 class="d1">Anul tău, tipărit</h1>
       <p class="lead">Fiecare produs se face pe comandă, cu anul, orașul și scorul tău. Încă nu vindem: spune-ne ce ți-ar plăcea și te anunțăm la lansare.</p>
+      <p v-if="!areProfil" class="lead invita">Fără test, tipărim pentru 1984. <NuxtLink to="/start">Fă testul</NuxtLink></p>
       <div class="cfg card">
         <div class="mock">
           <div v-if="produs === 'tricou'" class="tee">

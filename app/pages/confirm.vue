@@ -2,9 +2,9 @@
 // Întoarcerea din Google. Clientul Supabase schimbă singur codul din URL pe o sesiune;
 // aici doar așteptăm sesiunea și mergem mai departe.
 const { autentificat } = useAuth()
-const { areProfil } = useCapsula()
 const route = useRoute()
-const { deschide } = useIntrare()
+const { deschide, reia } = useIntrare()
+const cont = useCont()
 useHead({ title: 'Te conectăm · Capsula', meta: [{ name: 'robots', content: 'noindex' }] })
 
 function parametru(nume: string): string | null {
@@ -17,9 +17,15 @@ function parametru(nume: string): string | null {
 const eroare = ref(mesajEroareLogin(parametru('error_code') ?? parametru('error'), parametru('error_description')))
 let limita: ReturnType<typeof setTimeout> | undefined
 
-watchEffect(() => {
-  if (autentificat.value) navigateTo(rutaDupaLogin(areProfil.value), { replace: true })
-})
+// Înapoi pe pagina de pe care a plecat spre Google. Întâi datele contului (profilul făcut fără cont se urcă
+// acum, vezi decideStare), apoi acțiunea amânată („În casetă”, „Am avut asta”, seria), ca să nu fie suprascrisă.
+let plecat = false
+watch(autentificat, async (da) => {
+  if (!da || plecat) return
+  plecat = true
+  await cont.incarca()
+  navigateTo(reia(), { replace: true })
+}, { immediate: true })
 
 onMounted(() => {
   // Fără sesiune după câteva secunde: întoarcere deschisă în alt browser sau deja folosită.

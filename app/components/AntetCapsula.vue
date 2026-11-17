@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { ModulSetare } from '~/utils/setari'
-const { areProfil, caseta } = useCapsula()
+const { caseta } = useCapsula()
 const route = useRoute()
 const { autentificat } = useAuth()
+const { deschide } = useIntrare()
 const module = useModule()
 // Linkurile modulelor apar doar când sunt pornite din /admin.
 const toate: { to: string, text: string, modul?: ModulSetare }[] = [
@@ -28,11 +29,11 @@ watch(() => route.path, () => { deschis.value = false })
   <header class="antet">
     <NuxtLink to="/" class="logo">Capsula</NuxtLink>
     <button
-      v-if="autentificat && areProfil" type="button" class="meniu" :aria-expanded="deschis" aria-controls="nav-principal"
+      type="button" class="meniu" :aria-expanded="deschis" aria-controls="nav-principal"
       @click="deschis = !deschis">
       {{ deschis ? 'Închide' : 'Meniu' }}<span v-if="caseta.length" class="nr" :aria-label="`${caseta.length} în caseta ta`">{{ caseta.length }}</span>
     </button>
-    <nav v-if="autentificat && areProfil" id="nav-principal" aria-label="Principal" :class="{ deschis }">
+    <nav id="nav-principal" aria-label="Principal" :class="{ deschis }">
       <div class="lista">
         <NuxtLink v-for="(l, i) in linkuri" :key="l.to" :style="{ '--i': i }" :to="l.to" :aria-current="route.path === l.to ? 'page' : undefined" class="pista">
           <span class="num" aria-hidden="true">{{ pista(i) }}</span>
@@ -42,6 +43,7 @@ watch(() => route.path, () => { deschis.value = false })
       </div>
     </nav>
     <AntetUtilizator v-if="autentificat" class="cont" />
+    <button v-else type="button" class="intra cont" @click="deschide">Intră</button>
   </header>
 </template>
 
@@ -106,4 +108,6 @@ nav a{font-weight:500;font-size:15px;text-decoration:none;white-space:nowrap}
 @media (min-width:601px) and (prefers-reduced-motion:reduce){.nume,.pista{transition:none}}
 @media (max-width:600px) and (prefers-reduced-motion:reduce){nav,.lista a{transition:none!important}}
 .nr{font-family:var(--mono);font-size:11px;background:var(--signal);color:#14211B;border-radius:999px;padding:0 6px;margin-left:6px}
+.intra{min-height:44px;padding:0 16px;background:transparent;color:var(--ink);border:0;border-radius:2px;box-shadow:inset 0 0 0 2px var(--ink);font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:18px;letter-spacing:.03em;cursor:pointer}
+.intra:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
 </style>

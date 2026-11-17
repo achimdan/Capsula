@@ -26,9 +26,20 @@ export function decodeazaJwt<T = Record<string, unknown>>(token: string): T | nu
   }
 }
 
-// Unde trimitem utilizatorul după /confirm: la test dacă nu are încă profil.
-export function rutaDupaLogin(areProfil: boolean): string {
-  return areProfil ? '/' : '/start'
+// Unde trimitem utilizatorul după /confirm: înapoi pe pagina de pe care a pornit spre Google.
+// Doar căi interne (fără `//alt-site`, `/\alt-site` sau scheme), altfel acasă. Testul e opțional: nu mai forțăm /start.
+export function rutaDupaLogin(inapoi: unknown): string {
+  if (typeof inapoi !== 'string' || !inapoi.startsWith('/') || inapoi.length > 512) return '/'
+  // Caractere de control sau backslash: browserele le interpretează diferit, deci nu le acceptăm deloc.
+  if ([...inapoi].some(c => c === '\\' || c.charCodeAt(0) < 0x20 || c.charCodeAt(0) === 0x7f)) return '/'
+  let url: URL
+  try {
+    url = new URL(inapoi, 'https://capsula.invalid')
+  } catch {
+    return '/'
+  }
+  if (url.origin !== 'https://capsula.invalid' || url.pathname === '/confirm') return '/'
+  return url.pathname + url.search + url.hash
 }
 
 // Mesaj pentru erorile din URL-ul de întoarcere de la Google (cod expirat, refuzat, alt browser).
