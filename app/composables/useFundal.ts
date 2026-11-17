@@ -10,7 +10,8 @@ export const FUNDALURI: { id: Fundal; nume: string; descriere: string }[] = [
   { id: 'ceata', nume: 'Fișe în ceață', descriere: 'Fișele plutesc încet, ca înainte de intrare.' },
   { id: 'bloc', nume: 'Bloc la apus', descriere: 'Blocuri de pe vremuri, soare jos, ferestre aprinse.' },
   { id: 'pop', nume: 'Pop anii \'90', descriere: 'Casetă, Tamagotchi, telefon cu fir și dischetă.' },
-  { id: 'televizor', nume: 'Televizor în întuneric', descriere: 'Un CRT într-o cameră neluminată, cu ecranul care se schimbă.' }
+  { id: 'televizor', nume: 'Televizor anii \'80', descriere: 'Televizor de lemn, cu clape și antenă, într-o cameră întunecată.' },
+  { id: 'televizor-90', nume: 'Televizor anii \'90', descriere: 'Televizor gri, cu mileu, vază și telecomandă deasupra.' }
 ]
 
 export function useFundal() {

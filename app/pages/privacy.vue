@@ -79,6 +79,11 @@ async function sterge() {
         Acestea rămân doar în browserul tău; le ștergi golind datele site-ului. Fără cont, rezultatul testului, profilul și setările stau doar în acest browser (localStorage), până când intri în cont. Dacă acel cont are deja profil sau test, rămân cele din cont și copia din browser e înlocuită. Nu folosim cookie-uri de urmărire.
       </p>
 
+      <p>
+        Unele fișe au o postare de pe Facebook. Ea se încarcă doar dacă apeși „Arată coperta” pe fișa respectivă; abia atunci
+        browserul tău se conectează la facebook.com, care poate pune propriile cookie-uri.
+      </p>
+
       <h2 class="d2">Drepturile tale</h2>
       <p>
         Poți cere oricând să vezi, să corectezi sau să ștergi datele tale. Profilul îl corectezi refăcând testul. Dacă ai

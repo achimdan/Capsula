@@ -25,6 +25,8 @@ export interface Fisa {
   video?: Video
   // Scena muzicală, doar la fișele de muzică unde genul e evident (alegere editorială, nu fapt de arhivă)
   scena?: Scena
+  // Postare de pe Facebook afișată prin pluginul oficial (imaginea rămâne găzduită de Facebook), doar în fișa deschisă, la click
+  embed?: { url: string }
   // Fișă scrisă de utilizator (tabelul user_cards): doar a lui, niciodată în FISE, joc sau Random Hit
   proprie?: boolean
 }
@@ -147,6 +149,7 @@ export const FISE: Fisa[] = [
   { id: 'RO-0161', titlu: 'Inna – Hot', nota: 'Primul mare hit al Innei, lansat în 2008 și urcat pe locul 1 în România în decembrie.', an: 2008, an_exact: false, categorie: 'Muzică', scena: 'dance', oras: null, verificat: true, culori: ['#5B3A7A', '#E07B4C'], poza: { autor: 'Ilustrație Capsula', licenta: 'Generată pentru Capsula', generata: true } },
   { id: 'RO-0162', titlu: 'Cavalerul întunecat', nota: 'Joker-ul lui Heath Ledger, replicile lui și o discuție la ieșirea din sală.', an: 2008, an_exact: false, categorie: 'Filme & TV', oras: null, verificat: true, culori: ['#B9C6B6', '#F0B35A'], poza: { autor: 'Ilustrație Capsula', licenta: 'Generată pentru Capsula', generata: true } },
   { id: 'RO-0163', titlu: 'Șaorma la colț', nota: 'Ajunsă în România la începutul anilor ’90; prin 2010 șaormeriile erau aproape peste tot, iar „cu de toate” se cerea des.', an: 2008, an_exact: false, categorie: 'Mâncare', oras: null, verificat: true, sursa: 'zilesinopti.ro, vice.com/ro', culori: ['#E2582F', '#7A2E3A'], poza: { autor: 'Ilustrație Capsula', licenta: 'Generată pentru Capsula', generata: true } },
+  { id: 'RO-0164', titlu: 'La Familia pe coperta Salut', nota: 'Revista Salut, nr. 72: La Familia pe copertă, „Băiețași în «Paradis»”.', an: 1999, an_exact: false, categorie: 'Muzică', scena: 'hiphop', oras: null, verificat: false, sursa: 'facebook.com/Hiphopdinromania', culori: ['#7A2E3A', '#E2582F'], embed: { url: 'https://www.facebook.com/photo?fbid=1715823953447727&set=a.207749370921867' } },
 
   // ——— Stratul Cluj (din presa locală și amintiri publicate) ———
   { id: 'CJ-0001', titlu: 'Bianco e Nero', nota: 'Pe Universității, vizavi de UBB, în clădirea Echinox. Primele rave de aici au început prin 1995-1996.', an: 1995, an_exact: false, categorie: 'Locuri', oras: 'Cluj', verificat: true, sursa: 'clujenii.ro', culori: ['#14211B', '#F4F6F1'], poza: { autor: 'Ilustrație Capsula', licenta: 'Generată pentru Capsula', generata: true } },

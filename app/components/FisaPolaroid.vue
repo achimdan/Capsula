@@ -9,6 +9,8 @@ defineEmits<{ inchide: [] }>()
 const cuVideo = computed(() => props.mare && !!props.fisa.video)
 const film = ref<HTMLVideoElement | null>(null)
 const mut = ref(true)
+const embedPornit = ref(false)
+const embedSrc = computed(() => props.fisa.embed ? `https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(props.fisa.embed.url)}&show_text=false&width=500` : '')
 const merge = ref(false)
 const faraMiscare = ref(false)
 onMounted(() => { faraMiscare.value = matchMedia('(prefers-reduced-motion: reduce)').matches })
@@ -93,6 +95,13 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
         @pause="merge = false"
         @click="comutaFilm"
       />
+      <div v-else-if="mare && fisa.embed" class="foto embed">
+        <iframe v-if="embedPornit" :src="embedSrc" :title="`Postare Facebook: ${fisa.titlu}`" loading="lazy" allow="encrypted-media; clipboard-write" />
+        <template v-else>
+          <button type="button" @click="embedPornit = true">Arată coperta</button>
+          <small>Se încarcă de pe facebook.com, care poate pune cookie-uri.</small>
+        </template>
+      </div>
       <img v-else-if="fisa.poza" class="foto" :src="`/fise/${fisa.id}-480.webp`" :srcset="`/fise/${fisa.id}-480.webp 480w, /fise/${fisa.id}-960.webp 960w`" :sizes="mare ? '(max-width: 800px) 92vw, 400px' : '(max-width: 640px) 90vw, 300px'" :alt="fisa.titlu" loading="lazy" decoding="async" width="480" height="480">
       <span class="eticheta">{{ fisa.categorie }}{{ fisa.oras ? ' · ' + fisa.oras : '' }}{{ aScenei ? ' · scena ta' : '' }}{{ fisa.proprie ? ' · a ta' : '' }}</span>
       <span v-if="avut" :key="stamped ? 'nou' : 'vechi'" class="stampila" :class="{ nou: stamped }" aria-hidden="true">{{ fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta' }}</span>
@@ -157,6 +166,12 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
 .ascuns{background:var(--ink);color:var(--ink);border-radius:2px;padding:0 4px}
 h3{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:28px;line-height:.92;margin:6px 0}
 p{font-size:14px;line-height:1.45;margin:0}
+@media (max-width:799px){.mare .img:has(.embed){aspect-ratio:4/5}}
+.embed{z-index:2;display:grid;place-content:center;justify-items:center;gap:8px;padding:16px;text-align:center}
+.embed:has(iframe){display:block;padding:0;background:var(--card)}
+.embed iframe{width:100%;height:100%;border:0;display:block}
+.embed button{min-height:44px;font:600 13px var(--body);background:var(--card);color:var(--ink);border:0;border-radius:2px;cursor:pointer;padding:0 16px}
+.embed small{font-family:var(--mono);font-size:11px;color:var(--card);max-width:28ch}
 .sursa{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:8px}
 .act{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
 .act button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;min-width:44px;font:600 13px var(--body);background:var(--ink);color:var(--card);border:0;padding:0 14px;border-radius:2px;cursor:pointer;
