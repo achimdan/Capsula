@@ -117,8 +117,8 @@ v-for="(f, i) in fise" :key="f.id" type="button" class="slot" :aria-pressed="cur
 .slot:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
 .slot:disabled{opacity:.4;cursor:not-allowed;box-shadow:0 2px 0 var(--line)}
 .slot.gata .t{color:var(--muted)}
-.slot[aria-pressed=true]{background:var(--signal);color:var(--ink);transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
-.slot[aria-pressed=true] .t{color:var(--ink)}
+.slot[aria-pressed=true]{background:var(--signal);color:var(--on-signal);transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.slot[aria-pressed=true] .t{color:var(--on-signal)}
 .nr{font-family:var(--display);font-weight:800;font-size:24px;line-height:1}
 .t{font-family:var(--mono);font-size:11px;letter-spacing:.04em}
 .scena{display:grid;place-items:center;min-height:200px}

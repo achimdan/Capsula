@@ -107,7 +107,7 @@ nav a{font-weight:500;font-size:15px;text-decoration:none;white-space:nowrap}
 }
 @media (min-width:601px) and (prefers-reduced-motion:reduce){.nume,.pista{transition:none}}
 @media (max-width:600px) and (prefers-reduced-motion:reduce){nav,.lista a{transition:none!important}}
-.nr{font-family:var(--mono);font-size:11px;background:var(--signal);color:#14211B;border-radius:999px;padding:0 6px;margin-left:6px}
+.nr{font-family:var(--mono);font-size:11px;background:var(--signal);color:var(--on-signal);border-radius:999px;padding:0 6px;margin-left:6px}
 .intra{min-height:44px;padding:0 16px;background:transparent;color:var(--ink);border:0;border-radius:2px;box-shadow:inset 0 0 0 2px var(--ink);font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:18px;letter-spacing:.03em;cursor:pointer}
 .intra:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
 </style>

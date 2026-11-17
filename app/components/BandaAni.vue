@@ -149,7 +149,7 @@ v-for="(an, i) in ani" :key="r + '-' + an" class="an"
 .activ.lovit .y{color:inherit}
 .cap{transform-origin:center;transition:transform .25s var(--ease-ff)}
 .trage .cap{transform:scaleX(3)}
-.cap-et{position:absolute;top:0;left:50%;z-index:4;transform:translate(-50%,-100%);font-family:var(--mono);font-size:11px;background:var(--signal);color:var(--ink);padding:2px 6px;border-radius:0 0 2px 2px;opacity:0;transition:opacity .2s,transform .3s var(--ease-ff);pointer-events:none}
+.cap-et{position:absolute;top:0;left:50%;z-index:4;transform:translate(-50%,-100%);font-family:var(--mono);font-size:11px;background:var(--signal);color:var(--on-signal);padding:2px 6px;border-radius:0 0 2px 2px;opacity:0;transition:opacity .2s,transform .3s var(--ease-ff);pointer-events:none}
 .trage .cap-et,.inter:focus-visible .cap-et{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){.tambur.snap,.cap,.cap-et{transition:none}.trage .cap{transform:none}}
 /* Capul de citire: două liniuțe sus și jos, nu o linie întreagă care taie anul și titlul celulei din mijloc. */

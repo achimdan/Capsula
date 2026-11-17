@@ -162,7 +162,7 @@ p{font-size:14px;line-height:1.45;margin:0}
 .act button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;min-width:44px;font:600 13px var(--body);background:var(--ink);color:var(--card);border:0;padding:0 14px;border-radius:2px;cursor:pointer;
   transition:transform .2s var(--ease-ff),opacity .2s var(--ease-ff)}
 .act button.sec{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
-.act button[aria-pressed="true"]{background:var(--signal);color:var(--ink);box-shadow:none}
+.act button[aria-pressed="true"]{background:var(--signal);color:var(--on-signal);box-shadow:none}
 .act button{position:relative}
 .act button::before{content:"";position:absolute;inset:-3px}
 .act button:active{transform:scale(.95)}

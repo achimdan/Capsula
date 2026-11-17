@@ -525,7 +525,7 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) i
 .mini:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
 .img{position:relative;display:block;aspect-ratio:4/3;overflow:hidden}
 .img img{width:100%;height:100%;object-fit:cover;display:block;-webkit-user-drag:none}
-.avut{position:absolute;top:6px;right:6px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:var(--signal);color:#14211B;padding:1px 5px;border-radius:2px}
+.avut{position:absolute;top:6px;right:6px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:var(--signal);color:var(--on-signal);padding:1px 5px;border-radius:2px}
 .titlu{font-family:var(--display);font-weight:800;font-size:17px;line-height:1;text-transform:uppercase}
 .meta{font-family:var(--mono);font-size:11px;color:var(--muted)}
 

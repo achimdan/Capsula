@@ -50,9 +50,18 @@ function paralaxa() {
   window.addEventListener('scroll', laScroll, { passive: true })
   citesteScroll()
 }
-onMounted(() => { acordeaza(); paralaxa() })
+// Preferința se poate schimba cu pagina deschisă: atunci repornim (sau oprim) paralaxa.
+let miscare: MediaQueryList | undefined
+// Și tapetul (urmărirea mouse-ului) depinde de preferință, deci refacem ambele efecte.
+function laSchimbareMiscare() { acordeaza(); paralaxa() }
+onMounted(() => {
+  acordeaza(); paralaxa()
+  miscare = matchMedia('(prefers-reduced-motion:reduce)')
+  miscare.addEventListener('change', laSchimbareMiscare)
+})
 watch(tema, () => nextTick(() => { acordeaza(); paralaxa() }))
 onBeforeUnmount(() => {
+  miscare?.removeEventListener('change', laSchimbareMiscare)
   window.removeEventListener('scroll', laScroll)
   cancelAnimationFrame(rafScroll)
   window.removeEventListener('pointermove', mutaMouse)
