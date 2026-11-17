@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { profil, an15, fiseVizibile } = useCapsula()
+const { profil, an15, areProfil, fiseVizibile } = useCapsula()
 const { autentificat } = useAuth()
 const { cereCont } = useIntrare()
 
@@ -54,7 +54,7 @@ onMounted(() => {
 
       <div class="caseta" :class="{ suna }">
         <div class="eticheta">
-          <div class="et-sus"><span>PARTEA {{ parte }}</span><span>{{ eticheta }} · ’{{ String(an15).slice(2) }}</span></div>
+          <div class="et-sus"><span>PARTEA {{ parte }}</span><span>{{ eticheta }}<template v-if="areProfil"> · ’{{ String(an15).slice(2) }}</template></span></div>
           <div class="fereastra" aria-hidden="true">
             <div class="rola st"><i class="pachet" :style="{ transform: `scale(${1 - progres * 0.55})` }" /><i class="roata" /></div>
             <div class="banda-fir" />

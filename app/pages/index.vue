@@ -80,7 +80,7 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
         <button v-for="c in categorii" :key="c" class="chip" :aria-pressed="filtru === c" @click="filtru = c">{{ c }}</button>
       </div>
       <ClientOnly>
-        <CronologieFise v-if="listaFise === 'cronologie'" :fise="nationale" :an-eu="an15" />
+        <CronologieFise v-if="listaFise === 'cronologie'" :fise="nationale" :an-eu="areProfil ? an15 : null" />
         <div v-else class="grila">
           <FisaPolaroid v-for="(f, i) in nationale" :key="f.id" v-reveal="i" :fisa="f" />
         </div>

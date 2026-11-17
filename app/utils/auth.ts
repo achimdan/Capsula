@@ -38,7 +38,8 @@ export function rutaDupaLogin(inapoi: unknown): string {
   } catch {
     return '/'
   }
-  if (url.origin !== 'https://capsula.invalid' || url.pathname === '/confirm') return '/'
+  // `/..//alt-site` se normalizează în `//alt-site` (adresă către alt domeniu), deci verificăm și după normalizare.
+  if (url.origin !== 'https://capsula.invalid' || url.pathname.startsWith('//') || url.pathname === '/confirm') return '/'
   return url.pathname + url.search + url.hash
 }
 

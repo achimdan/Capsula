@@ -39,7 +39,7 @@ describe('după login', () => {
     expect(rutaDupaLogin('/start')).toBe('/start')
   })
   it('acceptă doar căi interne', () => {
-    for (const rau of [null, undefined, 42, '', 'game', 'https://rau.ro', '//rau.ro', '/\\rau.ro', '/\trau', 'javascript:alert(1)', '/confirm', '/confirm?x=1', '/' + 'a'.repeat(600)]) {
+    for (const rau of [null, undefined, 42, '', 'game', 'https://rau.ro', '//rau.ro', '/\\rau.ro', '/\trau', 'javascript:alert(1)', '/..//rau.ro', '/.//rau.ro', '/a/..//rau.ro', '/%2e%2e//rau.ro', '/confirm', '/confirm?x=1', '/' + 'a'.repeat(600)]) {
       expect(rutaDupaLogin(rau)).toBe('/')
     }
   })

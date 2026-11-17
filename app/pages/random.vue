@@ -29,10 +29,10 @@ async function hit() {
 <template>
   <main class="pagina">
     <section class="rh">
-      <div class="k">Random Hit · ponderat pe anii tăi de 10–20</div>
+      <div class="k">Random Hit{{ areProfil ? ' · ponderat pe anii tăi de 10–20' : '' }}</div>
       <h1 class="d1">Ce tare o fost</h1>
       <div class="deck" :class="{ ff: ocupat }">
-        <BandaAni ref="banda" :anul-meu="an15" />
+        <BandaAni ref="banda" :anul-meu="areProfil ? an15 : undefined" />
         <div class="vhs" aria-hidden="true"><i class="linii" /><i class="track" /></div>
         <div class="osd" aria-hidden="true"><b>▶▶ FF</b><span>{{ timecod }}</span></div>
         <i v-if="cheie" :key="cheie" class="flash" aria-hidden="true" />
