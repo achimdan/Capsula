@@ -6,7 +6,8 @@ export const FUNDALURI: { id: Fundal; nume: string; descriere: string }[] = [
   { id: 'clasic', nume: 'Clasic', descriere: 'Banda verde, ca la început.' },
   { id: 'tapet', nume: 'Tapet de bloc', descriere: 'Perete cald, lampă de living.' },
   { id: 'vhs', nume: 'Sufragerie VHS', descriere: 'Ecran CRT, linii și zgomot.' },
-  { id: 'arhiva', nume: 'Hârtie de arhivă', descriere: 'Carton crem, fișe și bandă adezivă.' }
+  { id: 'arhiva', nume: 'Hârtie de arhivă', descriere: 'Carton crem, fișe și bandă adezivă.' },
+  { id: 'ceata', nume: 'Fișe în ceață', descriere: 'Fișele plutesc încet, ca înainte de intrare.' }
 ]
 
 export function useFundal() {
