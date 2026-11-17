@@ -1,6 +1,7 @@
 /* Design system „Banda” — tokens */
 :root{
   --paper:#DCE3DA; --card:#F4F6F1; --ink:#14211B; --muted:#4F5F55; --line:#B9C6B6; --signal:#E2582F;
+  --on-signal:#14211B; /* textul pe fundal de accent; alb pe temele cu accent închis */
   --display:"Big Shoulders","Big Shoulders Display","Arial Narrow",sans-serif;
   --body:"Work Sans",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,monospace;
@@ -14,9 +15,9 @@
 /* Fundaluri alese din /admin: suprascriu tokenii, peste regulile dark/light. */
 [data-fundal="tapet"]:is(:root,.previzualizare){--paper:#1E1A12;--card:#2B251A;--ink:#EADFC8;--muted:#B9AB90;--line:#4A3F2C;--signal:#F0A030;color-scheme:dark}
 [data-fundal="vhs"]:is(:root,.previzualizare){--paper:#08090A;--card:#131617;--ink:#E6E2D6;--muted:#A5A194;--line:#2A2E30;--signal:#FF7A2E;color-scheme:dark}
-[data-fundal="arhiva"]:is(:root,.previzualizare){--paper:#EFE6D0;--card:#FBF6E8;--ink:#2A2218;--muted:#5C503F;--line:#CFC2A3;--signal:#D2501F;color-scheme:light}
-[data-fundal="bloc"]:is(:root,.previzualizare){--paper:#F3E3C8;--card:#FBF1DE;--ink:#2E2018;--muted:#66503C;--line:#DDC3A0;--signal:#C4471C;color-scheme:light}
-[data-fundal="pop"]:is(:root,.previzualizare){--paper:#FFF1CF;--card:#FFFAEA;--ink:#1E1B2E;--muted:#55506B;--line:#E8D3A0;--signal:#C2255C;color-scheme:light}
+[data-fundal="arhiva"]:is(:root,.previzualizare){--paper:#EFE6D0;--card:#FBF6E8;--ink:#2A2218;--muted:#5C503F;--line:#CFC2A3;--signal:#D2501F;--on-signal:#FFFFFF;color-scheme:light}
+[data-fundal="bloc"]:is(:root,.previzualizare){--paper:#F3E3C8;--card:#FBF1DE;--ink:#2E2018;--muted:#66503C;--line:#DDC3A0;--signal:#C4471C;--on-signal:#FFFFFF;color-scheme:light}
+[data-fundal="pop"]:is(:root,.previzualizare){--paper:#FFF1CF;--card:#FFFAEA;--ink:#1E1B2E;--muted:#55506B;--line:#E8D3A0;--signal:#C2255C;--on-signal:#FFFFFF;color-scheme:light}
 [data-fundal="televizor"]:is(:root,.previzualizare){--paper:#0B0A10;--card:#16141D;--ink:#E8E4F0;--muted:#A39FB3;--line:#2B2836;--signal:#FF8A4C;color-scheme:dark}
 /* Pe fundal decorat, pagina lasă fundalul să se vadă; antetul rămâne plin. */
 :root[data-fundal]:not([data-fundal="clasic"]) body{background:transparent}
@@ -44,7 +45,7 @@ img{max-width:100%}
 .btn::before{content:"";position:absolute;inset:-4px 0}
 .invita a{display:inline-flex;align-items:center;min-height:44px;color:var(--ink);font-weight:600}
 .btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
-.btn.semnal{background:var(--signal);color:#14211B}
+.btn.semnal{background:var(--signal);color:var(--on-signal)}
 .btn:disabled{opacity:.35;cursor:default}
 .chip{font:500 14px var(--body);background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--accent)}
