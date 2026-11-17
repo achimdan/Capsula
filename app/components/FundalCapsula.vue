@@ -61,6 +61,7 @@ onBeforeUnmount(() => {
       <i class="banda b2" />
       <i class="banda b3" />
     </template>
+    <CeataFise v-else-if="tema === 'ceata'" fundal :mini="mini" />
   </div>
 </template>
 
