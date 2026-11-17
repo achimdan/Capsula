@@ -13,7 +13,7 @@ const grupe = grupeazaPeAni(PRETURI)
       <h1 class="d1">Cât costa</h1>
       <p class="lead">
         Prețuri găsite în presă și în datele INS. Până în iunie 2005 sunt în lei vechi; un leu nou are 10.000 de lei vechi.
-        Un an cu „~” înseamnă că sursa nu îl spune sigur. Nimic de aici nu e verificat încă.
+        Un an cu „~” înseamnă că sursa nu îl spune sigur. Ce n-a fost încă verificat pe sursă are eticheta „neverificat”.
       </p>
 
       <ol class="axa">
@@ -32,7 +32,7 @@ const grupe = grupeazaPeAni(PRETURI)
               <div v-if="leiNoi(p)" class="noi k">{{ leiNoi(p) }}</div>
               <div class="jos">
                 <a class="sursa" :href="p.url" target="_blank" rel="noopener noreferrer">{{ p.sursa }}</a>
-                <span class="k neverificat">neverificat</span>
+                <span v-if="!p.verificat" class="k neverificat">neverificat</span>
               </div>
             </li>
           </ul>

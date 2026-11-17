@@ -19,9 +19,9 @@ export interface Emisiune {
 export const TIPURI_TV: TipEmisiune[] = ['Emisiune', 'Serial', 'Desene', 'Film']
 
 export const EMISIUNI: Emisiune[] = [
-  { id: 'dallas-1990', titlu: 'Dallas', post: 'TVR', an_start: 1990, an_sfarsit: null, an_exact: false, tip: 'Serial',
-    nota: 'Serialul american pe care mulți îl știau deja din anii 1980. Pilotul a fost printre primele programe occidentale după Revoluție.',
-    sursa: 'Wikipedia (ro): Dallas (serial TV)', url: 'https://ro.wikipedia.org/wiki/Dallas_(serial_TV)', verificat: false },
+  { id: 'dallas-1990', titlu: 'Dallas', post: 'TVR', an_start: 1990, an_sfarsit: null, an_exact: true, tip: 'Serial',
+    nota: 'Difuzat prima oară în România în 1979, reluat în 1990, după Revoluție, la Televiziunea Română Liberă. Pilotul a fost printre primele emisiuni occidentale de după Revoluție.',
+    sursa: 'Historia.ro: J.R. Ewing, personajul pe care Ceaușescu a mizat', url: 'https://historia.ro/sectiune/general/jr-ewing-personajul-pe-care-ceausescu-a-mizat-572487.html', verificat: true },
   { id: 'lantul-slabiciunilor-1990', titlu: 'Lanțul slăbiciunilor (ecranizare TVR)', post: 'TVR', an_start: 1990, an_sfarsit: null, an_exact: true, tip: 'Film',
     nota: 'O ecranizare TVR din 1990 după opera lui Caragiale.',
     sursa: 'Wikipedia (ro): Lanțul slăbiciunilor', url: 'https://ro.wikipedia.org/wiki/Lan%C8%9Bul_sl%C4%83biciunilor', verificat: true },
