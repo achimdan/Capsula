@@ -1,7 +1,7 @@
 // Setările site-ului (tabelul site_settings), alese din /admin și valabile pentru toți vizitatorii.
 // Funcții pure: rândurile din DB → setări valide, cu valori implicite pentru ce lipsește sau e greșit.
 // Listele de valori sunt aceleași ca în constrângerile din supabase/migrations (site_settings).
-export const FUNDALURI_VALIDE = ['clasic', 'tapet', 'vhs', 'arhiva', 'ceata'] as const
+export const FUNDALURI_VALIDE = ['clasic', 'tapet', 'vhs', 'arhiva', 'ceata', 'bloc', 'pop', 'televizor'] as const
 export type Fundal = typeof FUNDALURI_VALIDE[number]
 
 // Cum se afișează „Ce era peste tot”: grila de polaroiduri sau cronologia pe bandă.

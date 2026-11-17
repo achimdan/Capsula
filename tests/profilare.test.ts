@@ -129,8 +129,8 @@ describe('profiluri', () => {
       return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
     }
     const contrast = (a: string, b: string) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x! + 0.05) / (y! + 0.05) }
-    // --paper și --card din banda.css, pentru tema clară, tema închisă și cele trei fundaluri.
-    const fundaluri = ['#DCE3DA', '#F4F6F1', '#111A15', '#1C2721', '#1E1A12', '#2B251A', '#08090A', '#131617', '#EFE6D0', '#FBF6E8']
+    // --paper și --card din banda.css, pentru tema clară, tema închisă și fundalurile alese din /admin.
+    const fundaluri = ['#DCE3DA', '#F4F6F1', '#111A15', '#1C2721', '#1E1A12', '#2B251A', '#08090A', '#131617', '#EFE6D0', '#FBF6E8', '#F3E3C8', '#FBF1DE', '#FFF1CF', '#FFFAEA', '#0B0A10', '#16141D']
     for (const p of PROFILURI) {
       expect(p.config.accent).toMatch(/^#[0-9A-F]{6}$/i)
       for (const f of fundaluri) expect(contrast(p.config.accent!, f)).toBeGreaterThanOrEqual(3)
