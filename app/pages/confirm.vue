@@ -19,12 +19,23 @@ let limita: ReturnType<typeof setTimeout> | undefined
 
 // Înapoi pe pagina de pe care a plecat spre Google. Întâi datele contului (profilul făcut fără cont se urcă
 // acum, vezi decideStare), apoi acțiunea amânată („În casetă”, „Am avut asta”, seria), ca să nu fie suprascrisă.
+// Dacă datele contului nu se încarcă, nu facem acțiunea doar în browser (s-ar pierde la următoarea încărcare):
+// o lăsăm în sessionStorage și oferim reîncercarea.
 let plecat = false
-watch(autentificat, async (da) => {
+const contNeincarcat = ref(false)
+// Butonul rămâne pe pagină cât reîncercăm (doar dezactivat), ca focusul de la tastatură să nu se piardă.
+const seIncarca = ref(false)
+async function continua() {
+  seIncarca.value = true
+  await cont.incarca()
+  seIncarca.value = false
+  if (cont.eroare.value) { contNeincarcat.value = true; return }
+  navigateTo(reia(), { replace: true })
+}
+watch(autentificat, (da) => {
   if (!da || plecat) return
   plecat = true
-  await cont.incarca()
-  navigateTo(reia(), { replace: true })
+  continua()
 }, { immediate: true })
 
 onMounted(() => {
@@ -44,6 +55,12 @@ onBeforeUnmount(() => clearTimeout(limita))
         <h1 class="d2">Conectarea nu a mers</h1>
         <p class="lead" role="alert">{{ eroare }}</p>
         <button type="button" class="btn semnal" aria-haspopup="dialog" @click="deschide">Încearcă din nou</button>
+      </template>
+      <template v-else-if="contNeincarcat">
+        <span class="k">Conectare</span>
+        <h1 class="d2">Ești conectat, dar datele nu au venit</h1>
+        <p class="lead" role="alert">Nu am putut încărca datele contului. Ce ai vrut să păstrezi te așteaptă; încearcă din nou.</p>
+        <button type="button" class="btn semnal" :disabled="seIncarca" :aria-busy="seIncarca" @click="continua">{{ seIncarca ? 'Încercăm…' : 'Încearcă din nou' }}</button>
       </template>
       <template v-else>
         <span class="k">Conectare</span>
