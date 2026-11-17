@@ -120,7 +120,7 @@ async function share() {
 const titlu = computed(() => scor.value >= 450 ? 'Arhivar de meserie' : scor.value >= 300 ? 'Ureche bună de casetofon' : scor.value >= 150 ? 'Banda se mai derulează' : 'Casetă nouă, încă fără amintiri')
 
 onMounted(() => {
-  reduce.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  reduce.value = miscareRedusa()
   amesteca()
 })
 onBeforeUnmount(() => { opresteFlap(); cancelAnimationFrame(rafScor) })

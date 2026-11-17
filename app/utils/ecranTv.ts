@@ -61,3 +61,12 @@ export function camera(p: number, tv: { w: number; h: number }, ecran: { cx: num
   const rest = 1 - e
   return { scara, x: -(ecran.cx - 0.5) * tv.w * scara * rest, y: -(ecran.cy - 0.5) * tv.h * scara * rest }
 }
+
+// Snapping-ul intro-ului: unde se așază pagina când scroll-ul se oprește în pistă.
+// Urmează direcția ultimei mișcări (în jos → capătul de jos, în sus → începutul); null = rămâne pe loc.
+export function tintaSnap(p: number, directie: number): 'sus' | 'jos' | null {
+  if (p <= 0.01 || p >= 0.99) return null
+  if (directie > 0) return 'jos'
+  if (directie < 0) return 'sus'
+  return p < 0.5 ? 'sus' : 'jos'
+}

@@ -10,7 +10,7 @@ const developat = ref(true)
 let timer: ReturnType<typeof setInterval> | undefined
 function porneste() {
   clearInterval(timer)
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { scris.value = props.profil.citire; developat.value = true; return }
+  if (miscareRedusa()) { scris.value = props.profil.citire; developat.value = true; return }
   developat.value = false
   scris.value = ''
   requestAnimationFrame(() => requestAnimationFrame(() => { developat.value = true }))

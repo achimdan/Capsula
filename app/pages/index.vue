@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { progresPin } from '~/utils/ecranTv'
+import { progresPin, tintaSnap } from '~/utils/ecranTv'
 import type { Categorie } from '~/data/fise'
 const { areProfil, profil, an15, fiseVizibile, orasDeblocat, voturi } = useCapsula()
 const { ton, profilCititor, ponderiCategorii } = useProfilCitit()
@@ -23,26 +23,41 @@ function voteaza() { if (profil.value.oras && !aVotat.value) voturi.value = [...
 // Intro fixat doar cu fundalul televizor și fără „mișcare redusă” (atunci televizorul stă direct pe loc).
 const fundal = useStocare<string>('fundal', 'clasic')
 const calm = ref(false)
-onMounted(() => { calm.value = matchMedia('(prefers-reduced-motion:reduce)').matches })
+onMounted(() => { calm.value = miscareRedusa() })
 const cuPin = computed(() => import.meta.client && !calm.value && fundal.value.startsWith('televizor'))
-// Snapping ca la MemoryQuest: dacă scroll-ul se oprește în mijlocul retragerii, merge lin la capătul cel mai apropiat.
+// Snapping ca la MemoryQuest: când scroll-ul se oprește în mijlocul retragerii, pagina merge lin la capătul
+// spre care derulai (în jos → conținutul, în sus → ecranul plin). Cât timp se așază, nu-l întrerupem cu alt snap.
 const pista = ref<HTMLElement>()
 let ceas: ReturnType<typeof setTimeout> | undefined
-let seAseaza = false
+let ultimY = 0
+let directie = 0
+let tinta: number | null = null
 function asazaPin() {
   const el = pista.value
-  if (!el || seAseaza) return
+  if (!el) return
   const r = el.getBoundingClientRect()
-  const p = progresPin(r.top, r.height, innerHeight)
-  if (p <= 0.02 || p >= 0.98) return
   const sus = scrollY + r.top
-  seAseaza = true
-  scrollTo({ top: p < 0.35 ? sus : sus + r.height - innerHeight, behavior: 'smooth' })
-  setTimeout(() => { seAseaza = false }, 700)
+  const unde = tintaSnap(progresPin(r.top, r.height, innerHeight), directie)
+  if (!unde) return
+  tinta = Math.round(unde === 'sus' ? sus : sus + r.height - innerHeight)
+  scrollTo({ top: tinta, behavior: 'smooth' })
 }
-function laOprire() { clearTimeout(ceas); ceas = setTimeout(asazaPin, 140) }
-onMounted(() => addEventListener('scroll', laOprire, { passive: true }))
-onBeforeUnmount(() => { removeEventListener('scroll', laOprire); clearTimeout(ceas) })
+function laScroll() {
+  const y = scrollY
+  if (tinta !== null) {
+    // Am ajuns la țintă: gata. Altfel lăsăm animația să se termine; dacă omul o întrerupe, oprirea următoare decide din nou.
+    if (Math.abs(y - tinta) < 2) { tinta = null; ultimY = y; return }
+    // Omul trage în sens opus animației: preia el controlul.
+    if (y !== ultimY && Math.sign(y - ultimY) !== Math.sign(tinta - ultimY)) { tinta = null; directie = Math.sign(y - ultimY) }
+  } else if (y !== ultimY) {
+    directie = Math.sign(y - ultimY)
+  }
+  ultimY = y
+  clearTimeout(ceas)
+  ceas = setTimeout(() => { tinta = null; asazaPin() }, 160)
+}
+onMounted(() => { ultimY = scrollY; addEventListener('scroll', laScroll, { passive: true }) })
+onBeforeUnmount(() => { removeEventListener('scroll', laScroll); clearTimeout(ceas) })
 
 const cuvinte = ['Aveai', '15', 'ani', 'în']
 const cifre = computed(() => String(an15.value).split('').map(Number))
@@ -58,7 +73,7 @@ if (import.meta.client) {
 let io: IntersectionObserver | null = null
 const vReveal = {
   mounted(el: HTMLElement, b: { value?: number }) {
-    if (typeof IntersectionObserver === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (typeof IntersectionObserver === 'undefined' || miscareRedusa()) return
     io ??= new IntersectionObserver((es) => {
       for (const e of es) if (e.isIntersecting) { (e.target as HTMLElement).classList.add('in'); io?.unobserve(e.target) }
     }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' })

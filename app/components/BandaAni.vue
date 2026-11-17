@@ -21,7 +21,7 @@ function seteaza(an: number) { anim.value = false; snap.value = false; x.value =
 
 // Derulează rapid (cu blur) până la anul dat; se rezolvă când banda s-a oprit
 function deruleaza(an: number, titluFisa = ''): Promise<void> {
-  const redus = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const redus = miscareRedusa()
   lovit.value = null
   titluLovit.value = titluFisa
   const tinta = ani.length * (REP - 1) + ani.indexOf(an)
@@ -37,7 +37,7 @@ function deruleaza(an: number, titluFisa = ''): Promise<void> {
 }
 
 // --- Drag cu inerție + cap magnetic (doar cu prop-ul `interactiva`) ---
-const redus = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const redus = () => miscareRedusa()
 const perioada = () => ani.length * props.latime
 const idxSub = () => Math.floor(((banda.value?.clientWidth ?? 0) / 2 - x.value) / props.latime)
 function normalizeaza() {
