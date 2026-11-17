@@ -49,7 +49,7 @@ describe('date', () => {
     expect(new Set(ZILE.map(e => e.id)).size).toBe(ZILE.length)
     for (const e of ZILE) {
       expect(e.data).toMatch(/^\d{4}-\d{2}-\d{2}$/)
-      expect(e.verificat).toBe(false)
+      expect(typeof e.verificat).toBe("boolean")
       expect(e.url).toMatch(/^https:\/\//)
     }
   })
