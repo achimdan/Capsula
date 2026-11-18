@@ -56,7 +56,7 @@ async function sterge() {
         <li><strong>Contul Google:</strong> adresa de e-mail, numele și poza de profil, primite de la Google când intri.</li>
         <li><strong>Profilul tău:</strong> anul nașterii, orașul sau localitatea și profilul citit din test.</li>
         <li><strong>Răspunsurile la test</strong>, ca să-l poți relua de unde ai rămas.</li>
-        <li><strong>Caseta mea:</strong> fișele pe care le-ai salvat.</li>
+        <li><strong>Caseta mea:</strong> fișele marcate „Am avut asta” sau „Am fost acolo”.</li>
         <li><strong>Amintirile tale:</strong> fișele scrise de tine (titlu, an, categorie, notă). Le vezi doar tu; cât le scrii, textul trece prin Cloudflare Workers AI (vezi mai jos).</li>
       </ul>
       <p>
@@ -80,7 +80,7 @@ async function sterge() {
       <h2 class="d2">În browserul tău</h2>
       <p>
         Păstrăm în browser (localStorage) sesiunea de conectare, o copie a profilului, a testului și a casetei, ca
-        pagina să se deschidă repede, plus ce alegi pe site: fișele marcate „Am avut asta”, voturile pentru orașe,
+        pagina să se deschidă repede, plus ce alegi pe site: voturile pentru orașe,
         scorurile din „Ghicește anul”, Caseta zilei și seria ei, interesul pentru magazin și preferințele de afișare.
         Acestea rămân doar în browserul tău; le ștergi golind datele site-ului. Fără cont, rezultatul testului, profilul și setările stau doar în acest browser (localStorage), până când intri în cont. Dacă acel cont are deja profil sau test, rămân cele din cont și copia din browser e înlocuită. Nu folosim cookie-uri de urmărire.
       </p>

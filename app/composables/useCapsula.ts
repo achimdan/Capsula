@@ -6,7 +6,6 @@ export interface Profil { anNastere: number | null; oras: string | null; localit
 export function useCapsula() {
   const profil = useStocare<Profil>('profil', { anNastere: null, oras: null })
   const caseta = useStocare<string[]>('caseta', [])
-  const amAvut = useStocare<string[]>('amavut', [])
   const voturi = useStocare<string[]>('voturi', [])
 
   // Toate fișele (din Supabase, vezi useFise); goale până ajung datele.
@@ -43,5 +42,5 @@ export function useCapsula() {
     lista.value = lista.value.includes(id) ? lista.value.filter(x => x !== id) : [...lista.value, id]
   }
 
-  return { profil, caseta, amAvut, voturi, areProfil, orasDeblocat, deblocate, an15, fise, fiseVizibile, varsta, randomHit, comuta }
+  return { profil, caseta, voturi, areProfil, orasDeblocat, deblocate, an15, fise, fiseVizibile, varsta, randomHit, comuta }
 }

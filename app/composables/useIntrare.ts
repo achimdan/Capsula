@@ -1,5 +1,5 @@
 // Fereastra de intrare (Google), deschisă de oriunde: antet, acțiunile care păstrează ceva, /confirm după o eroare.
-// Navigarea e liberă; contul se cere doar când omul vrea să păstreze ceva (caseta, „Am avut asta”, seria, amintirile).
+// Navigarea e liberă; contul se cere doar când omul vrea să păstreze ceva (caseta, adică „Am avut asta”, seria, amintirile).
 import { CHEIE_INTRARE, adaugaUnic, citesteIntrare, type ActiuneAmanata } from '~/utils/intrare'
 import { actualizeazaSerie } from '~/utils/casetaZilei'
 
@@ -14,7 +14,6 @@ export function useIntrare() {
   // Luate la setup: pleaca() și reia() rulează după await, în afara contextului Nuxt.
   const router = useRouter()
   const caseta = useStocare<string[]>('caseta', [])
-  const amAvut = useStocare<string[]>('amavut', [])
   const serie = useStocare<{ ultima: string, zile: number }>('serie', { ultima: '', zile: 0 })
 
   function deschide() {
@@ -51,9 +50,9 @@ export function useIntrare() {
       sessionStorage.removeItem(CHEIE_INTRARE)
     } catch {}
     const a = intrare?.actiune
+    // „amavut” vine din sesiuni pornite înainte ca „Am avut asta” să devină caseta.
     if (a?.tip === 'caseta' || a?.tip === 'amavut') {
-      const lista = a.tip === 'caseta' ? caseta : amAvut
-      lista.value = adaugaUnic(lista.value, a.id)
+      caseta.value = adaugaUnic(caseta.value, a.id)
     } else if (a?.tip === 'serie' && a.zi === cheieZi(new Date())) {
       if (serie.value.ultima !== a.zi) serie.value = actualizeazaSerie(serie.value, a.zi, cheieIeri(Date.now()))
     }
