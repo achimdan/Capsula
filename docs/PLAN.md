@@ -101,6 +101,17 @@ Fonturile se descarcă la build prin `@nuxt/fonts` și se servesc din `/_fonts`,
 
 **Amintirile tale.** Un utilizator logat își poate scrie propriile fișe (titlu, an, categorie, notă), salvate în `user_cards` și văzute doar de el (RLS). Apar pe bandă și în grilă cu eticheta „a ta”, se pot șterge din fișă și sunt cel mult 200 pe cont. Nu intră în „Ghicește anul”, Caseta zilei, Random Hit sau caseta, fiindcă nu sunt în `FISE`. Fără cont, secțiunea cere intrarea; nu le ținem în browser.
 
+## Căutare și profil personal (vectori)
+
+Fișele primesc un vector de sens (Workers AI, `@cf/baai/bge-m3`, multilingv, bun pe română), ținut în Supabase cu pgvector. Pe aceeași bază vin, pe rând, căutarea, recomandările și profilul personal. Regula „nu inventăm fapte” rămâne: nimic nu generează text despre trecut fără să citeze fișe.
+
+1. **Căutare hibridă și „fișe asemănătoare”** — 🔶 backend gata (18 nov 2026). Tabelul `fise_embeddings` (doar super adminul îl citește și scrie), funcțiile `cauta_fise` (cuvinte fără diacritice + sens, combinate prin Reciprocal Rank Fusion, doar fișele publicate) și `fise_similare`. Ruta `GET /api/search?q=` întoarce id-uri; fără Workers AI (în `nuxt dev`) caută doar după cuvinte. Vectorii se refac din `/admin` → „Reindexează fișele” (`POST /api/admin/reindex`, doar fișele schimbate, după hash-ul textului) sau cu `node --env-file=.env scripts/index-fise.mjs` + SQL editor. Lipsesc: prima indexare (după deploy, din butonul din admin), câmpul de căutare în interfață și „Fișe asemănătoare” în fișa deschisă.
+2. **Gust personal** — ⏳. Pentru fiecare cont, un vector de gust (media ponderată a fișelor salvate, deschise, ghicite), cu RLS pe `auth.uid()`. Din el: „Pentru tine” (fișe nevăzute, apropiate de gust) și Random Hit personalizat, cu o parte (~30%) lăsată la întâmplare, ca să nu se închidă într-o bulă. La început (cont nou): fișe populare sau 3–5 fișe alese la onboarding. „Ghicește anul” poate alege din zonele unde omul greșește des, tot doar cu `an_exact: true`.
+3. **Capsula personală** — ⏳. Amintirile proprii (`user_cards`) primesc vectori și se leagă de fișele arhivei care le seamănă („asta seamănă cu ce ai trăit tu”). Rămân private; nu intră în arhiva publică. Dacă vreodată se propun, intră cu `verificat: false` și trec prin curator.
+4. **„Întreabă-mi capsula”** — ⏳. Răspunsuri doar din fișele găsite și din amintirile omului, cu citare; fișele `verificat: false` sunt marcate ca neverificate. Fără fapte din afara fișelor.
+
+Confidențialitate: vectorii de gust și amintirile se șterg odată cu contul.
+
 ## Roadmap
 
 | Fază | Conținut | Stare |

@@ -12,3 +12,4 @@ Crawl-delay: 10
 Disallow: /admin
 Disallow: /confirm
 Disallow: /login
+Disallow: /api
