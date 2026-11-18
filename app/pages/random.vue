@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Fisa } from '~/data/fise'
 const { areProfil, an15, randomHit } = useCapsula()
+const { incarca } = useFise()
 const banda = ref<{ deruleaza: (an: number, titlu?: string) => Promise<void> }>()
 const fisa = ref<Fisa | null>(null)
 const ocupat = ref(false)
@@ -19,7 +20,9 @@ async function hit() {
   if (ocupat.value) return
   ocupat.value = true
   pornesteContor()
+  await incarca()
   const urm = randomHit(fisa.value?.id)
+  if (!urm) { opresteContor(); ocupat.value = false; return }
   try { await banda.value?.deruleaza(urm.an, urm.titlu) } finally { opresteContor() }
   fisa.value = urm; cheie.value++
   ocupat.value = false

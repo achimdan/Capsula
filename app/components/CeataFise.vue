@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { FISE } from '~/data/fise'
+const { toate: fise } = useFise()
 
 // Fișe în ceață: doar culorile fișelor și anii mascați, fără titluri. Folosit ca fundal de pagină ales din /admin (`fundal`: mai șters, cu voal peste tot, ca textul să se citească).
 defineProps<{ fundal?: boolean; mini?: boolean }>()
 
-const coloane = [0, 1, 2].map((c) => {
-  const lista = FISE.filter((_, i) => i % 3 === c).slice(0, 8)
+const coloane = computed(() => [0, 1, 2].map((c) => {
+  const lista = fise.value.filter((_, i) => i % 3 === c).slice(0, 8)
   return [...lista, ...lista].map((f, i) => ({
     k: `${c}-${i}`,
     culori: f.culori,
     an: `${String(f.an).slice(0, 2)}··`
   }))
-})
+}))
 </script>
 
 <template>
