@@ -17,7 +17,7 @@ Aplicația pornește pe http://localhost:3000.
 
 ## Structură
 
-- `app/data/fise.ts` — fișele (conținutul), până la mutarea în Supabase
+- `app/data/fise.ts` — tipul fișelor și constantele; conținutul e în Supabase (tabelul `fise`, import inițial în `supabase/seed/fise.json`, vezi `scripts/seed-fise.mjs`)
 - `app/composables/` — profilul, caseta, Random Hit ponderat pe vârstă
 - `app/components/` — banda anilor, fișa-polaroid, antetul, onboarding-ul
 - `app/pages/` — Capsula, Random Hit, Ghicește anul, Caseta mea, Magazin

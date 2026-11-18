@@ -2,6 +2,8 @@
 import type { Json } from '../types/database'
 import { randChestionar, randProfil, stareDinRanduri, type ChestionarApp, type StareCont } from './cont'
 import { CHEI_DB, setariDinRanduri, type SetariSite } from './setari'
+import { COLOANE_FISE, fiseDinRanduri } from './fise'
+import type { Fisa } from '../data/fise'
 import { LIMITE_FISA, randDinFormular, type FisaNoua, type RandFisaProprie } from './fiseProprii'
 
 export function contApi() {
@@ -134,4 +136,19 @@ export function fiseProprii() {
   }
 
   return { listeaza, adauga, sterge }
+}
+
+// Fișele Capsulei (public.fise): citite de oricine, doar cele publicate (RLS); scrise doar de super admin.
+// Și super adminul primește aici doar fișele publicate, ca paginile publice să fie la fel pentru toți.
+// Lista e mică și se schimbă rar: o cerere pe încărcare, partajată prin TanStack Query (composables/useFise.ts).
+export function fiseApi() {
+  const client = useSupabaseClient()
+
+  async function toate(): Promise<Fisa[]> {
+    const { data, error } = await client.from('fise').select(COLOANE_FISE).eq('publicat', true).order('ordine').limit(1000)
+    if (error) throw error
+    return fiseDinRanduri(data ?? [])
+  }
+
+  return { toate }
 }

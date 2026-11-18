@@ -155,6 +155,85 @@ export type Database = {
         }
         Relationships: []
       }
+      // supabase/migrations/20261118120000_fise.sql
+      fise: {
+        Row: {
+          id: string
+          ordine: number
+          titlu: string
+          nota: string
+          an: number
+          an_exact: boolean
+          categorie: string
+          oras: string | null
+          verificat: boolean
+          publicat: boolean
+          sursa: string | null
+          culori: string[]
+          poza_autor: string | null
+          poza_licenta: string | null
+          poza_url: string | null
+          poza_generata: boolean | null
+          video_autor: string | null
+          video_licenta: string | null
+          video_url: string | null
+          scena: string | null
+          embed_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          ordine: number
+          titlu: string
+          nota: string
+          an: number
+          an_exact: boolean
+          categorie: string
+          oras?: string | null
+          verificat?: boolean
+          publicat?: boolean
+          sursa?: string | null
+          culori: string[]
+          poza_autor?: string | null
+          poza_licenta?: string | null
+          poza_url?: string | null
+          poza_generata?: boolean | null
+          video_autor?: string | null
+          video_licenta?: string | null
+          video_url?: string | null
+          scena?: string | null
+          embed_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          ordine?: number
+          titlu?: string
+          nota?: string
+          an?: number
+          an_exact?: boolean
+          categorie?: string
+          oras?: string | null
+          verificat?: boolean
+          publicat?: boolean
+          sursa?: string | null
+          culori?: string[]
+          poza_autor?: string | null
+          poza_licenta?: string | null
+          poza_url?: string | null
+          poza_generata?: boolean | null
+          video_autor?: string | null
+          video_licenta?: string | null
+          video_url?: string | null
+          scena?: string | null
+          embed_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: { [_ in never]: never }
     Functions: {

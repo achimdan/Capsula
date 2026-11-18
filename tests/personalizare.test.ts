@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { categoriiPreferate, eDinScena, ordineCategorii, ordoneazaFise, ORDINE_CATEGORII } from '../app/utils/personalizare'
-import { FISE, type Categorie } from '../app/data/fise'
+import type { Categorie } from '../app/data/fise'
+import { FISE } from './fixtures/fise'
 import { PROFILURI } from '../app/data/profiluri'
 import { SCENE } from '../app/data/chestionar'
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AN_MIN, AN_MAX, FISE } from '~/data/fise'
+import { AN_MIN, AN_MAX } from '~/data/fise'
 const props = withDefaults(defineProps<{ anulMeu?: number; latime?: number; inaltime?: number; interactiva?: boolean }>(), { anulMeu: undefined, latime: 140, inaltime: 120, interactiva: false })
 const ani = Array.from({ length: AN_MAX - AN_MIN + 1 }, (_, i) => AN_MIN + i)
 const REP = 3
@@ -12,7 +12,8 @@ const lovit = ref<number | null>(null)
 const snap = ref(false)
 const trage = ref(false)
 const activ = ref<number | null>(null)
-const titlu = (an: number) => FISE.find(f => f.an === an && f.oras === null)?.titlu ?? ''
+const { toate: fise } = useFise()
+const titlu = (an: number) => fise.value.find(f => f.an === an && f.oras === null)?.titlu ?? ''
 // Titlul fișei pe care se oprește banda (Random Hit): celula lovită arată fișa aleasă, nu prima din anul ei.
 const titluLovit = ref('')
 

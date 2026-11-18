@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { FISE } from '~/data/fise'
-const { caseta } = useCapsula()
+const { caseta, fise } = useCapsula()
 const { autentificat } = useAuth()
 const { cereCont } = useIntrare()
-const salvate = computed(() => FISE.filter(f => caseta.value.includes(f.id)).sort((a, b) => a.an - b.an))
+const salvate = computed(() => fise.value.filter(f => caseta.value.includes(f.id)).sort((a, b) => a.an - b.an))
 </script>
 
 <template>

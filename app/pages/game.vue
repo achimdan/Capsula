@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { FISE, AN_MIN, AN_MAX, type Fisa } from '~/data/fise'
+import { AN_MIN, AN_MAX, type Fisa } from '~/data/fise'
 import type { RundaJucata } from '~/utils/cardScor'
-const { areProfil, profil } = useCapsula()
+const { areProfil, profil, fise } = useCapsula()
+const { incarca } = useFise()
 const recorduri = useStocare<number[]>('scoruri', [])
 const lista = ref<Fisa[]>([])
 const runda = ref(0)
@@ -50,7 +51,7 @@ function pornesteFlap() {
 
 function amesteca() {
   opresteFlap()
-  lista.value = alegeRunde(FISE, profil.value.oras)
+  lista.value = alegeRunde(fise.value, profil.value.oras)
   runda.value = 0; scor.value = 0; dezvaluit.value = false; terminat.value = false; ghicit.value = AN_START
   jucate.value = []; mesajShare.value = ''
   afisScor.value = 0
@@ -119,8 +120,9 @@ async function share() {
 }
 const titlu = computed(() => scor.value >= 450 ? 'Arhivar de meserie' : scor.value >= 300 ? 'Ureche bună de casetofon' : scor.value >= 150 ? 'Banda se mai derulează' : 'Casetă nouă, încă fără amintiri')
 
-onMounted(() => {
+onMounted(async () => {
   reduce.value = miscareRedusa()
+  await incarca()
   amesteca()
 })
 onBeforeUnmount(() => { opresteFlap(); cancelAnimationFrame(rafScor) })

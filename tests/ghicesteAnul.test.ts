@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { FISE } from '../app/data/fise'
+import { FISE } from './fixtures/fise'
 import { RUNDE, alegeRunde, amestecate, fisaFaraAn, fiseJoc, mascheazaAni, puncteDupaDistanta } from '../app/utils/ghicesteAnul'
 
 describe('mascheazaAni', () => {
