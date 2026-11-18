@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { curataIntrebarea } from '~/utils/cautare'
+
 useHead({ title: 'Caută · Capsula', meta: [{ name: 'robots', content: 'noindex' }] })
 
 const route = useRoute()
@@ -19,6 +21,10 @@ watch(q, v => router.replace({ query: v ? { q: v } : {} }))
 
 const EXEMPLE = ['vara la mare', 'ce se mânca la școală', 'muzică de discotecă', 'iarna anilor 90']
 function incearca(e: string) { text.value = e; intrebare.value = e }
+
+const { cerere: intreb, text: raspunsText, surse } = useIntrebare()
+const poateIntreba = computed(() => curataIntrebarea(text.value).length >= 3 && !intreb.isPending.value)
+function intreaba() { if (poateIntreba.value) intreb.mutate(curataIntrebarea(text.value)) }
 </script>
 
 <template>
@@ -45,6 +51,24 @@ id="q" v-model="text" type="search" name="q" maxlength="200" autocomplete="off" 
         <template v-else-if="data">{{ rezultate.length === 1 ? 'O fișă' : `${rezultate.length} fișe` }}, cele mai potrivite primele</template>
       </p>
     </section>
+    <section v-if="q.length >= 2" class="intreaba" aria-labelledby="intreaba-titlu">
+      <div class="intreaba-cap">
+        <h2 id="intreaba-titlu" class="k">Întreabă capsula</h2>
+        <button type="button" class="btn" :disabled="!poateIntreba" @click="intreaba">
+          {{ intreb.isPending.value ? 'Se gândește…' : 'Răspunde din fișe' }}
+        </button>
+      </div>
+      <p class="k notita">Răspunsul vine doar din fișele capsulei, cu sursele dedesubt. Poate greși: verifică fișele.</p>
+      <div role="status" aria-live="polite">
+        <p v-if="intreb.isError.value" class="raspuns">N-am putut răspunde acum. Încearcă din nou.</p>
+        <template v-else-if="intreb.data.value">
+          <p class="raspuns">{{ raspunsText }}</p>
+          <div v-if="surse.length" class="grila surse">
+            <FisaPolaroid v-for="f in surse" :key="f.id" :fisa="f" />
+          </div>
+        </template>
+      </div>
+    </section>
     <div v-if="rezultate.length" class="grila" :class="{ vechi: isFetching }">
       <FisaPolaroid v-for="f in rezultate" :key="f.id" :fisa="f" />
     </div>
@@ -61,5 +85,11 @@ id="q" v-model="text" type="search" name="q" maxlength="200" autocomplete="off" 
 .stare{min-height:1.5em}
 .grila{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px;justify-items:center;transition:opacity .2s}
 .grila.vechi{opacity:.5}
+.intreaba{display:grid;gap:10px;margin:8px 0 32px;padding:16px;border:1px solid var(--line);border-radius:12px;max-width:760px;min-width:0}
+.intreaba-cap{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.intreaba-cap .btn{min-height:44px}
+.notita{color:var(--muted)}
+.raspuns{font-size:18px;line-height:1.5;white-space:pre-line;overflow-wrap:anywhere}
+.surse{margin-top:12px}
 @media (prefers-reduced-motion: reduce){.grila{transition:none}}
 </style>
