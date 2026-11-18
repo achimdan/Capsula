@@ -482,7 +482,7 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) i
               v-for="(a, i) in ani"
               :key="a"
               class="celula"
-              :class="{ eu: anEu !== null && a === anEu, acum: i === idx, rest: preferate.size > 0 && !preferate.has(p) }"
+              :class="{ eu: anEu !== null && a === anEu, acum: i === idx }"
               :style="{ gridRow: 3 + t * 2, gridColumn: i + 2 }"
             >
               <button
@@ -586,8 +586,6 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) i
 .pista .k{position:sticky;left:var(--gut);display:inline-block;background:var(--paper);padding:2px 8px 2px 0}
 .pista.pref .k{color:var(--ink);font-weight:700}
 .pista .tine{font-weight:400;color:var(--muted)}
-.celula.rest .mini .img{filter:grayscale(.85);transition:filter .25s}
-.celula.rest .mini:hover .img,.celula.rest .mini:focus-visible .img{filter:none}
 .celula{border-left:1px solid var(--line);padding:22px 12px 16px;display:flex;flex-direction:column;gap:22px;min-height:56px;transition:background-color .3s}
 .celula.acum{background:color-mix(in srgb,var(--ink) 5%,transparent)}
 .celula.eu{background:color-mix(in srgb,var(--signal) 8%,transparent)}

@@ -46,3 +46,11 @@ describe('fisaDinRand', () => {
     expect(idRand('RO-0102')).toBeNull()
   })
 })
+
+describe('randDinFormular', () => {
+  it('scrie ș și ț cu virgulă, nu cu sedilă', () => {
+    const r = randDinFormular({ titlu: ' Ţigări şi Şcoala ', nota: 'ştiam ţara', an: 1995, categorie: 'Locuri' })
+    expect(r.title).toBe('Țigări și Școala')
+    expect(r.note).toBe('știam țara')
+  })
+})
