@@ -17,9 +17,16 @@ describe('maparea fișelor', () => {
 
   it('câmpurile opționale lipsă rămân absente, nu null', () => {
     const r = randTabelDinFisa({ ...SEED_FISE[0]!, ordine: 1 })
-    const f = fisaDinTabel({ ...r, poza_autor: null, poza_licenta: null, poza_url: null, poza_generata: null })
+    const f = fisaDinTabel({ ...r, poza_autor: null, poza_licenta: null, poza_url: null, poza_generata: null, poza_alt: null })
     expect('poza' in f).toBe(false)
     expect('video' in f).toBe(false)
     expect('embed' in f).toBe(false)
+  })
+
+  it('pune textul alternativ doar când există', () => {
+    const cuPoza = SEED_FISE.find(f => f.poza)!
+    const r = randTabelDinFisa(cuPoza)
+    expect('alt' in fisaDinTabel(r).poza!).toBe(false)
+    expect(fisaDinTabel({ ...r, poza_alt: 'O casetă pe o masă.' }).poza!.alt).toBe('O casetă pe o masă.')
   })
 })

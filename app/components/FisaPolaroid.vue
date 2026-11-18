@@ -81,6 +81,8 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
 
 <template>
   <article ref="card" class="fisa" :class="{ dev: developare, mare, 'fara-poza': faraPoza }" @pointermove="pePointer" @pointerleave="laIesire" @pointercancel="laIesire">
+    <!-- Poza e pe televizorul din fundal (canvas ascuns cititoarelor de ecran): descrierea ei rămâne aici. -->
+    <p v-if="faraPoza && fisa.poza?.alt" class="sr-only">Poza, pe televizor: {{ fisa.poza.alt }}</p>
     <div v-if="!faraPoza" class="img" :style="{ background: `linear-gradient(135deg, ${fisa.culori[0]}, ${fisa.culori[1]})` }">
       <video
         v-if="cuVideo"
@@ -105,7 +107,7 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
           <small>Se încarcă de pe facebook.com, care poate pune cookie-uri.</small>
         </template>
       </div>
-      <img v-else-if="fisa.poza" class="foto" :src="`/fise/${fisa.id}-480.webp`" :srcset="`/fise/${fisa.id}-480.webp 480w, /fise/${fisa.id}-960.webp 960w`" :sizes="mare ? '(max-width: 800px) 92vw, 400px' : '(max-width: 640px) 90vw, 300px'" :alt="fisa.titlu" loading="lazy" decoding="async" width="480" height="480">
+      <img v-else-if="fisa.poza" class="foto" :src="`/fise/${fisa.id}-480.webp`" :srcset="`/fise/${fisa.id}-480.webp 480w, /fise/${fisa.id}-960.webp 960w`" :sizes="mare ? '(max-width: 800px) 92vw, 400px' : '(max-width: 640px) 90vw, 300px'" :alt="fisa.poza.alt ?? fisa.titlu" loading="lazy" decoding="async" width="480" height="480">
       <span class="eticheta">{{ fisa.categorie }}{{ fisa.oras ? ' · ' + fisa.oras : '' }}{{ aScenei ? ' · scena ta' : '' }}{{ fisa.proprie ? ' · a ta' : '' }}</span>
       <span v-if="avut" :key="stamped ? 'nou' : 'vechi'" class="stampila" :class="{ nou: stamped }" aria-hidden="true">{{ fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta' }}</span>
       <div v-if="cuVideo" class="film-act">
