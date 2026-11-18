@@ -60,8 +60,9 @@ export function fisaDinTabel(r: RandFisaCitit): Fisa {
   return f
 }
 
-// Fisa (cu poziția ei în listă) → rândul din tabel. Folosit de importul din supabase/seed/fise.json.
-export function randTabelDinFisa(f: Fisa & { ordine: number }): RandFisa {
+// Fisa (cu poziția ei în listă) → rândul din tabel. Folosit de importurile din supabase/seed/*.json.
+// Fără `publicat` în JSON, fișa e publicată (ca la importul inițial).
+export function randTabelDinFisa(f: Fisa & { ordine: number, publicat?: boolean }): RandFisa {
   return {
     id: f.id,
     ordine: f.ordine,
@@ -72,7 +73,7 @@ export function randTabelDinFisa(f: Fisa & { ordine: number }): RandFisa {
     categorie: f.categorie,
     oras: f.oras ?? null,
     verificat: f.verificat,
-    publicat: true,
+    publicat: f.publicat ?? true,
     sursa: f.sursa ?? null,
     culori: [...f.culori],
     poza_autor: f.poza?.autor ?? null,
