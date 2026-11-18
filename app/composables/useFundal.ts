@@ -11,7 +11,9 @@ export const FUNDALURI: { id: Fundal; nume: string; descriere: string }[] = [
   { id: 'bloc', nume: 'Bloc la apus', descriere: 'Blocuri de pe vremuri, soare jos, ferestre aprinse.' },
   { id: 'pop', nume: 'Pop anii \'90', descriere: 'Casetă, Tamagotchi, telefon cu fir și dischetă.' },
   { id: 'televizor', nume: 'Televizor anii \'80', descriere: 'Televizor de lemn, cu clape și antenă, într-o cameră întunecată.' },
-  { id: 'televizor-90', nume: 'Televizor anii \'90', descriere: 'Televizor gri, cu mileu, vază și telecomandă deasupra.' }
+  { id: 'televizor-90', nume: 'Televizor anii \'90', descriere: 'Televizor gri, cu mileu, vază și telecomandă deasupra.' },
+  { id: 'caseta', nume: 'Casetă 3D', descriere: 'O casetă audio în 3D; pe prima pagină derulezi anii pe bandă, iar rolele se învârt.' },
+  { id: 'anuar', nume: 'Anuar', descriere: 'Hârtie albă, anul uriaș pe stânga; derulezi în jos prin ani, ca într-un catalog.' }
 ]
 
 export function useFundal() {

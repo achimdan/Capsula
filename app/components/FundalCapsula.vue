@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Fundal } from '~/utils/setari'
 import { camera, ECRAN_TV, progresPin } from '~/utils/ecranTv'
+import { AN_MIN, AN_MAX } from '~/data/fise'
 
 // `tema` + `mini` = previzualizare în /admin; altfel fundalul fix al paginii.
 const props = defineProps<{ tema?: Fundal; mini?: boolean }>()
@@ -10,6 +11,9 @@ const tema = computed(() => props.tema ?? activ.value)
 const { areProfil, an15 } = useCapsula()
 // Lumina din cameră urmează ecranul: culoarea medie a imaginii, câteva ori pe secundă.
 const luminaTv = ref('rgb(90 120 255)')
+// Caseta 3D doar în fundalul real, cu mișcare normală; altfel (previzualizare, mișcare redusă, „lite”) caseta desenată.
+const caseta3d = ref(false)
+function alegeCaseta() { caseta3d.value = !props.mini && !miscareRedusa() }
 // Fișa deschisă din cronologie își arată poza pe ecranul televizorului (vezi CronologieFise).
 const fisaPeTv = useState<{ id: string; titlu: string } | null>('fisa-pe-tv', () => null)
 
@@ -89,9 +93,9 @@ watch(() => ruta.path, () => nextTick(() => requestAnimationFrame(citesteScroll)
 // Preferința se poate schimba cu pagina deschisă: atunci repornim (sau oprim) paralaxa.
 let miscare: MediaQueryList | undefined
 // Și tapetul (urmărirea mouse-ului) depinde de preferință, deci refacem ambele efecte.
-function laSchimbareMiscare() { acordeaza(); paralaxa() }
+function laSchimbareMiscare() { acordeaza(); paralaxa(); alegeCaseta() }
 onMounted(() => {
-  acordeaza(); paralaxa()
+  acordeaza(); paralaxa(); alegeCaseta()
   miscare = matchMedia('(prefers-reduced-motion:reduce)')
   miscare.addEventListener('change', laSchimbareMiscare)
 })
@@ -186,6 +190,13 @@ onBeforeUnmount(() => {
       <div class="pp p4"><svg viewBox="0 0 120 120"><path d="M10 10H92L110 28V110H10Z" fill="#8FD3FF" /><rect x="32" y="10" width="48" height="30" fill="#D9D9E3" /><rect x="66" y="15" width="8" height="20" fill="#1E1B2E" /><rect x="24" y="60" width="72" height="50" rx="3" fill="#fff" /><path d="M34 78h52M34 92h36" /></svg></div>
       <div class="pp p5"><svg viewBox="0 0 120 120"><rect x="12" y="14" width="96" height="92" rx="14" fill="#FFD43B" /><rect x="26" y="26" width="68" height="40" rx="6" fill="#8FD3FF" /><path d="M34 78v18M25 87h18" /><circle cx="80" cy="84" r="6" fill="#FF6FA8" /><circle cx="94" cy="94" r="6" fill="#FF6FA8" /></svg></div>
     </template>
+    <!-- „Anuar”: pagina e hârtie simplă; anul și fișele le pune AnuarAni. În previzualizare desenăm compoziția. -->
+    <div v-else-if="tema === 'anuar' && mini" class="anuar-mini"><b>1994</b><i /><i /><i /></div>
+    <template v-else-if="tema === 'caseta'">
+      <i class="cs-lumina" />
+      <CasetaScena v-if="caseta3d" :an-min="AN_MIN" :an-max="AN_MAX" />
+      <CasetaStatica v-else :an-min="AN_MIN" :an-max="AN_MAX" />
+    </template>
     <template v-else-if="tema === 'televizor' || tema === 'televizor-90'">
       <i class="tv-h" :style="{ color: luminaTv }" />
       <div ref="tv" class="tv" :class="{ 'tv-90': tema === 'televizor-90' }">
@@ -262,6 +273,13 @@ onBeforeUnmount(() => {
 <style scoped>
 .fundal{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;contain:strict}
 .fundal.mini{position:absolute;z-index:0}
+.anuar-mini{position:absolute;inset:0;display:grid;grid-template-columns:5fr 2.2fr 2.2fr;grid-template-rows:1fr 1fr;gap:6px;padding:10%;align-items:start}
+.anuar-mini b{grid-row:1 / 3;align-self:center;font:800 clamp(28px,4.4vw,46px)/.82 var(--display);letter-spacing:-.02em;color:var(--ink)}
+.anuar-mini i{display:block;aspect-ratio:1;background:var(--ink);opacity:.82}
+.anuar-mini i:nth-of-type(2){grid-column:3;margin-top:30%;opacity:.5}
+.anuar-mini i:nth-of-type(3){grid-column:2;opacity:.3}
+/* Casetă 3D: o lumină caldă, joasă, în spatele casetei */
+.cs-lumina{position:absolute;left:50%;top:30%;width:120vmax;height:80vmax;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgb(255 176 112/.13),transparent)}
 .fundal>*{position:absolute}
 
 /* Tapet de bloc */

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { progresPin, tintaSnap } from '~/utils/ecranTv'
-import type { Categorie } from '~/data/fise'
+import { anDeOprire, imparteProgres, pozitieAn, progresPentruAn } from '~/utils/caseta'
+import { AN_MIN, AN_MAX, type Categorie } from '~/data/fise'
+import { CASETE_RO } from '~/data/caseteRo'
 const { areProfil, profil, an15, fiseVizibile, orasDeblocat, voturi } = useCapsula()
 const { ton, profilCititor, ponderiCategorii } = useProfilCitit()
 const linieTon = computed(() => (ton.value ? LINII_TON[ton.value] : ''))
@@ -25,6 +27,44 @@ const fundal = useStocare<string>('fundal', 'clasic')
 const calm = ref(false)
 onMounted(() => { calm.value = miscareRedusa() })
 const cuPin = computed(() => import.meta.client && !calm.value && fundal.value.startsWith('televizor'))
+// Cu fundalul „Casetă 3D”: anii stau pe o bandă orizontală. Scroll-ul în jos o derulează spre dreapta,
+// iar rolele casetei din spate se învârt (components/CasetaScena). Cu mișcare redusă, banda se derulează cu mâna.
+const esteCaseta = computed(() => fundal.value === 'caseta')
+const cuCaseta = computed(() => import.meta.client && !calm.value && esteCaseta.value)
+const aniBanda = computed(() => Array.from({ length: AN_MAX - AN_MIN + 1 }, (_, i) => {
+  const an = AN_MIN + i
+  const fise = fiseVizibile.value.filter(f => f.oras === null && f.an === an)
+  return { an, numar: fise.length, titluri: fise.slice(0, 3).map(f => f.titlu), muzica: [...new Set(CASETE_RO.filter(c => c.an === an).map(c => c.artist))].join(' · ') }
+}))
+const anCurent = ref(0)
+const pistaCaseta = ref<HTMLElement>()
+let rafCaseta = 0
+function deruleazaCaseta() {
+  rafCaseta = 0
+  const el = pistaCaseta.value
+  if (!el) return
+  const r = el.getBoundingClientRect()
+  const parti = imparteProgres(progresPin(r.top, r.height, innerHeight), r.height, innerHeight)
+  const x = pozitieAn(parti.ani, aniBanda.value.length)
+  el.style.setProperty('--cx', x.toFixed(4))
+  el.style.setProperty('--ci', parti.intro.toFixed(3))
+  const i = Math.round(x)
+  if (i !== anCurent.value) anCurent.value = i
+}
+// Butoanele anilor duc pagina exact la anul ales.
+function laAn(i: number) {
+  const el = pistaCaseta.value
+  if (!el) return
+  const r = el.getBoundingClientRect()
+  tinta = yPentruAn(r, progresPentruAn(i, aniBanda.value.length))
+  scrollTo({ top: tinta, behavior: 'smooth' })
+}
+// Poziția paginii pentru un progres pe bandă (0..1), după ecranul de intro.
+function yPentruAn(r: DOMRect, ani: number) {
+  const drum = r.height - innerHeight
+  const prag = imparteProgres(0, r.height, innerHeight).prag
+  return Math.round(scrollY + r.top + (prag + ani * (1 - prag)) * drum)
+}
 // Snapping ca la MemoryQuest: când scroll-ul se oprește în mijlocul retragerii, pagina merge lin la capătul
 // spre care derulai (în jos → conținutul, în sus → ecranul plin). Cât timp se așază, nu-l întrerupem cu alt snap.
 const pista = ref<HTMLElement>()
@@ -33,6 +73,7 @@ let ultimY = 0
 let directie = 0
 let tinta: number | null = null
 function asazaPin() {
+  if (pistaCaseta.value) return asazaCaseta()
   const el = pista.value
   if (!el) return
   const r = el.getBoundingClientRect()
@@ -42,7 +83,24 @@ function asazaPin() {
   tinta = Math.round(unde === 'sus' ? sus : sus + r.height - innerHeight)
   scrollTo({ top: tinta, behavior: 'smooth' })
 }
+// Pe bandă, pagina se oprește mereu pe un an întreg.
+function asazaCaseta() {
+  const el = pistaCaseta.value!
+  const r = el.getBoundingClientRect()
+  const p = progresPin(r.top, r.height, innerHeight)
+  if (p <= 0.001 || p >= 0.999) return
+  const parti = imparteProgres(p, r.height, innerHeight)
+  const n = aniBanda.value.length
+  // În intro: înapoi la caseta de aproape sau înainte, la primul an, după sensul derulării.
+  const y = parti.intro < 1
+    ? (tintaSnap(parti.intro, directie) === 'sus' ? Math.round(scrollY + r.top) : yPentruAn(r, 0))
+    : yPentruAn(r, progresPentruAn(anDeOprire(parti.ani, n, directie), n))
+  if (Math.abs(y - scrollY) < 2) return
+  tinta = y
+  scrollTo({ top: tinta, behavior: 'smooth' })
+}
 function laScroll() {
+  if (pistaCaseta.value && !rafCaseta) rafCaseta = requestAnimationFrame(deruleazaCaseta)
   const y = scrollY
   if (tinta !== null) {
     // Am ajuns la țintă: gata. Altfel lăsăm animația să se termine; dacă omul o întrerupe, oprirea următoare decide din nou.
@@ -61,8 +119,9 @@ function laScroll() {
   clearTimeout(ceas)
   ceas = setTimeout(() => { tinta = null; asazaPin() }, 160)
 }
-onMounted(() => { ultimY = scrollY; addEventListener('scroll', laScroll, { passive: true }) })
-onBeforeUnmount(() => { removeEventListener('scroll', laScroll); clearTimeout(ceas) })
+onMounted(() => { ultimY = scrollY; addEventListener('scroll', laScroll, { passive: true }); addEventListener('resize', laScroll, { passive: true }) })
+onBeforeUnmount(() => { removeEventListener('scroll', laScroll); removeEventListener('resize', laScroll); clearTimeout(ceas); cancelAnimationFrame(rafCaseta) })
+watch(cuCaseta, v => { if (v) nextTick(deruleazaCaseta) }, { flush: 'post' })
 
 const cuvinte = ['Aveai', '15', 'ani', 'în']
 const cifre = computed(() => String(an15.value).split('').map(Number))
@@ -102,6 +161,45 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
         </div>
       </div>
     </div>
+    <!-- Cu fundalul „Casetă 3D”: anii pe bandă. Pagina stă fixată cât derulezi prin toți anii, apoi merge mai departe. -->
+    <div v-if="cuCaseta" ref="pistaCaseta" class="cs-pin" data-caseta-pin :style="{ '--n': aniBanda.length }">
+      <div class="cs-scena">
+        <div class="cs-intro">
+          <div class="d1">Capsula</div>
+          <div class="k">Derulează ca să pornești banda ↓</div>
+        </div>
+        <div class="cs-cap">
+          <div class="k">Capsula · banda anilor</div>
+          <div class="k cs-indemn" aria-hidden="true">Derulează ↓ ca să avansezi banda →</div>
+        </div>
+        <ol class="cs-banda" aria-label="Anii din capsulă">
+          <li v-for="(a, i) in aniBanda" :key="a.an" class="cs-an" :class="{ acum: i === anCurent, tu: areProfil && a.an === an15 }">
+            <button type="button" class="cs-an-b" :aria-current="i === anCurent ? 'true' : undefined" @click="laAn(i)">
+              <span v-if="areProfil && a.an === an15" class="cs-tu">Ești aici · aveai 15 ani</span>
+              <span class="cs-anul">{{ a.an }}</span>
+              <span class="k">{{ a.numar === 1 ? '1 fișă' : `${a.numar} fișe` }}</span>
+              <span v-for="t in a.titluri" :key="t" class="cs-titlu">{{ t }}</span>
+              <span v-if="a.muzica" class="cs-muzica">Pe casetă: {{ a.muzica }}</span>
+            </button>
+          </li>
+        </ol>
+        <i class="cs-citire" aria-hidden="true" />
+      </div>
+    </div>
+    <section v-else-if="esteCaseta && calm" class="sec">
+      <div class="k">Capsula · banda anilor</div>
+      <ol class="cs-lista" aria-label="Anii din capsulă">
+        <li v-for="a in aniBanda" :key="a.an" class="cs-an" :class="{ tu: areProfil && a.an === an15 }">
+          <div class="cs-an-b">
+            <span v-if="areProfil && a.an === an15" class="cs-tu">Ești aici · aveai 15 ani</span>
+            <span class="cs-anul">{{ a.an }}</span>
+            <span class="k">{{ a.numar === 1 ? '1 fișă' : `${a.numar} fișe` }}</span>
+            <span v-for="t in a.titluri" :key="t" class="cs-titlu">{{ t }}</span>
+            <span v-if="a.muzica" class="cs-muzica">Pe casetă: {{ a.muzica }}</span>
+          </div>
+        </li>
+      </ol>
+    </section>
     <section v-if="!areProfil" class="erou">
       <div class="k">Capsula · arhiva anilor tăi</div>
       <h1 class="d1">Ceva din ’9x te așteaptă.</h1>
@@ -134,7 +232,8 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
         <button v-for="c in categorii" :key="c" class="chip" :aria-pressed="filtru === c" @click="filtru = c">{{ c }}</button>
       </div>
       <ClientOnly>
-        <CronologieFise v-if="listaFise === 'cronologie'" :fise="nationale" :an-eu="areProfil ? an15 : null" />
+        <AnuarAni v-if="fundal === 'anuar'" :fise="nationale" :an-eu="areProfil ? an15 : null" />
+        <CronologieFise v-else-if="listaFise === 'cronologie'" :fise="nationale" :an-eu="areProfil ? an15 : null" />
         <div v-else class="grila">
           <FisaPolaroid v-for="(f, i) in nationale" :key="f.id" v-reveal="i" :fisa="f" />
         </div>
@@ -166,6 +265,38 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 .tv-pin-titlu{display:grid;gap:10px;justify-items:center;text-align:center;padding:18px 26px;border-radius:14px;
   background:rgb(0 0 0/.55);color:#F4F1FA;opacity:calc(1 - var(--tvp, 0) * 4);transform:scale(calc(1 - var(--tvp, 0) * .6))}
 .tv-pin-titlu .k{color:#D9D4E6}
+/* Banda anilor (fundal „Casetă 3D”): pista dă lungimea derulării, scena rămâne fixată. */
+.cs-pin{height:calc(200svh + (var(--n) - 1) * 28svh);margin-inline:calc(50% - 50vw)}
+/* Intro: titlul stă peste fereastra casetei, apoi dispare; banda de ani apare după ce camera s-a retras. */
+.cs-intro{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:10px;text-align:center;pointer-events:none;
+  color:#F4F1FA;text-shadow:0 2px 24px rgb(0 0 0/.8);opacity:calc(1 - var(--ci, 0) * 3);transform:scale(calc(1 + var(--ci, 0) * .4))}
+.cs-intro .k{color:#E2DDEC}
+.cs-cap,.cs-banda,.cs-citire{opacity:clamp(0,calc(var(--ci, 1) * 3 - 2),1)}
+.cs-scena{position:sticky;top:0;height:100svh;overflow:hidden}
+.cs-cap{position:absolute;left:0;right:0;top:calc(100svh * .02 + 64px);display:flex;justify-content:space-between;gap:12px;padding:0 max(16px,4vw)}
+.cs-indemn{opacity:calc(1 - var(--cx, 0) * 2)}
+.cs-banda{--w:clamp(230px,30vw,340px);position:absolute;left:0;top:56%;margin:0;padding:0;list-style:none;display:flex;
+  transform:translate3d(calc(50vw - (var(--cx, 0) + .5) * var(--w)),0,0);will-change:transform}
+.cs-banda .cs-an{width:var(--w);flex:none;padding:0 8px}
+.cs-an-b{display:grid;gap:6px;align-content:start;width:100%;min-height:200px;padding:18px 18px 20px;text-align:left;font:inherit;color:inherit;
+  background:color-mix(in srgb,var(--card) 82%,transparent);border:1px solid var(--line);border-radius:12px;cursor:pointer;
+  transition:transform .35s var(--ease-ff),border-color .2s,opacity .35s;opacity:.55;transform:scale(.92)}
+.cs-an-b:hover{border-color:var(--muted);opacity:.85}
+.cs-an-b:active{transform:scale(.9)}
+.cs-an-b:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.acum .cs-an-b{opacity:1;transform:none;border-color:var(--muted)}
+.tu .cs-an-b{border-color:var(--signal)}
+.cs-anul{font-family:var(--display);font-weight:800;font-size:clamp(56px,7vw,84px);line-height:.85}
+.cs-tu{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--signal)}
+.cs-muzica{margin-top:4px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--ink);opacity:.8}
+.cs-titlu{font-size:14px;line-height:1.35;color:var(--muted);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+/* Capul de citire: linia fină din dreptul anului curent */
+.cs-citire{position:absolute;left:50%;top:calc(56% - 18px);width:1px;height:18px;background:var(--ink);opacity:.5}
+/* Cu mișcare redusă: aceeași bandă, derulată cu mâna */
+.cs-lista{display:flex;gap:12px;margin:0;padding:0 0 12px;list-style:none;overflow-x:auto;scroll-snap-type:x mandatory}
+.cs-lista .cs-an{flex:none;width:min(72vw,280px);scroll-snap-align:start}
+.cs-lista .cs-an-b{opacity:1;transform:none;cursor:auto}
+@media (max-width:640px){.cs-banda{--w:74vw;top:52%}.cs-indemn{display:none}.cs-an-b{min-height:180px}}
 .erou{display:grid;gap:20px}
 /* Puțin mai mult loc între rânduri decât .d1: pe telefon „ÎN” cade pe rândul doi și căciula lui atingea rândul de sus. */
 .erou h1{line-height:.96}
