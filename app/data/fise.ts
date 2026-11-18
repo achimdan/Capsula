@@ -38,6 +38,7 @@ export interface Poza {
   licenta: string // ex. „CC BY-SA 4.0”, „Domeniu public”
   url?: string // pagina fișierului pe Wikimedia Commons
   generata?: boolean
+  alt?: string // ce se vede în poză, pentru cititoarele de ecran (propus de Workers AI, scripts/alt-fise.mjs)
 }
 
 // Filmul fișei: aceleași reguli de licență ca la poze. MP4 (H.264), scurt, sub 25 MB (limita Workers pe fișier).

@@ -20,6 +20,7 @@ export interface RandFisa {
   poza_licenta: string | null
   poza_url: string | null
   poza_generata: boolean | null
+  poza_alt: string | null
   video_autor: string | null
   video_licenta: string | null
   video_url: string | null
@@ -28,7 +29,7 @@ export interface RandFisa {
 }
 
 // Coloanele citite de aplicație (fără `publicat`, `created_at`, `updated_at`: RLS arată oricum doar fișele publicate).
-export const COLOANE_FISE = 'id, ordine, titlu, nota, an, an_exact, categorie, oras, verificat, sursa, culori, poza_autor, poza_licenta, poza_url, poza_generata, video_autor, video_licenta, video_url, scena, embed_url'
+export const COLOANE_FISE = 'id, ordine, titlu, nota, an, an_exact, categorie, oras, verificat, sursa, culori, poza_autor, poza_licenta, poza_url, poza_generata, poza_alt, video_autor, video_licenta, video_url, scena, embed_url'
 
 export type RandFisaCitit = Omit<RandFisa, 'publicat'>
 
@@ -49,6 +50,7 @@ export function fisaDinTabel(r: RandFisaCitit): Fisa {
     f.poza = { autor: r.poza_autor, licenta: r.poza_licenta }
     if (r.poza_url !== null) f.poza.url = r.poza_url
     if (r.poza_generata !== null) f.poza.generata = r.poza_generata
+    if (r.poza_alt !== null) f.poza.alt = r.poza_alt
   }
   if (r.sursa !== null) f.sursa = r.sursa
   if (r.scena !== null) f.scena = r.scena as Scena
@@ -79,6 +81,7 @@ export function randTabelDinFisa(f: Fisa & { ordine: number }): RandFisa {
     poza_licenta: f.poza?.licenta ?? null,
     poza_url: f.poza?.url ?? null,
     poza_generata: f.poza?.generata ?? null,
+    poza_alt: f.poza?.alt ?? null,
     video_autor: f.video?.autor ?? null,
     video_licenta: f.video?.licenta ?? null,
     video_url: f.video?.url ?? null,

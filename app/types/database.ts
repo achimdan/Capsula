@@ -181,6 +181,7 @@ export type Database = {
           poza_licenta: string | null
           poza_url: string | null
           poza_generata: boolean | null
+          poza_alt: string | null
           video_autor: string | null
           video_licenta: string | null
           video_url: string | null
@@ -206,6 +207,7 @@ export type Database = {
           poza_licenta?: string | null
           poza_url?: string | null
           poza_generata?: boolean | null
+          poza_alt?: string | null
           video_autor?: string | null
           video_licenta?: string | null
           video_url?: string | null
@@ -231,6 +233,7 @@ export type Database = {
           poza_licenta?: string | null
           poza_url?: string | null
           poza_generata?: boolean | null
+          poza_alt?: string | null
           video_autor?: string | null
           video_licenta?: string | null
           video_url?: string | null
