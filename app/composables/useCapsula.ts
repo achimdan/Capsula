@@ -43,5 +43,5 @@ export function useCapsula() {
     lista.value = lista.value.includes(id) ? lista.value.filter(x => x !== id) : [...lista.value, id]
   }
 
-  return { profil, caseta, amAvut, voturi, areProfil, orasDeblocat, an15, fise, fiseVizibile, varsta, randomHit, comuta }
+  return { profil, caseta, amAvut, voturi, areProfil, orasDeblocat, deblocate, an15, fise, fiseVizibile, varsta, randomHit, comuta }
 }

@@ -247,6 +247,7 @@ export type Database = {
       delete_my_account: { Args: Record<string, never>, Returns: undefined }
       cauta_fise: { Args: { q: string, query_embedding?: string | null, match_count?: number }, Returns: { fisa_id: string, scor: number }[] }
       fise_similare: { Args: { p_fisa_id: string, match_count?: number }, Returns: { fisa_id: string, similarity: number }[] }
+      fise_pentru_intrebare: { Args: { query_embedding: string, match_count?: number }, Returns: { fisa_id: string, sim: number }[] }
     }
     Enums: { [_ in never]: never }
     CompositeTypes: { [_ in never]: never }
