@@ -223,8 +223,6 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
       </div>
     </section>
 
-    <CautareRapida />
-
     <section class="sec">
       <div class="k">Capsula națională</div>
       <h2 class="d2">Ce era peste tot</h2>
