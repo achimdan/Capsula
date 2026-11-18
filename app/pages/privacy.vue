@@ -46,7 +46,7 @@ async function sterge() {
         Capsula ține doar ce îi trebuie ca să-ți arate capsula ta. Nu vindem date, nu avem reclame și nu folosim
         programe de analiză a traficului.
       </p>
-      <p class="nota">Ciornă, actualizată pe 16 noiembrie 2026.</p>
+      <p class="nota">Ciornă, actualizată pe 18 noiembrie 2026.</p>
 
       <h2 class="d2">Cine răspunde de date</h2>
       <p>{{ OPERATOR.nume }}. Pentru orice întrebare despre datele tale: {{ OPERATOR.contact }}.</p>
@@ -57,7 +57,7 @@ async function sterge() {
         <li><strong>Profilul tău:</strong> anul nașterii, orașul sau localitatea și profilul citit din test.</li>
         <li><strong>Răspunsurile la test</strong>, ca să-l poți relua de unde ai rămas.</li>
         <li><strong>Caseta mea:</strong> fișele pe care le-ai salvat.</li>
-        <li><strong>Amintirile tale:</strong> fișele scrise de tine (titlu, an, categorie, notă). Le vezi doar tu.</li>
+        <li><strong>Amintirile tale:</strong> fișele scrise de tine (titlu, an, categorie, notă). Le vezi doar tu; cât le scrii, textul trece prin Cloudflare Workers AI (vezi mai jos).</li>
       </ul>
       <p>
         Le folosim doar ca să-ți arătăm capsula personalizată și să-ți păstrăm salvările între dispozitive.
@@ -68,6 +68,12 @@ async function sterge() {
       <ul>
         <li><strong>Supabase</strong> găzduiește baza de date și conturile.</li>
         <li><strong>Cloudflare</strong> servește site-ul. Ca orice server, înregistrează cererile (inclusiv adresa IP) în jurnale tehnice.</li>
+        <li>
+          <strong>Cloudflare Workers AI</strong> transformă texte în vectori și scrie răspunsurile din „Întreabă capsula”.
+          Primește întrebarea pe care o pui acolo și, cât scrii o amintire, titlul și nota ei, ca să găsim fișe care
+          seamănă și o categorie potrivită. Asta se întâmplă înainte să salvezi, chiar dacă renunți la fișă. Noi nu
+          păstrăm aceste texte în afara fișelor pe care le salvezi.
+        </li>
         <li><strong>Google</strong> se ocupă de conectare, doar când intri în cont. Fonturile le servim noi, nu Google.</li>
       </ul>
 

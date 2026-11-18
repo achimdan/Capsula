@@ -3,7 +3,7 @@ import { ORDINE_CATEGORII } from '~/utils/personalizare'
 import type { Categorie } from '~/data/fise'
 
 // Ajutorul la „Pune și tu o fișă”: fișe din Capsulă care seamănă cu ce scrii și o categorie propusă.
-// Doar sugestii: formularul nu se schimbă singur. Fiecare cerere costă un vector, deci nu repetăm același text.
+// Doar sugestii: formularul nu se schimbă singur. Textul trece prin Workers AI; e spus în /privacy. Fiecare cerere costă un vector, deci nu repetăm același text.
 export function useSugestiiFisa() {
   const { fiseVizibile } = useCapsula()
   const api = fiseProprii()
