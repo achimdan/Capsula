@@ -10,7 +10,6 @@ const toate: { to: string, text: string, modul?: ModulSetare }[] = [
   { to: '/', text: 'Capsula' },
   { to: '/daily', text: 'Caseta zilei' },
   { to: '/on-this-day', text: 'Azi, demult', modul: 'modul_azi' },
-  { to: '/search', text: 'Caută' },
   { to: '/random', text: 'Random Hit' },
   { to: '/game', text: 'Ghicește anul' },
   { to: '/prices', text: 'Prețuri', modul: 'modul_preturi' },
@@ -43,6 +42,9 @@ watch(() => route.path, () => { deschis.value = false })
         </NuxtLink>
       </div>
     </nav>
+    <NuxtLink to="/search" class="lupa" :aria-current="route.path === '/search' ? 'page' : undefined" aria-label="Caută în fișe" title="Caută">
+      <UIcon name="i-lucide-search" class="ic" aria-hidden="true" />
+    </NuxtLink>
     <AntetUtilizator v-if="autentificat" class="cont" />
     <button v-else type="button" class="intra cont" @click="deschide">Intră</button>
   </header>
@@ -57,6 +59,13 @@ nav{display:flex;gap:4px;overflow-x:auto;max-width:100%;scrollbar-width:none}
 .lista{display:contents}
 @media (max-width:600px){.antet{gap:8px}}
 .meniu{display:none;align-items:center;margin-left:auto;min-height:44px;padding:0 14px;font:500 15px var(--body);color:var(--ink);background:transparent;border:0;border-radius:2px;box-shadow:inset 0 0 0 1.5px var(--ink);cursor:pointer}
+.lupa{display:inline-grid;place-items:center;width:44px;height:44px;flex:none;color:var(--ink);border-radius:2px;box-shadow:inset 0 0 0 1.5px var(--ink);transition:background .15s,color .15s,transform .15s}
+.lupa .ic{width:20px;height:20px}
+.lupa:hover,.lupa[aria-current="page"]{background:var(--ink);color:var(--paper)}
+.lupa:active{transform:scale(.94)}
+.lupa:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+/* Pe telefon lupa stă înaintea butonului de meniu. */
+@media (max-width:600px){.logo{order:-2}.lupa{order:-1;margin-left:auto}.meniu{margin-left:0}}
 .meniu[aria-expanded="true"]{background:var(--ink);color:var(--paper)}
 @media (max-width:600px){
   .meniu{display:inline-flex}
