@@ -2261,5 +2261,305 @@
       "#2E5E8C",
       "#F0B35A"
     ]
+  },
+  {
+    "ordine": 130,
+    "id": "RO-0165",
+    "titlu": "Hagi pleacă la Real Madrid",
+    "nota": "Vara lui ’90. Numele lui Hagi lângă Real Madrid, în ziarul pe care îl citeau toți bărbații din bloc.",
+    "an": 1990,
+    "an_exact": true,
+    "categorie": "Evenimente",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#F4F1EA",
+      "#6B3FA0"
+    ]
+  },
+  {
+    "ordine": 131,
+    "id": "RO-0166",
+    "titlu": "Radio Contact",
+    "nota": "Primul radio care nu suna ca la stat: muzică străină, prezentatori care glumeau, reclame noi.",
+    "an": 1990,
+    "an_exact": false,
+    "categorie": "Muzică",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#1D3557",
+      "#E63946"
+    ]
+  },
+  {
+    "ordine": 132,
+    "id": "RO-0167",
+    "titlu": "Antena 1, prima emisie",
+    "nota": "Încă un buton pe telecomandă. Nu mai erai obligat să te uiți la TVR.",
+    "an": 1993,
+    "an_exact": true,
+    "categorie": "Filme & TV",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#0B3C8C",
+      "#F2C14E"
+    ]
+  },
+  {
+    "ordine": 133,
+    "id": "RO-0168",
+    "titlu": "What Is Love",
+    "nota": "Haddaway la discotecă și la radio, cu dansul din cap pe care îl făceau toți la refren.",
+    "an": 1993,
+    "an_exact": true,
+    "categorie": "Muzică",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#2B2D42",
+      "#EF233C"
+    ]
+  },
+  {
+    "ordine": 134,
+    "id": "RO-0169",
+    "titlu": "Jurassic Park",
+    "nota": "Dinozaurii care arătau adevărați. Văzut la cinema sau pe o casetă video cu dublaj peste voce.",
+    "an": 1993,
+    "an_exact": false,
+    "categorie": "Filme & TV",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#1B4332",
+      "#F9C74F"
+    ]
+  },
+  {
+    "ordine": 135,
+    "id": "RO-0170",
+    "titlu": "Walkman-ul cu căști",
+    "nota": "Caseta în buzunar, căștile cu burete, bateriile care se terminau exact la melodia preferată.",
+    "an": 1994,
+    "an_exact": false,
+    "categorie": "Obiecte & Haine",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#3A3A3A",
+      "#F77F00"
+    ]
+  },
+  {
+    "ordine": 136,
+    "id": "RO-0171",
+    "titlu": "Chioșcul de ziare",
+    "nota": "Reviste, gumă, abțibilduri și cartele. Totul printr-un geam mic, la colțul străzii.",
+    "an": 1994,
+    "an_exact": false,
+    "categorie": "Locuri",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#6C584C",
+      "#DDE5B6"
+    ]
+  },
+  {
+    "ordine": 137,
+    "id": "RO-0172",
+    "titlu": "Gangsta’s Paradise",
+    "nota": "Coolio pe toate posturile. Toată lumea știa refrenul, puțini știau versurile.",
+    "an": 1995,
+    "an_exact": true,
+    "categorie": "Muzică",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#14213D",
+      "#FCA311"
+    ]
+  },
+  {
+    "ordine": 138,
+    "id": "RO-0173",
+    "titlu": "Jocul de Brick Game",
+    "nota": "Tetris pe un ecran cât o cutie de chibrituri, cu bipurile date încet sub bancă.",
+    "an": 1995,
+    "an_exact": false,
+    "categorie": "Obiecte & Haine",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#5A5A5A",
+      "#B5E48C"
+    ]
+  },
+  {
+    "ordine": 139,
+    "id": "RO-0174",
+    "titlu": "Consola Pegasus",
+    "nota": "Cartușul suflat înainte de joc, Mario la televizor și certurile pentru al doilea controller.",
+    "an": 1995,
+    "an_exact": false,
+    "categorie": "Obiecte & Haine",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#22223B",
+      "#C9184A"
+    ]
+  },
+  {
+    "ordine": 140,
+    "id": "RO-0175",
+    "titlu": "Beverly Hills 90210",
+    "nota": "Liceul din California, cu tunsorile și blugii pe care încercai să-i copiezi.",
+    "an": 1995,
+    "an_exact": false,
+    "categorie": "Filme & TV",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#2A9D8F",
+      "#E9C46A"
+    ]
+  },
+  {
+    "ordine": 141,
+    "id": "RO-0176",
+    "titlu": "Tang la plic",
+    "nota": "Pulberea portocalie amestecată cu apă în cana mare. Uneori o mâncai direct din plic.",
+    "an": 1995,
+    "an_exact": false,
+    "categorie": "Mâncare",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#F3722C",
+      "#FFF3B0"
+    ]
+  },
+  {
+    "ordine": 142,
+    "id": "RO-0177",
+    "titlu": "Olimpiada de la Atlanta",
+    "nota": "Vara lui ’96, nopți întregi cu ochii la televizor după medaliile României.",
+    "an": 1996,
+    "an_exact": true,
+    "categorie": "Evenimente",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#003F88",
+      "#FDC500"
+    ]
+  },
+  {
+    "ordine": 143,
+    "id": "RO-0178",
+    "titlu": "Power Rangers",
+    "nota": "Cinci costume colorate, o transformare cu pumnul în sus și toată curtea care alegea ce culoare e.",
+    "an": 1996,
+    "an_exact": false,
+    "categorie": "Filme & TV",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#D00000",
+      "#3F37C9"
+    ]
+  },
+  {
+    "ordine": 144,
+    "id": "RO-0179",
+    "titlu": "Frutti Fresh",
+    "nota": "Sucul colorat în sticlă de plastic, cu gust de fructe pe care nu le gustaseși niciodată.",
+    "an": 1996,
+    "an_exact": false,
+    "categorie": "Mâncare",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#F72585",
+      "#FFD60A"
+    ]
+  },
+  {
+    "ordine": 145,
+    "id": "RO-0180",
+    "titlu": "Pagerul",
+    "nota": "Un mesaj scurt pe un ecran mic, apoi fuga la telefonul public ca să suni înapoi.",
+    "an": 1996,
+    "an_exact": false,
+    "categorie": "Obiecte & Haine",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#343A40",
+      "#80ED99"
+    ]
+  },
+  {
+    "ordine": 146,
+    "id": "RO-0181",
+    "titlu": "Tazos din pungile de chipsuri",
+    "nota": "Discurile de plastic din punga de chipsuri, strânse, schimbate și jucate pe pervaz.",
+    "an": 1997,
+    "an_exact": false,
+    "categorie": "Obiecte & Haine",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#7209B7",
+      "#F9C80E"
+    ]
+  },
+  {
+    "ordine": 147,
+    "id": "RO-0182",
+    "titlu": "Acasă TV",
+    "nota": "Postul telenovelelor. La ora serialului se făcea liniște în toată casa.",
+    "an": 1998,
+    "an_exact": true,
+    "categorie": "Filme & TV",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#9D0208",
+      "#FFBA08"
+    ]
+  },
+  {
+    "ordine": 148,
+    "id": "RO-0183",
+    "titlu": "Internet café-ul",
+    "nota": "O oră plătită la calculator, chat cu necunoscuți și primul e-mail făcut cu ajutorul cuiva.",
+    "an": 1998,
+    "an_exact": false,
+    "categorie": "Locuri",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#023047",
+      "#8ECAE6"
+    ]
+  },
+  {
+    "ordine": 149,
+    "id": "RO-0184",
+    "titlu": "Papa Ioan Paul al II-lea la București",
+    "nota": "Mai 1999, prima vizită a unui papă în România. Străzi pline și slujbă transmisă în direct.",
+    "an": 1999,
+    "an_exact": true,
+    "categorie": "Evenimente",
+    "oras": null,
+    "verificat": false,
+    "culori": [
+      "#F8F9FA",
+      "#B08968"
+    ]
   }
 ]
