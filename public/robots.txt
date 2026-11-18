@@ -13,3 +13,4 @@ Disallow: /admin
 Disallow: /confirm
 Disallow: /login
 Disallow: /api
+Disallow: /search

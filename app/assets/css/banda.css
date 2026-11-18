@@ -55,7 +55,7 @@ img{max-width:100%}
 .rand{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:24px}
 :focus-visible{outline:3px solid var(--signal);outline-offset:3px}
-select,input[type=text],input[type=number],textarea{font:inherit;background:var(--card);color:var(--ink);border:1.5px solid var(--ink);border-radius:2px;padding:10px 12px;width:100%}
+select,input[type=text],input[type=search],input[type=number],textarea{font:inherit;background:var(--card);color:var(--ink);border:1.5px solid var(--ink);border-radius:2px;padding:10px 12px;width:100%}
 label.k{display:block;margin-bottom:6px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}

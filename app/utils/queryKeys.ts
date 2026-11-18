@@ -4,6 +4,7 @@ export const queryKeys = {
   conturi: ['cont'] as const,
   setari: ['setari'] as const,
   fise: ['fise'] as const,
+  cautare: (q: string) => ['cautare', q] as const,
   fiseProprii: (userId: string) => ['fise-proprii', userId] as const,
   toateFiseleProprii: ['fise-proprii'] as const
 }
