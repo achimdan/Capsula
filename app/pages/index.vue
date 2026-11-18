@@ -48,7 +48,12 @@ function laScroll() {
     // Am ajuns la țintă: gata. Altfel lăsăm animația să se termine; dacă omul o întrerupe, oprirea următoare decide din nou.
     if (Math.abs(y - tinta) < 2) { tinta = null; ultimY = y; return }
     // Omul trage în sens opus animației: preia el controlul.
-    if (y !== ultimY && Math.sign(y - ultimY) !== Math.sign(tinta - ultimY)) { tinta = null; directie = Math.sign(y - ultimY) }
+    if (y !== ultimY && Math.sign(y - ultimY) !== Math.sign(tinta - ultimY)) {
+      tinta = null
+      directie = Math.sign(y - ultimY)
+      // Unele browsere nu opresc singure scroll-ul lin când omul atinge ecranul; îl oprim noi pe loc.
+      scrollTo({ top: y, behavior: 'instant' })
+    }
   } else if (y !== ultimY) {
     directie = Math.sign(y - ultimY)
   }

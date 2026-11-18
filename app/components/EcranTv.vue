@@ -23,6 +23,7 @@ let raf = 0
 let ultim = 0
 let start = 0
 let ultimaLumina = 0
+let culoareTrimisa = [-99, -99, -99]
 let programAnterior = ''
 let canal = 1
 let osdPana = 0
@@ -38,7 +39,11 @@ function trimiteLumina() {
   let r = 0, g = 0, b = 0
   for (let i = 0; i < d.length; i += 4) { r += d[i]!; g += d[i + 1]!; b += d[i + 2]! }
   const n = d.length / 4
-  emit('lumina', `rgb(${Math.round(r / n)} ${Math.round(g / n)} ${Math.round(b / n)})`)
+  // Trimitem culoarea doar când se schimbă vizibil: fiecare schimbare redesenează lumina din cameră.
+  const c = [Math.round(r / n), Math.round(g / n), Math.round(b / n)]
+  if (Math.abs(c[0]! - culoareTrimisa[0]!) + Math.abs(c[1]! - culoareTrimisa[1]!) + Math.abs(c[2]! - culoareTrimisa[2]!) < 30) return
+  culoareTrimisa = c
+  emit('lumina', `rgb(${c[0]} ${c[1]} ${c[2]})`)
 }
 
 // Numărul canalului, verde, ca pe televizoarele cu telecomandă (nu și pe cele alb-negru).
