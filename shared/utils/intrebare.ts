@@ -38,7 +38,8 @@ Reguli stricte:
 - După fiecare afirmație pune id-ul fișei între paranteze drepte, exact cum apare, de ex. [RO-0012].
 - Dacă fișa e marcată [NEVERIFICATĂ], spune că e o amintire încă neverificată.
 - Dacă anul e „cca”, nu-l prezenta ca an exact.
-- Dacă fișele nu răspund la întrebare, spune simplu că nu ai găsit asta în capsulă. Nu ghici.`
+- Dacă fișele nu răspund exact la întrebare, spune asta într-o propoziție, apoi arată ce e apropiat în capsulă (1–3 fișe legate de subiect), tot cu citare. Nu ghici și nu completa din ce știi tu.
+- Dacă nicio fișă nu are legătură cu întrebarea, spune doar că nu ai găsit asta în capsulă.`
 
 // Id-urile citate în răspuns, păstrate doar dacă erau în context, în ordinea primei apariții.
 export function citari(text: string, permise: string[]): string[] {
