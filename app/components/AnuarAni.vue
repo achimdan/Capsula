@@ -142,7 +142,7 @@ const loc = (f: Fisa) => [f.categorie, f.oras].filter(Boolean).join(' · ')
     :ui="{ overlay: 'fisa-voal bg-[#121212]/80', content: 'max-w-[812px] fisa-modal bg-transparent ring-0 shadow-none divide-y-0', header: 'sr-only', body: 'p-2 sm:p-4 flex justify-center [scrollbar-width:none]' }"
   >
     <template #body>
-      <FisaPolaroid v-if="selectata" :fisa="selectata" mare @inchide="selectata = null" />
+      <FisaPolaroid v-if="selectata" :fisa="selectata" mare @inchide="selectata = null" @deschide="f => selectata = f" />
     </template>
   </UModal>
 </template>

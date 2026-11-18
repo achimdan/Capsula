@@ -16,6 +16,12 @@ export default defineNuxtConfig({
     devtools: false,
     queryClientOptions: queryDefaults
   },
+  // Doar pentru `nuxt dev`: pe Worker, Workers AI vine din legătura `AI`. Valorile vin din
+  // NUXT_CLOUDFLARE_ACCOUNT_ID / NUXT_CLOUDFLARE_AI_TOKEN (.env) și nu se pun ca secrete pe Worker.
+  runtimeConfig: {
+    cloudflareAccountId: '',
+    cloudflareAiToken: ''
+  },
   supabase: {
     // URL-ul și cheia publishable vin din NUXT_PUBLIC_SUPABASE_URL / NUXT_PUBLIC_SUPABASE_KEY (.env).
     // Rutele protejate le decide middleware-ul nostru (auth.global.ts), nu modulul.
@@ -30,7 +36,7 @@ export default defineNuxtConfig({
       deployConfig: true,
       nodeCompat: true,
       // previews: {} cerut de `wrangler preview`, pe care Workers Builds îl rulează pentru ramurile care nu sunt main (PR-uri).
-      wrangler: { name: 'capsula', workers_dev: true, compatibility_flags: ['nodejs_compat'], observability: { enabled: true }, ...({ previews: {} } as object) }
+      wrangler: { name: 'capsula', workers_dev: true, compatibility_flags: ['nodejs_compat'], observability: { enabled: true }, ai: { binding: 'AI' }, ...({ previews: {} } as object) }
     }
   },
   // Lista SIRUTA se schimbă de două ori pe an: cache lung în browser și la margine.

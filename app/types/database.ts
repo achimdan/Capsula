@@ -155,6 +155,13 @@ export type Database = {
         }
         Relationships: []
       }
+      // supabase/migrations/20261118140000_fise_embeddings.sql
+      fise_embeddings: {
+        Row: { fisa_id: string, model: string, content_hash: string, embedding: string, updated_at: string }
+        Insert: { fisa_id: string, model: string, content_hash: string, embedding: string, updated_at?: string }
+        Update: { fisa_id?: string, model?: string, content_hash?: string, embedding?: string, updated_at?: string }
+        Relationships: []
+      }
       // supabase/migrations/20261118120000_fise.sql
       fise: {
         Row: {
@@ -238,6 +245,8 @@ export type Database = {
     Views: { [_ in never]: never }
     Functions: {
       delete_my_account: { Args: Record<string, never>, Returns: undefined }
+      cauta_fise: { Args: { q: string, query_embedding?: string | null, match_count?: number }, Returns: { fisa_id: string, scor: number }[] }
+      fise_similare: { Args: { p_fisa_id: string, match_count?: number }, Returns: { fisa_id: string, similarity: number }[] }
     }
     Enums: { [_ in never]: never }
     CompositeTypes: { [_ in never]: never }

@@ -10,6 +10,7 @@ const toate: { to: string, text: string, modul?: ModulSetare }[] = [
   { to: '/', text: 'Capsula' },
   { to: '/daily', text: 'Caseta zilei' },
   { to: '/on-this-day', text: 'Azi, demult', modul: 'modul_azi' },
+  { to: '/search', text: 'Caută' },
   { to: '/random', text: 'Random Hit' },
   { to: '/game', text: 'Ghicește anul' },
   { to: '/prices', text: 'Prețuri', modul: 'modul_preturi' },

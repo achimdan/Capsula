@@ -5,8 +5,10 @@ import type { Fisa } from '~/data/fise'
 const props = withDefaults(defineProps<{ fisa: Fisa; ascundeAn?: boolean; actiuni?: boolean; developare?: boolean; mare?: boolean; faraPoza?: boolean }>(), {
   ascundeAn: false, actiuni: true, developare: false, mare: false, faraPoza: false
 })
-defineEmits<{ inchide: [] }>()
+defineEmits<{ inchide: [], deschide: [fisa: Fisa] }>()
 // Filmul pornește mut, în buclă; cu „reduce motion” așteaptă să fie pornit de cititor.
+// Doar în fișa deschisă: cererea pornește abia când e `mare`.
+const { similare } = props.mare ? useFiseSimilare(toRef(props, 'fisa')) : { similare: computed<Fisa[]>(() => []) }
 const cuVideo = computed(() => props.mare && !!props.fisa.video)
 const film = ref<HTMLVideoElement | null>(null)
 const mut = ref(true)
@@ -144,6 +146,14 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
       </button>
     </div>
     <span class="glare" aria-hidden="true" />
+    <nav v-if="mare && similare.length" class="similare" aria-label="Fișe asemănătoare">
+      <span class="k">Seamănă cu</span>
+      <ul>
+        <li v-for="s in similare" :key="s.id">
+          <button type="button" @click="$emit('deschide', s)"><span class="an">{{ s.an_exact ? s.an : '≈' + s.an }}</span>{{ s.titlu }}</button>
+        </li>
+      </ul>
+    </nav>
   </article>
 </template>
 
@@ -248,4 +258,13 @@ video.foto{cursor:pointer;background:#000}
   .dev .img::after,.stampila.nou,.banda.lipit{animation:none}
   .act button,.act button:hover,.act button:active,.inchide,.inchide:active{transition:none;transform:none}
 }
+.similare{grid-column:1/-1;display:grid;gap:8px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.similare ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.similare button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:6px 12px;font:500 14px var(--body);text-align:left;
+  color:var(--ink);background:transparent;border:1.5px solid var(--ink);border-radius:2px;cursor:pointer;transition:background .15s,color .15s,transform .15s}
+.similare button:hover{background:var(--ink);color:var(--paper)}
+.similare button:active{transform:scale(.97)}
+.similare button:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.similare .an{font-family:var(--mono);font-size:12px;opacity:.7}
+@media (prefers-reduced-motion: reduce){.similare button{transition:none}}
 </style>

@@ -21,6 +21,22 @@ const MODULE_ADMIN: { id: Modul; nume: string; descriere: string; ruta?: string 
   { id: 'tv', nume: 'La TV', descriere: 'Emisiunile, serialele și desenele fiecărui an. Doar titluri și texte proprii.', ruta: '/tv' },
   { id: 'bucuresti', nume: 'Stratul București', descriere: 'Fișele locale din București apar celor care au ales Bucureștiul.' }
 ]
+// Căutarea: vectorii fișelor se refac doar pentru fișele schimbate de la ultima indexare.
+const reindexare = ref<'' | 'lucrez' | 'gata' | 'eroare'>('')
+const rezultatReindexare = ref('')
+async function reindexeaza() {
+  if (reindexare.value === 'lucrez') return
+  reindexare.value = 'lucrez'
+  try {
+    const r = await $fetch<{ total: number, reindexate: number }>('/api/admin/reindex', { method: 'POST' })
+    rezultatReindexare.value = r.reindexate ? `${r.reindexate} din ${r.total} fișe reindexate.` : `Toate cele ${r.total} fișe erau la zi.`
+    reindexare.value = 'gata'
+  } catch (e) {
+    rezultatReindexare.value = (e as { statusMessage?: string }).statusMessage ?? 'Nu a mers. Încearcă din nou.'
+    reindexare.value = 'eroare'
+  }
+}
+
 async function alege<K extends keyof SetariSite>(cheie: K, valoare: SetariSite[K], curent: SetariSite[K]) {
   if (valoare === curent || stare[cheie] === 'salvez') return
   stare[cheie] = 'salvez'
@@ -112,6 +128,16 @@ async function alege<K extends keyof SetariSite>(cheie: K, valoare: SetariSite[K
             </span>
           </label>
         </div>
+      </section>
+      <section class="bloc">
+        <h2 class="d3">Căutare</h2>
+        <p class="desc">Căutarea găsește fișele și după sens, nu doar după cuvinte. După ce modifici fișe, reindexează-le; cele neschimbate sunt sărite.</p>
+        <p>
+          <button type="button" class="btn" :disabled="reindexare === 'lucrez'" @click="reindexeaza">
+            {{ reindexare === 'lucrez' ? 'Se reindexează…' : 'Reindexează fișele' }}
+          </button>
+        </p>
+        <p class="k nota" role="status" aria-live="polite">{{ rezultatReindexare }}</p>
       </section>
       <template #fallback><div class="grila" style="min-height:240px" /></template>
     </ClientOnly>
