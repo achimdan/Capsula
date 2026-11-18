@@ -1,9 +1,12 @@
 import type { Ref } from 'vue'
 import { curataIntrebarea, fiseDinRezultate } from '~/utils/cautare'
+import { fisaVizibila } from '#shared/utils/intrebare'
 
 // Căutarea în fișe: /api/search dă id-urile (după cuvinte și după sens), fișele întregi le avem deja (useFise).
 export function useCautare(intrebare: Ref<string>) {
-  const { fiseVizibile } = useCapsula()
+  const { fise: toate, deblocate } = useCapsula()
+  // În căutare intră și straturile altor orașe deblocate (marcate în pagină), nu doar orașul omului.
+  const fiseCautabile = computed(() => toate.value.filter(f => fisaVizibila(f, deblocate.value)))
   const { incarca } = useFise()
   const q = computed(() => curataIntrebarea(intrebare.value))
 
@@ -21,8 +24,8 @@ export function useCautare(intrebare: Ref<string>) {
     enabled: computed(() => import.meta.client && q.value.length >= 2)
   })
 
-  const rezultate = computed(() => fiseDinRezultate(cerere.data.value?.ids ?? [], fiseVizibile.value))
-  // Găsite, dar din straturi de oraș pe care omul nu le-a deschis.
+  const rezultate = computed(() => fiseDinRezultate(cerere.data.value?.ids ?? [], fiseCautabile.value))
+  // Găsite, dar din straturi de oraș încă blocate.
   const ascunse = computed(() => (cerere.data.value?.ids.length ?? 0) - rezultate.value.length)
   return { q, rezultate, ascunse, cerere }
 }

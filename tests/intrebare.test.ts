@@ -3,12 +3,11 @@ import { fisaVizibila, contextFise, citari, faraCitariInventate, diacriticeCorec
 
 describe('fisaVizibila', () => {
   it('arată fișele naționale oricui', () => {
-    expect(fisaVizibila({ oras: null }, null)).toBe(true)
+    expect(fisaVizibila({ oras: null }, [])).toBe(true)
   })
-  it('arată stratul de oraș doar pentru orașul deblocat al omului', () => {
-    expect(fisaVizibila({ oras: 'Cluj' }, 'Cluj')).toBe(true)
-    expect(fisaVizibila({ oras: 'Cluj' }, 'București')).toBe(false)
-    expect(fisaVizibila({ oras: 'Cluj' }, null)).toBe(false)
+  it('arată straturile orașelor deblocate, oricare ar fi orașul omului', () => {
+    expect(fisaVizibila({ oras: 'Cluj' }, ['Cluj'])).toBe(true)
+    expect(fisaVizibila({ oras: 'Iași' }, ['Cluj', 'București'])).toBe(false)
   })
 })
 

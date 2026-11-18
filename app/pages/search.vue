@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { curataIntrebarea } from '~/utils/cautare'
+import type { Fisa } from '~/data/fise'
 
 useHead({ title: 'Caută · Capsula', meta: [{ name: 'robots', content: 'noindex' }] })
 
@@ -21,6 +22,10 @@ watch(q, v => router.replace({ query: v ? { q: v } : {} }))
 
 const EXEMPLE = ['vara la mare', 'ce se mânca la școală', 'muzică de discotecă', 'iarna anilor 90']
 function incearca(e: string) { text.value = e; intrebare.value = e }
+
+// Fișele din straturile altor orașe deblocate apar în căutare, dar marcate.
+const { profil } = useCapsula()
+function dinAltOras(f: Fisa) { return f.oras !== null && f.oras !== profil.value.oras }
 
 const { cerere: intreb, text: raspunsText, surse } = useIntrebare()
 const poateIntreba = computed(() => curataIntrebarea(text.value).length >= 3 && !intreb.isPending.value)
@@ -64,13 +69,19 @@ id="q" v-model="text" type="search" name="q" maxlength="200" autocomplete="off" 
         <template v-else-if="intreb.data.value">
           <p class="raspuns">{{ raspunsText }}</p>
           <div v-if="surse.length" class="grila surse">
-            <FisaPolaroid v-for="f in surse" :key="f.id" :fisa="f" />
+            <div v-for="f in surse" :key="f.id" class="rezultat">
+              <span v-if="dinAltOras(f)" class="k eticheta">din {{ f.oras }}</span>
+              <FisaPolaroid :fisa="f" />
+            </div>
           </div>
         </template>
       </div>
     </section>
     <div v-if="rezultate.length" class="grila" :class="{ vechi: isFetching }">
-      <FisaPolaroid v-for="f in rezultate" :key="f.id" :fisa="f" />
+      <div v-for="f in rezultate" :key="f.id" class="rezultat">
+        <span v-if="dinAltOras(f)" class="k eticheta">din {{ f.oras }}</span>
+        <FisaPolaroid :fisa="f" />
+      </div>
     </div>
   </main>
 </template>
@@ -91,5 +102,7 @@ id="q" v-model="text" type="search" name="q" maxlength="200" autocomplete="off" 
 .notita{color:var(--muted)}
 .raspuns{font-size:18px;line-height:1.5;white-space:pre-line;overflow-wrap:anywhere}
 .surse{margin-top:12px}
+.rezultat{display:grid;gap:6px;justify-items:center;min-width:0}
+.eticheta{color:var(--muted)}
 @media (prefers-reduced-motion: reduce){.grila{transition:none}}
 </style>

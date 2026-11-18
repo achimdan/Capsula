@@ -4,12 +4,12 @@ import {
   fisaVizibila, contextFise, citari, faraCitariInventate, diacriticeCorecte, type FisaContext
 } from '#shared/utils/intrebare'
 
-// „Întreabă-mi capsula”: caută fișele apropiate de întrebare (după sens), păstrează doar ce vede omul
+// „Întreabă-mi capsula”: caută fișele apropiate de întrebare (după sens), păstrează naționalele și orașele deblocate
 // și cere modelului un răspuns scurt, doar din ele, cu citare. Fără fișe nu chemăm modelul deloc.
 export default defineEventHandler(async (event) => {
-  const body = await readBody<{ q?: unknown, oras?: unknown }>(event)
+  const body = await readBody<{ q?: unknown, orase?: unknown }>(event)
   const q = String(body?.q ?? '').trim().replace(/\s+/g, ' ').slice(0, 200)
-  const oras = typeof body?.oras === 'string' && body.oras ? body.oras.slice(0, 60) : null
+  const orase = (Array.isArray(body?.orase) ? body.orase : []).filter((o): o is string => typeof o === 'string').slice(0, 12)
   if (q.length < 3) throw createError({ statusCode: 400, statusMessage: 'Întrebarea e prea scurtă' })
 
   const ai = legaturaAi(event)
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
       .in('id', ids).eq('publicat', true)
     if (e) throw createError({ statusCode: 502, statusMessage: 'Fișele nu s-au încărcat' })
     const dupaId = new Map((data as FisaContext[]).map(f => [f.id, f]))
-    fise = ids.flatMap(id => dupaId.get(id) ?? []).filter(f => fisaVizibila(f, oras)).slice(0, FISE_IN_CONTEXT)
+    fise = ids.flatMap(id => dupaId.get(id) ?? []).filter(f => fisaVizibila(f, orase)).slice(0, FISE_IN_CONTEXT)
   }
 
   setHeader(event, 'cache-control', 'no-store')

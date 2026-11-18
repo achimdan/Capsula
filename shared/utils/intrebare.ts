@@ -16,10 +16,10 @@ export interface FisaContext {
   verificat: boolean
 }
 
-// Aceeași regulă ca fiseVizibile din useCapsula: fișele naționale plus stratul orașului deblocat al omului.
-// `oras` vine de la client doar când orașul lui e deblocat; altfel e null și rămân doar fișele naționale.
-export function fisaVizibila(f: { oras: string | null }, oras: string | null): boolean {
-  return f.oras === null || (oras !== null && f.oras === oras)
+// Ce intră în căutare și în „Întreabă”: fișele naționale plus straturile orașelor deblocate,
+// chiar dacă omul și-a ales alt oraș (în pagină sunt marcate „din <oraș>”).
+export function fisaVizibila(f: { oras: string | null }, orase: readonly string[]): boolean {
+  return f.oras === null || orase.includes(f.oras)
 }
 
 // Blocul de fișe pentru model. Anii nesiguri apar ca „cca”, fișele neverificate sunt marcate,
