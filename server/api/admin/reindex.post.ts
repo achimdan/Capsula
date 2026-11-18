@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   if (user?.app_metadata?.role !== 'super_admin') throw createError({ statusCode: 403, statusMessage: 'Doar pentru admin' })
 
   const ai = legaturaAi(event)
-  if (!ai) throw createError({ statusCode: 503, statusMessage: 'Workers AI lipsește (merge doar pe Worker)' })
+  if (!ai) throw createError({ statusCode: 503, statusMessage: 'Workers AI lipsește: pe Worker trebuie legătura AI; local, NUXT_CLOUDFLARE_ACCOUNT_ID și NUXT_CLOUDFLARE_AI_TOKEN în .env' })
 
   const supabase = await serverSupabaseClient(event)
   const [fise, existente] = await Promise.all([

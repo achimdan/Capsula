@@ -5,10 +5,23 @@ interface LegaturaAi {
   run: (model: string, input: { text: string[] }) => Promise<{ data: number[][] }>
 }
 
-// Workers AI prin legătura `AI` din wrangler (doar pe Worker; în `nuxt dev` lipsește și întoarce null).
+// Workers AI: pe Worker prin legătura `AI` din wrangler. În `nuxt dev` legătura lipsește, așa că folosim
+// API-ul REST, dacă .env are NUXT_CLOUDFLARE_ACCOUNT_ID și NUXT_CLOUDFLARE_AI_TOKEN. Altfel întoarce null.
 export function legaturaAi(event: H3Event): LegaturaAi | null {
   const env = (event.context as { cloudflare?: { env?: { AI?: LegaturaAi } } }).cloudflare?.env
-  return env?.AI ?? null
+  if (env?.AI) return env.AI
+  const { cloudflareAccountId: cont, cloudflareAiToken: token } = useRuntimeConfig(event)
+  if (!cont || !token) return null
+  return {
+    async run(model, input) {
+      const r = await $fetch<{ success: boolean, result: { data: number[][] } }>(
+        `https://api.cloudflare.com/client/v4/accounts/${cont}/ai/run/${model}`,
+        { method: 'POST', headers: { authorization: `Bearer ${token}` }, body: input }
+      )
+      if (!r.success) throw new Error('Workers AI REST a răspuns cu eroare')
+      return r.result
+    }
+  }
 }
 
 // Vectorii pentru mai multe texte, în loturi de câte 50 (limita modelului e 100).

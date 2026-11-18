@@ -16,6 +16,12 @@ export default defineNuxtConfig({
     devtools: false,
     queryClientOptions: queryDefaults
   },
+  // Doar pentru `nuxt dev`: pe Worker, Workers AI vine din legătura `AI`. Valorile vin din
+  // NUXT_CLOUDFLARE_ACCOUNT_ID / NUXT_CLOUDFLARE_AI_TOKEN (.env) și nu se pun ca secrete pe Worker.
+  runtimeConfig: {
+    cloudflareAccountId: '',
+    cloudflareAiToken: ''
+  },
   supabase: {
     // URL-ul și cheia publishable vin din NUXT_PUBLIC_SUPABASE_URL / NUXT_PUBLIC_SUPABASE_KEY (.env).
     // Rutele protejate le decide middleware-ul nostru (auth.global.ts), nu modulul.
