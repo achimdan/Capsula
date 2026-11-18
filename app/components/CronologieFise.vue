@@ -8,7 +8,7 @@ import { anVecinCuFise, cateFise, indexDinScroll, varstaInAn, varstaScurta } fro
 
 const props = defineProps<{ fise: Fisa[]; anEu: number | null }>()
 
-const { caseta, amAvut } = useCapsula()
+const { caseta } = useCapsula()
 
 const ani = computed(() => {
   if (!props.fise.length) return []
@@ -499,10 +499,10 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) i
               >
                 <span class="img" :style="{ background: `linear-gradient(135deg, ${f.culori[0]}, ${f.culori[1]})` }">
                   <img v-if="f.poza" :src="`/fise/${f.id}-480.webp`" alt="" loading="lazy" decoding="async" width="480" height="480" draggable="false">
-                  <span v-if="amAvut.includes(f.id)" class="avut">{{ f.categorie === 'Locuri' ? 'Am fost' : 'Am avut' }}</span>
+                  <span v-if="caseta.includes(f.id)" class="avut">{{ f.categorie === 'Locuri' ? 'Am fost' : 'Am avut' }}</span>
                 </span>
                 <span class="titlu">{{ f.titlu }}</span>
-                <span class="meta">{{ f.an }}{{ f.an_exact ? '' : ' ≈' }}<template v-if="caseta.includes(f.id)"> · în casetă</template><template v-if="eDinScena(f, profilCititor?.scena)"> · scena ta</template><template v-if="f.proprie"> · a ta</template></span>
+                <span class="meta">{{ f.an }}{{ f.an_exact ? '' : ' ≈' }}<template v-if="eDinScena(f, profilCititor?.scena)"> · scena ta</template><template v-if="f.proprie"> · a ta</template></span>
               </button>
             </div>
           </template>

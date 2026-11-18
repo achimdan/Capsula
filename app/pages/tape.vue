@@ -10,13 +10,13 @@ const salvate = computed(() => fise.value.filter(f => caseta.value.includes(f.id
     <section class="sec">
       <div class="k">Partea A · {{ salvate.length }} {{ salvate.length === 1 ? 'amintire' : 'amintiri' }}</div>
       <h1 class="d1">Caseta mea</h1>
-      <p v-if="salvate.length" class="lead">Aici păstrezi ce vrei să revezi. „Am avut asta” e separat: bifează-l pe fișă doar dacă ai avut-o cu adevărat.</p>
+      <p v-if="salvate.length" class="lead">Tot ce ai avut și locurile prin care ai fost, în ordinea anilor.</p>
       <div v-if="!autentificat && !salvate.length" class="card gol">
         <p class="lead">Ca să păstrezi caseta, intră cu Google. Până atunci, răsfoiești liber.</p>
         <button type="button" class="btn" @click="cereCont()">Intră cu Google</button>
       </div>
       <div v-else-if="!salvate.length" class="card gol">
-        <p class="lead">Caseta e goală. Când o amintire te atinge, apasă „+ Caseta mea” pe fișă și o găsești aici.</p>
+        <p class="lead">Caseta e goală. Când dai de ceva ce ai avut, apasă „Am avut asta” pe fișă și o găsești aici.</p>
         <NuxtLink to="/random" class="btn">▶▶ Random Hit</NuxtLink>
       </div>
       <div v-else class="grila"><FisaPolaroid v-for="f in salvate" :key="f.id" :fisa="f" /></div>

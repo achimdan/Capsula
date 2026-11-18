@@ -15,6 +15,8 @@ export function useCont() {
   const proprietar = useStocare<string | null>('cont-local', null)
   const serie = useStocare<{ ultima: string, zile: number }>('serie', { ultima: '', zile: 0 })
   const casetaZilei = useStocare<{ data: string, deschise: number }>('caseta-zilei', { data: '', deschise: 0 })
+  // „Am avut asta” era o listă separată, doar în browser; acum e caseta. O mutăm o dată în casetă.
+  const amAvutVechi = useStocare<string[]>('amavut', [])
   // id-ul contului ale cărui date sunt încărcate în refs; null = nimic încărcat, scrierile stau.
   const incarcat = useState<string | null>('cont:incarcat', () => null)
   const eroare = useState<boolean>('cont:eroare', () => false)
@@ -61,6 +63,7 @@ export function useCont() {
       return
     }
     eroare.value = false
+    const alAceluiasi = proprietar.value === null || proprietar.value === id
     const { stare, importa } = decideStare(cont, stareLocala(), proprietar.value, id)
     aplica(stare)
     proprietar.value = id
@@ -72,6 +75,11 @@ export function useCont() {
       }
     }
     incarcat.value = id
+    // După încărcare, ca mutarea să ajungă în cont prin scrierile obișnuite.
+    if (amAvutVechi.value.length) {
+      if (alAceluiasi) caseta.value = [...new Set([...caseta.value, ...amAvutVechi.value])]
+      amAvutVechi.value = []
+    }
     actualizeazaCache()
   }
 

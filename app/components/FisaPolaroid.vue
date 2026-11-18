@@ -23,7 +23,7 @@ function comutaFilm() {
   if (v.paused) v.play().catch(() => {})
   else v.pause()
 }
-const { caseta, amAvut, comuta } = useCapsula()
+const { caseta, comuta } = useCapsula()
 const { profilCititor } = useProfilCitit()
 const aScenei = computed(() => eDinScena(props.fisa, profilCititor.value?.scena))
 // Fișele scrise de utilizator: fără casetă / „Am avut”, doar ștergere (cu confirmare, e definitivă).
@@ -36,16 +36,12 @@ async function sterge() {
   seSterge.value = true
   try { await proprii.sterge(props.fisa) } finally { seSterge.value = false; confirmaStergerea.value = false }
 }
-const salvata = computed(() => caseta.value.includes(props.fisa.id))
-const avut = computed(() => amAvut.value.includes(props.fisa.id))
+// „Am avut asta” / „Am fost acolo” = fișa e în caseta ta (un singur gest).
+const avut = computed(() => caseta.value.includes(props.fisa.id))
 const { cereCont } = useIntrare()
-function comutaCaseta() {
-  if (!salvata.value && !cereCont({ tip: 'caseta', id: props.fisa.id })) return
-  comuta(caseta, props.fisa.id)
-}
 function comutaAvut(): boolean {
-  if (!avut.value && !cereCont({ tip: 'amavut', id: props.fisa.id })) return false
-  comuta(amAvut, props.fisa.id)
+  if (!avut.value && !cereCont({ tip: 'caseta', id: props.fisa.id })) return false
+  comuta(caseta, props.fisa.id)
   return true
 }
 // Efecte vizuale (doar prezentare): înclinare 3D la pointer, ștampilă, sunet de bandă
@@ -75,7 +71,6 @@ function laIesire() {
 }
 onBeforeUnmount(() => cancelAnimationFrame(raf))
 function apasaAvut() { const va = !avut.value; if (comutaAvut()) stamped.value = va }
-function apasaCaseta() { comutaCaseta() }
 const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.fisa.an_exact ? '' : ' ≈'))
 </script>
 
@@ -141,11 +136,7 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
       <button v-if="confirmaStergerea" type="button" class="sec" @click="confirmaStergerea = false">Renunță</button>
     </div>
     <div v-else-if="actiuni" class="act">
-      <button type="button" class="avut" :aria-pressed="avut" @click="apasaAvut">{{ avut ? '✓ ' + (fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta') : (fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta') }}</button>
-      <button type="button" class="sec caseta" :aria-pressed="salvata" :title="salvata ? 'Apasă din nou ca s-o scoți din casetă' : 'Pune fișa în caseta ta'" @click="apasaCaseta">
-        <svg :key="'i' + salvata" class="banda" :class="{ lipit: salvata }" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" /><circle cx="8.5" cy="12" r="2" /><circle cx="15.5" cy="12" r="2" /><path d="M8.5 14h7" /></svg>
-        <span class="etichete"><span class="eticheta-buton">{{ salvata ? '✓ În casetă' : '+ Caseta mea' }}</span><span v-if="salvata" class="scoate" aria-hidden="true">Scoate din casetă</span></span>
-      </button>
+      <button type="button" class="avut" :aria-pressed="avut" :title="avut ? 'Apasă din nou ca s-o scoți din casetă' : 'O pui în caseta ta'" @click="apasaAvut">{{ avut ? '✓ ' + (fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta') : (fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta') }}</button>
     </div>
     <span class="glare" aria-hidden="true" />
     <nav v-if="mare && similare.length" class="similare" aria-label="Fișe asemănătoare">
@@ -195,7 +186,6 @@ p{font-size:14px;line-height:1.45;margin:0}
 .act button::before{content:"";position:absolute;inset:-3px}
 .act button:active{transform:scale(.95)}
 .act button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
-.banda{flex:none}
 
 /* Fișa deschisă din cronologie: mare, cu detalii. Pe ecran lat, poza stă în stânga și textul în dreapta. */
 .mare{width:min(780px,100%);padding:12px 12px 16px}
@@ -232,11 +222,6 @@ video.foto{cursor:pointer;background:#000}
 .fara-poza>.meta,.fara-poza h3{padding-right:52px}
 .fara-poza h3{font-size:clamp(24px,6vw,32px)}
 .fara-poza .detalii div{padding:5px 0}
-.banda.lipit{animation:snap .45s var(--ease-ff) both}
-@keyframes snap{0%{transform:translateY(-10px) rotate(-30deg) scale(1.5);opacity:0}60%{transform:translateY(1px) rotate(4deg) scale(.9);opacity:1}100%{transform:none}}
-.etichete{display:inline-grid}
-.etichete>*{grid-area:1/1;text-align:center}
-.scoate{visibility:hidden}
 .glare{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s var(--ease-ff);overflow:hidden}
 .glare::before{content:"";position:absolute;left:-50%;top:-50%;width:200%;height:200%;background:radial-gradient(circle at center,rgba(255,255,255,.5),transparent 28%);
   transform:translate(var(--gx),var(--gy))}
@@ -246,8 +231,6 @@ video.foto{cursor:pointer;background:#000}
   .act button:hover{opacity:.88;transform:translateY(-1px)}
   .act button:active{transform:scale(.95)}
   /* Pe hover, butonul spune ce face al doilea click. */
-  .caseta[aria-pressed="true"]:hover .eticheta-buton{opacity:0}
-  .caseta[aria-pressed="true"]:hover .scoate{visibility:visible}
 }
 .dev .img::before{animation:chimic 3.2s var(--ease-ff) both}
 .dev .img::after{animation:grain 3.2s ease-out both}
@@ -257,7 +240,7 @@ video.foto{cursor:pointer;background:#000}
   .fisa{transform:none!important;transition:none}
   .glare{display:none}
   .dev .img::before{animation:none;opacity:0}
-  .dev .img::after,.stampila.nou,.banda.lipit{animation:none}
+  .dev .img::after,.stampila.nou{animation:none}
   .act button,.act button:hover,.act button:active,.inchide,.inchide:active{transition:none;transform:none}
 }
 .similare{grid-column:1/-1;display:grid;gap:8px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
