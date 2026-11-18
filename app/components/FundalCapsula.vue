@@ -62,7 +62,7 @@ function aseazaTv() {
   const c = camera(p, { w: el.offsetWidth, h: el.offsetHeight }, ECRAN_TV[tema.value as keyof typeof ECRAN_TV], vp)
   el.style.transform = `translate(-50%,-50%) translate3d(${c.x}px,${c.y}px,0) scale(${c.scara})`
   el.style.opacity = String(1 - dupa * 0.62)
-  document.documentElement.style.setProperty('--tvp', String(p))
+  pista?.style.setProperty('--tvp', String(p))
 }
 function citesteScroll() {
   rafScroll = 0
@@ -188,7 +188,7 @@ onBeforeUnmount(() => {
     </template>
     <template v-else-if="tema === 'televizor' || tema === 'televizor-90'">
       <i class="tv-h" :style="{ color: luminaTv }" />
-      <div ref="tv" class="tv" :class="{ 'tv-90': tema === 'televizor-90' }" :style="{ color: luminaTv }">
+      <div ref="tv" class="tv" :class="{ 'tv-90': tema === 'televizor-90' }">
         <!-- Podeaua și umbra se mișcă odată cu televizorul, ca să pară o cameră în care camera de filmat se retrage. -->
         <i class="tv-podea" />
         <svg v-if="tema === 'televizor-90'" viewBox="0 0 360 320" aria-hidden="true">
@@ -230,14 +230,13 @@ onBeforeUnmount(() => {
             <linearGradient id="t8-rama" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050404" /><stop offset="1" stop-color="#2A2420" /></linearGradient>
             <radialGradient id="t8-buton" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#F4EEE2" /><stop offset=".55" stop-color="#A39B8C" /><stop offset="1" stop-color="#4C463D" /></radialGradient>
             <radialGradient id="t8-umbra" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".75" /><stop offset="1" stop-color="#000" stop-opacity="0" /></radialGradient>
-            <filter id="t8-fibra"><feTurbulence type="fractalNoise" baseFrequency=".012 .4" numOctaves="3" seed="4" /><feColorMatrix values="0 0 0 0 .2  0 0 0 0 .1  0 0 0 0 .03  0 0 0 .5 0" /><feComposite in2="SourceGraphic" operator="in" /></filter>
           </defs>
           <ellipse cx="180" cy="312" rx="190" ry="12" fill="url(#t8-umbra)" />
           <g fill="none" stroke="url(#t8-crom)" stroke-width="3" stroke-linecap="round"><path d="M172 58L100 4M188 58L258 0" /></g>
           <path d="M146 70a34 18 0 0 1 68 0z" fill="#1C191C" />
           <path d="M44 294h14l-3 22h-8zM302 294h14l-3 22h-8z" fill="#1E120A" />
           <rect x="8" y="66" width="344" height="232" rx="12" fill="url(#t8-lemn)" />
-          <rect x="8" y="66" width="344" height="232" rx="12" fill="#000" filter="url(#t8-fibra)" opacity=".9" />
+          <g fill="none" stroke="#2A1608" stroke-width="1.2" opacity=".35"><path d="M10 90c90-6 200 8 340-2M10 132c110 7 220-7 340 3M10 176c80-5 190 9 340-1M10 222c120 6 210-8 340 2M10 270c90-6 200 6 340-2" /></g>
           <rect x="8" y="66" width="344" height="232" rx="12" fill="url(#t8-lat)" />
           <rect x="8" y="66" width="344" height="232" rx="12" fill="url(#t8-luciu)" />
           <path d="M18 67h324" stroke="#C48A52" stroke-width="1.3" stroke-linecap="round" opacity=".7" />
@@ -339,17 +338,16 @@ onBeforeUnmount(() => {
 /* Centrat; camera (zoom + deplasare) o pune aseazaTv() din script, ca transform. */
 .tv{left:50%;top:50%;width:min(70vw,100vh);aspect-ratio:360/320;transform-origin:50% 50%;will-change:transform,opacity;transform:translate(-50%,-50%)}
 .tv svg{position:absolute;inset:0;width:100%;height:100%}
-.tv-ec{position:absolute;left:10.56%;top:30%;width:56.67%;height:51.88%;border-radius:16% / 19%;overflow:hidden;background:#1D2A55;box-shadow:0 0 60px 14px color-mix(in srgb,currentColor 30%,transparent)}
+.tv-ec{position:absolute;left:10.56%;top:30%;width:56.67%;height:51.88%;border-radius:16% / 19%;overflow:hidden;background:#1D2A55;box-shadow:0 0 60px 14px rgb(120 150 255/.22)}
+.tv-linii,.tv-sticla{will-change:transform}
 .tv-linii{position:absolute;inset:0;background:repeating-linear-gradient(to bottom,rgb(0 0 0/.28) 0 1px,transparent 1px 3px)}
 .tv-bara{position:absolute;left:0;right:0;top:-20%;height:20%;background:linear-gradient(to bottom,transparent,rgb(255 255 255/.09),transparent);animation:tv-rulaj 7s linear infinite}
 /* Sticla bombată a tubului: întunecată pe margini, cu o reflexie curbă sus-stânga și una slabă jos-dreapta. */
 .tv-sticla{position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 40px 14px rgb(0 0 0/.7),inset 0 0 6px 3px rgb(0 0 0/.6);
   background:radial-gradient(90% 55% at 28% 8%,rgb(255 255 255/.2),rgb(255 255 255/.05) 40%,transparent 60%),radial-gradient(60% 40% at 82% 96%,rgb(255 255 255/.06),transparent 70%),radial-gradient(ellipse at center,transparent 50%,rgb(0 0 0/.4))}
 /* Camera: podea de parchet închis, luminată de ecran, care se întinde mult în jurul televizorului. */
-.tv-podea{position:absolute;left:-260%;width:620%;top:94%;height:260%;
-  background:radial-gradient(40% 18% at 50% 0,color-mix(in srgb,currentColor 22%,transparent),transparent 70%),linear-gradient(to bottom,#1A1512,#0B0908 40%);
-  -webkit-mask-image:radial-gradient(50% 60% at 50% 0,#000 40%,transparent);mask-image:radial-gradient(50% 60% at 50% 0,#000 40%,transparent)}
-.tv svg{filter:drop-shadow(0 0 30px color-mix(in srgb,currentColor 18%,transparent))}
+.tv-podea{position:absolute;left:-260%;width:620%;top:94%;height:200%;
+  background:radial-gradient(18% 14% at 50% 0,rgb(120 150 255/.14),transparent 70%),radial-gradient(50% 60% at 50% 0,#17120F,transparent 75%)}
 /* Televizorul de plastic din anii '90, pe un video */
 .tv-poza{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.15) contrast(1.05);animation:tv-poza-intra .5s .55s steps(6,end) both}
 @keyframes tv-poza-intra{from{opacity:0;transform:scaleY(.02)}50%{opacity:1;transform:scaleY(.02) scaleX(1)}to{opacity:1;transform:none}}
@@ -358,7 +356,7 @@ onBeforeUnmount(() => {
 .tv-standby{animation:tv-clipire 2.4s steps(1) infinite}
 @keyframes tv-clipire{50%{opacity:0}}
 @keyframes tv-rulaj{to{transform:translateY(600%)}}
-.tv-h{left:-25vw;top:-25vh;width:150vw;height:150vh;border-radius:50%;opacity:.3;background:radial-gradient(closest-side,currentColor,transparent);transition:color .35s linear}
+.tv-h{left:-25vw;top:-25vh;width:150vw;height:150vh;border-radius:50%;opacity:.3;background:radial-gradient(closest-side,currentColor,transparent);will-change:transform}
 .mini .tv{width:64%}
 .mini .tv-h{left:-20%;top:-20%;width:140%;height:140%}
 @media (max-width:480px){.tv{width:88vw}.mini .tv{width:64%}}
