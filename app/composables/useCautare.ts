@@ -10,10 +10,12 @@ export function useCautare(intrebare: Ref<string>) {
   const cerere = useQuery({
     queryKey: computed(() => queryKeys.cautare(q.value)),
     queryFn: async () => {
-      const [r] = await Promise.all([
+      const [r, fise] = await Promise.all([
         $fetch<{ ids: string[], semantic: boolean }>('/api/search', { query: { q: q.value } }),
         incarca()
       ])
+      // Fără lista de fișe, orice rezultat ar părea „din alt oraș”: mai bine eroare.
+      if (!fise.length) throw new Error('Fișele nu s-au încărcat')
       return r
     },
     enabled: computed(() => import.meta.client && q.value.length >= 2)

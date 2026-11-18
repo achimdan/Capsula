@@ -372,6 +372,8 @@ function schimba(f: Fisa) {
   plecata.value = f.id
   peTv.value = false
   fisaPeTv.value = null
+  document.querySelector<HTMLElement>('.fisa-modal')?.classList.remove('pe-tv', 'vine')
+  document.documentElement.classList.remove('tv-zoom', 'tv-vine')
 }
 function inchide() {
   if (!selectata.value) return

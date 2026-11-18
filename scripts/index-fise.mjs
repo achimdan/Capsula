@@ -4,7 +4,7 @@
 //
 //   node --env-file=.env scripts/index-fise.mjs
 //
-// Cere `cf` autentificat (cf auth login) și Node ≥ 23 (rulează TypeScript direct).
+// Cere `cf` autentificat (cf auth login) și Node 22.18+ (rulează TypeScript direct).
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { mkdirSync, writeFileSync } from 'node:fs'

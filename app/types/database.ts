@@ -155,13 +155,14 @@ export type Database = {
         }
         Relationships: []
       }
-      // supabase/migrations/20261118120000_fise.sql
+      // supabase/migrations/20261118140000_fise_embeddings.sql
       fise_embeddings: {
         Row: { fisa_id: string, model: string, content_hash: string, embedding: string, updated_at: string }
         Insert: { fisa_id: string, model: string, content_hash: string, embedding: string, updated_at?: string }
         Update: { fisa_id?: string, model?: string, content_hash?: string, embedding?: string, updated_at?: string }
         Relationships: []
       }
+      // supabase/migrations/20261118120000_fise.sql
       fise: {
         Row: {
           id: string
