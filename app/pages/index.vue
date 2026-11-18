@@ -260,7 +260,7 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 </template>
 
 <style scoped>
-.tv-pin{height:170vh;height:170svh}
+.tv-pin{height:118vh;height:118svh}
 .tv-pin-scena{position:sticky;top:0;height:100vh;height:100svh;display:grid;place-items:center;pointer-events:none}
 .tv-pin-titlu{display:grid;gap:10px;justify-items:center;text-align:center;padding:18px 26px;border-radius:14px;
   background:rgb(0 0 0/.55);color:#F4F1FA;opacity:calc(1 - var(--tvp, 0) * 4);transform:scale(calc(1 - var(--tvp, 0) * .6))}
