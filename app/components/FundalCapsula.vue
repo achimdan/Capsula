@@ -367,7 +367,7 @@ onBeforeUnmount(() => {
 .tv-podea{position:absolute;left:-260%;width:620%;top:94%;height:200%;
   background:radial-gradient(18% 14% at 50% 0,rgb(120 150 255/.14),transparent 70%),radial-gradient(50% 60% at 50% 0,#17120F,transparent 75%)}
 /* Televizorul de plastic din anii '90, pe un video */
-.tv-poza{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.15) contrast(1.05);animation:tv-poza-intra .5s .55s steps(6,end) both}
+.tv-poza{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.15) contrast(1.05);animation:tv-poza-intra .28s .25s steps(4,end) both}
 @keyframes tv-poza-intra{from{opacity:0;transform:scaleY(.02)}50%{opacity:1;transform:scaleY(.02) scaleX(1)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.tv-poza{animation:none}}
 .tv-90 .tv-ec{left:10.56%;top:18.13%;width:78.89%;height:54.38%;border-radius:7% / 10%}
