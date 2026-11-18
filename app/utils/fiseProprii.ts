@@ -3,6 +3,7 @@
 import type { Database } from '../types/database'
 import type { Categorie, Fisa } from '../data/fise'
 import { ORDINE_CATEGORII } from './personalizare'
+import { diacriticeCorecte } from '../../shared/utils/intrebare'
 
 export type RandFisaProprie = Pick<Database['public']['Tables']['user_cards']['Row'], 'id' | 'title' | 'note' | 'year' | 'category'>
 
@@ -40,7 +41,7 @@ export function valideazaFisa(f: FisaNoua, anMax = new Date().getFullYear(), anM
 }
 
 export function randDinFormular(f: FisaNoua): { title: string, note: string, year: number, category: Categorie } {
-  return { title: f.titlu.trim(), note: f.nota.trim(), year: f.an as number, category: f.categorie as Categorie }
+  return { title: diacriticeCorecte(f.titlu.trim()), note: diacriticeCorecte(f.nota.trim()), year: f.an as number, category: f.categorie as Categorie }
 }
 
 // Rândurile cu o categorie necunoscută (n-ar trebui să existe, dar baza le-ar putea avea) sunt sărite.

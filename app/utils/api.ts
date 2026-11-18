@@ -116,6 +116,11 @@ export function setariApi() {
 export function fiseProprii() {
   const client = useSupabaseClient()
 
+  // Ajutor la scris (server/api/card-hint.post.ts): fișe din Capsulă care seamănă și categoria propusă.
+  async function sugestii(titlu: string, nota: string) {
+    return await $fetch<{ categorie: string | null, seamana: string[] }>('/api/card-hint', { method: 'POST', body: { titlu, nota } })
+  }
+
   async function listeaza(userId: string): Promise<RandFisaProprie[]> {
     const { data, error } = await client.from('user_cards').select('id, title, note, year, category')
       .eq('user_id', userId).order('year').order('created_at').limit(LIMITE_FISA.peCont)
@@ -135,7 +140,7 @@ export function fiseProprii() {
     if (error) throw error
   }
 
-  return { listeaza, adauga, sterge }
+  return { listeaza, adauga, sterge, sugestii }
 }
 
 // Fișele Capsulei (public.fise): citite de oricine, doar cele publicate (RLS); scrise doar de super admin.
