@@ -139,12 +139,13 @@ export function fiseProprii() {
 }
 
 // Fișele Capsulei (public.fise): citite de oricine, doar cele publicate (RLS); scrise doar de super admin.
+// Și super adminul primește aici doar fișele publicate, ca paginile publice să fie la fel pentru toți.
 // Lista e mică și se schimbă rar: o cerere pe încărcare, partajată prin TanStack Query (composables/useFise.ts).
 export function fiseApi() {
   const client = useSupabaseClient()
 
   async function toate(): Promise<Fisa[]> {
-    const { data, error } = await client.from('fise').select(COLOANE_FISE).order('ordine').limit(1000)
+    const { data, error } = await client.from('fise').select(COLOANE_FISE).eq('publicat', true).order('ordine').limit(1000)
     if (error) throw error
     return fiseDinRanduri(data ?? [])
   }
