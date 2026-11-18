@@ -15,7 +15,7 @@ const luminaTv = ref('rgb(90 120 255)')
 const caseta3d = ref(false)
 function alegeCaseta() { caseta3d.value = !props.mini && !miscareRedusa() }
 // Fișa deschisă din cronologie își arată poza pe ecranul televizorului (vezi CronologieFise).
-const fisaPeTv = useState<{ id: string; titlu: string } | null>('fisa-pe-tv', () => null)
+const fisaPeTv = useState<{ id: string; titlu: string; src: string } | null>('fisa-pe-tv', () => null)
 
 const lampa = ref<HTMLElement>()
 let rafId = 0
@@ -264,7 +264,7 @@ onBeforeUnmount(() => {
           <g fill="#070605"><rect x="276" y="220" width="56" height="2.4" rx="1.2" /><rect x="276" y="226" width="56" height="2.4" rx="1.2" /><rect x="276" y="232" width="56" height="2.4" rx="1.2" /><rect x="276" y="238" width="56" height="2.4" rx="1.2" /><rect x="276" y="244" width="56" height="2.4" rx="1.2" /><rect x="276" y="250" width="56" height="2.4" rx="1.2" /><rect x="276" y="256" width="56" height="2.4" rx="1.2" /></g>
           <circle cx="334" cy="140" r="2.4" fill="#E2483A" class="tv-standby" /><circle cx="334" cy="140" r="6" fill="#E2483A" opacity=".2" />
         </svg>
-        <div class="tv-ec"><ClientOnly><EcranTv :an="areProfil ? an15 : null" @lumina="luminaTv = $event" /></ClientOnly><img v-if="fisaPeTv && !mini" :key="fisaPeTv.id" class="tv-poza" :src="`/fise/${fisaPeTv.id}-960.webp`" alt="" decoding="async"><i class="tv-linii" /><i class="tv-bara" /><i class="tv-sticla" /></div>
+        <div class="tv-ec"><ClientOnly><EcranTv :an="areProfil ? an15 : null" @lumina="luminaTv = $event" /></ClientOnly><img v-if="fisaPeTv && !mini" :key="fisaPeTv.id" class="tv-poza" :src="fisaPeTv.src" alt="" decoding="async"><i class="tv-linii" /><i class="tv-bara" /><i class="tv-sticla" /></div>
       </div>
     </template>
   </div>

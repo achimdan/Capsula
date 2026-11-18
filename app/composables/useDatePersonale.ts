@@ -21,7 +21,9 @@ export function useDatePersonale() {
   }
 
   async function stergeCont() {
-    await api.stergeCont()
+    const u = utilizator.value
+    if (!u) return
+    await api.stergeCont(u.id)
     try {
       for (const k of cheiLocale(Object.keys(localStorage))) localStorage.removeItem(k)
     } catch {}

@@ -130,6 +130,8 @@ export type Database = {
           note: string
           year: number
           category: string
+          photo: string | null
+          photo_ext: string | null
           created_at: string
           updated_at: string
         }
@@ -140,6 +142,8 @@ export type Database = {
           note?: string
           year: number
           category: string
+          photo?: string | null
+          photo_ext?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -150,6 +154,8 @@ export type Database = {
           note?: string
           year?: number
           category?: string
+          photo?: string | null
+          photo_ext?: string | null
           created_at?: string
           updated_at?: string
         }

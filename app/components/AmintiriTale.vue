@@ -3,6 +3,7 @@
 import { LIMITE_FISA, valideazaFisa, type FisaNoua } from '~/utils/fiseProprii'
 import { ORDINE_CATEGORII } from '~/utils/personalizare'
 import { fiseProprieCuAcelasiTitlu } from '#shared/utils/sugestiiFisa'
+import type { PozaProprie } from '~/utils/pozeProprii'
 
 const props = defineProps<{ anImplicit: number | null }>()
 const { userId, fise, adauga, salveaza } = useFiseProprii()
@@ -15,6 +16,7 @@ const gol = (): FisaNoua => ({ titlu: '', nota: '', an: props.anImplicit, catego
 const forma = ref<FisaNoua>(gol())
 const eroare = ref('')
 const salvat = ref('')
+const poza = ref<PozaProprie | null>(null)
 
 const sugestii = useSugestiiFisa()
 const cereSugestii = () => sugestii.cere(forma.value.titlu, forma.value.nota)
@@ -29,9 +31,10 @@ async function trimite() {
     ?? (dejaAle.value.length ? 'Ai deja o fișă cu titlul ăsta. Schimbă titlul dacă e altă amintire.' : '')
   if (eroare.value) return
   try {
-    await adauga(forma.value)
+    await adauga(forma.value, poza.value)
     salvat.value = `„${forma.value.titlu.trim()}” e pe bandă, în ${forma.value.an}.`
     forma.value = { ...gol(), an: forma.value.an }
+    poza.value = null
     sugestii.goleste()
   } catch {
     eroare.value = fise.value.length >= LIMITE_FISA.peCont
@@ -75,6 +78,7 @@ async function trimite() {
         <span class="k">Ce îți amintești <span class="opt">(opțional)</span></span>
         <textarea v-model="forma.nota" rows="3" :maxlength="LIMITE_FISA.nota" @blur="cereSugestii" />
       </label>
+      <GaleriePoze v-model="poza" class="lat" />
       <div v-if="dejaAle.length" class="lat seamana" role="status">
         <span class="k">Ai deja</span>
         <ul>

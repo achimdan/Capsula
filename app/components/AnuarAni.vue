@@ -43,7 +43,7 @@ const selectata = ref<Fisa | null>(null)
 const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) selectata.value = null } })
 watch(() => props.fise, (l) => { if (selectata.value && !l.some(f => f.id === selectata.value!.id)) selectata.value = null })
 
-const srcset = (f: Fisa) => `/fise/${f.id}-480.webp 480w, /fise/${f.id}-960.webp 960w`
+const srcset = (f: Fisa) => srcsetPoza(f)
 // Câmpul de culoare al fișelor fără poză: textul ia a doua culoare doar dacă se citește pe prima, altfel negru sau alb.
 function luminanta(hex: string) {
   const v = hex.replace('#', '')
@@ -101,7 +101,7 @@ const loc = (f: Fisa) => [f.categorie, f.oras].filter(Boolean).join(' · ')
             <span class="cadru">
               <img
                 v-if="c.deschidere.poza"
-                :src="`/fise/${c.deschidere.id}-960.webp`"
+                :src="srcPoza(c.deschidere, 960)"
                 :srcset="srcset(c.deschidere)"
                 sizes="(max-width: 900px) 92vw, 640px"
                 alt=""
@@ -122,7 +122,7 @@ const loc = (f: Fisa) => [f.categorie, f.oras].filter(Boolean).join(' · ')
             <li v-for="f in c.rest" :key="f.id">
               <button type="button" class="mica" :aria-label="`Deschide fișa ${f.titlu}`" @click="selectata = f">
                 <span class="cadru">
-                  <img v-if="f.poza" :src="`/fise/${f.id}-480.webp`" :srcset="srcset(f)" sizes="(max-width: 900px) 46vw, 300px" alt="" width="480" height="480" loading="lazy" decoding="async">
+                  <img v-if="f.poza" :src="srcPoza(f, 480)" :srcset="srcset(f)" sizes="(max-width: 900px) 46vw, 300px" alt="" width="480" height="480" loading="lazy" decoding="async">
                   <span v-else class="camp" :style="camp(f)">{{ f.titlu }}</span>
                 </span>
                 <span class="loc-f">{{ loc(f) }}</span>

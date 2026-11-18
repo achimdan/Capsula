@@ -1,7 +1,8 @@
 // „Amintirile tale”: fișele scrise de utilizatorul logat, din user_cards.
 // O singură cerere pe sesiune (TanStack Query); adăugarea și ștergerea actualizează cache-ul direct, fără recitire.
 // Fără cont nu există fișe proprii: formularul cere intrarea în cont.
-import { fisaDinRand, idRand, type FisaNoua, type RandFisaProprie } from '~/utils/fiseProprii'
+import { caiPozaRand, fisaDinRand, idRand, type FisaNoua, type RandFisaProprie } from '~/utils/fiseProprii'
+import type { PozaProprie } from '~/utils/pozeProprii'
 import type { Fisa } from '~/data/fise'
 
 export function useFiseProprii() {
@@ -16,14 +17,18 @@ export function useFiseProprii() {
     enabled: computed(() => import.meta.client && !!userId.value)
   })
 
+  // Pozele fișelor: linkuri semnate, cerute o dată pentru toate căile (vezi useLinkuriPoze).
+  const caiPoze = computed(() => (query.data.value ?? []).flatMap(r => caiPozaRand(r) ?? []))
+  const linkuri = useLinkuriPoze(caiPoze)
+
   const fise = computed<Fisa[]>(() => (userId.value ? query.data.value ?? [] : [])
-    .map(fisaDinRand).filter((f): f is Fisa => f !== null))
+    .map(r => fisaDinRand(r, linkuri.value)).filter((f): f is Fisa => f !== null))
 
   const seteaza = (fn: (r: RandFisaProprie[]) => RandFisaProprie[]) =>
     queryClient.setQueryData<RandFisaProprie[]>(cheie.value, r => fn(r ?? []))
 
   const adaugare = useMutation({
-    mutationFn: (f: FisaNoua) => api.adauga(userId.value!, f),
+    mutationFn: ({ f, poza }: { f: FisaNoua, poza: PozaProprie | null }) => api.adauga(userId.value!, f, poza),
     onSuccess: rand => seteaza(r => [...r, rand].sort((a, b) => a.year - b.year))
   })
 
@@ -32,7 +37,7 @@ export function useFiseProprii() {
     onSuccess: (_, id) => seteaza(r => r.filter(x => x.id !== id))
   })
 
-  async function adauga(f: FisaNoua) { await adaugare.mutateAsync(f) }
+  async function adauga(f: FisaNoua, poza: PozaProprie | null = null) { await adaugare.mutateAsync({ f, poza }) }
   async function sterge(fisa: Fisa) {
     const id = idRand(fisa.id)
     if (id) await stergere.mutateAsync(id)

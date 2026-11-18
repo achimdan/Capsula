@@ -5,6 +5,8 @@ import { CHEI_DB, setariDinRanduri, type SetariSite } from './setari'
 import { COLOANE_FISE, fiseDinRanduri } from './fise'
 import type { Fisa } from '../data/fise'
 import { LIMITE_FISA, randDinFormular, type FisaNoua, type RandFisaProprie } from './fiseProprii'
+import { BUCKET_AMINTIRI, POZE_PE_CONT, caleVarianta, pozeDinFisiere, toateVariantele, type PozaProprie } from './pozeProprii'
+import { variantePoza } from './variantePoza'
 
 export function contApi() {
   const client = useSupabaseClient()
@@ -77,14 +79,16 @@ export function datePersonaleApi() {
       client.from('profiles').select('*').eq('id', userId).maybeSingle(),
       client.from('questionnaire_responses').select('*').eq('user_id', userId).maybeSingle(),
       toataCaseta(userId),
-      client.from('user_cards').select('title, note, year, category, created_at').eq('user_id', userId).order('year').limit(LIMITE_FISA.peCont)
+      client.from('user_cards').select('title, note, year, category, photo, created_at').eq('user_id', userId).order('year').limit(LIMITE_FISA.peCont)
     ])
     const eroare = p.error ?? c.error ?? u.error
     if (eroare) throw eroare
     return { profil: p.data, chestionar: c.data, caseta: t, amintiri: u.data }
   }
 
-  async function stergeCont() {
+  async function stergeCont(userId: string) {
+    // Pozele nu pleacă prin cascade (sunt în Storage): le ștergem întâi, cât contul încă există.
+    await pozeApi().stergeTot(userId)
     const { error } = await client.rpc('delete_my_account')
     if (error) throw error
     // Contul nu mai există: doar sesiunea locală (o deconectare globală ar cere API-ul pentru un cont șters).
@@ -112,6 +116,8 @@ export function setariApi() {
   return { citesteSetari, salveazaSetare }
 }
 
+const COLOANE_PROPRII = 'id, title, note, year, category, photo, photo_ext'
+
 // Fișele scrise de utilizator (user_cards). RLS: fiecare vede și modifică doar rândurile lui.
 export function fiseProprii() {
   const client = useSupabaseClient()
@@ -122,15 +128,16 @@ export function fiseProprii() {
   }
 
   async function listeaza(userId: string): Promise<RandFisaProprie[]> {
-    const { data, error } = await client.from('user_cards').select('id, title, note, year, category')
+    const { data, error } = await client.from('user_cards').select(COLOANE_PROPRII)
       .eq('user_id', userId).order('year').order('created_at').limit(LIMITE_FISA.peCont)
     if (error) throw error
     return data ?? []
   }
 
-  async function adauga(userId: string, f: FisaNoua): Promise<RandFisaProprie> {
-    const { data, error } = await client.from('user_cards').insert({ user_id: userId, ...randDinFormular(f) })
-      .select('id, title, note, year, category').single()
+  async function adauga(userId: string, f: FisaNoua, poza: Pick<PozaProprie, 'cale' | 'ext'> | null): Promise<RandFisaProprie> {
+    const { data, error } = await client.from('user_cards')
+      .insert({ user_id: userId, ...randDinFormular(f), photo: poza?.cale ?? null, photo_ext: poza?.ext ?? null })
+      .select(COLOANE_PROPRII).single()
     if (error) throw error
     return data
   }
@@ -164,4 +171,75 @@ export function fiseApi() {
   }
 
   return { toate, similare }
+}
+
+// Pozele de la „Pune și tu o fișă” (bucket privat `amintiri`). RLS pe storage.objects: fiecare în folderul lui;
+// super adminul vede și șterge tot. Se văd doar prin linkuri semnate.
+export function pozeApi() {
+  const client = useSupabaseClient()
+  const bucket = () => client.storage.from(BUCKET_AMINTIRI)
+  // Linkurile țin o săptămână: aceeași adresă cât stă în cache-ul TanStack, deci și în cache-ul browserului.
+  const VALABIL_SECUNDE = 7 * 24 * 3600
+
+  async function listeaza(folder: string): Promise<PozaProprie[]> {
+    const { data, error } = await bucket().list(folder, { limit: POZE_PE_CONT * 2 + 10, sortBy: { column: 'created_at', order: 'desc' } })
+    if (error) throw error
+    return pozeDinFisiere(folder, data ?? [])
+  }
+
+  async function urca(userId: string, fisier: Blob): Promise<PozaProprie> {
+    const { ext, variante } = await variantePoza(fisier)
+    const cale = `${userId}/${crypto.randomUUID()}`
+    const urcate: string[] = []
+    try {
+      for (const v of variante) {
+        const nume = caleVarianta(cale, v.latime, ext)
+        const { error } = await bucket().upload(nume, v.blob, { contentType: ext === 'webp' ? 'image/webp' : 'image/jpeg', cacheControl: '31536000' })
+        if (error) throw error
+        urcate.push(nume)
+      }
+    } catch (e) {
+      if (urcate.length) await bucket().remove(urcate)
+      throw e
+    }
+    return { cale, ext, creata: new Date().toISOString() }
+  }
+
+  // Ștergerea scoate poza și din fișele proprietarului (pentru super admin, RLS lasă rândurile altora neatinse:
+  // fișa rămâne fără poză, fiindcă linkul nu se mai poate semna).
+  async function sterge(p: Pick<PozaProprie, 'cale' | 'ext'>) {
+    const { error } = await bucket().remove(toateVariantele(p))
+    if (error) throw error
+    await client.from('user_cards').update({ photo: null, photo_ext: null }).eq('photo', p.cale)
+  }
+
+  async function stergeTot(userId: string) {
+    const poze = await listeaza(userId)
+    const nume = poze.flatMap(toateVariantele)
+    if (nume.length) {
+      const { error } = await bucket().remove(nume)
+      if (error) throw error
+    }
+  }
+
+  // Căile fișierelor → linkuri semnate; fișierele lipsă (șterse) nu primesc link.
+  async function semneaza(nume: string[]): Promise<Record<string, string>> {
+    if (!nume.length) return {}
+    const { data, error } = await bucket().createSignedUrls(nume, VALABIL_SECUNDE)
+    if (error) throw error
+    const out: Record<string, string> = {}
+    for (const d of data ?? []) if (d.path && d.signedUrl && !d.error) out[d.path] = d.signedUrl
+    return out
+  }
+
+  // Doar super admin: folderele (câte unul pe utilizator), apoi pozele din fiecare.
+  async function toate(): Promise<PozaProprie[]> {
+    const { data, error } = await bucket().list('', { limit: 1000 })
+    if (error) throw error
+    const foldere = (data ?? []).filter(f => !f.id).map(f => f.name)
+    const liste = await Promise.all(foldere.map(listeaza))
+    return liste.flat().sort((a, b) => (b.creata ?? '').localeCompare(a.creata ?? ''))
+  }
+
+  return { listeaza, urca, sterge, stergeTot, semneaza, toate }
 }

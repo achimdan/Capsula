@@ -29,6 +29,8 @@ export interface Fisa {
   embed?: { url: string }
   // Fișă scrisă de utilizator (tabelul user_cards): doar a lui, niciodată în FISE, joc sau Random Hit
   proprie?: boolean
+  // Poza unei fișe proprii: linkuri semnate din bucketul privat `amintiri`, în loc de public/fise/<id>-*.webp
+  imagine?: { mica: string, mare: string }
 }
 
 // Imaginea fișei: fișierele sunt în public/fise/<id>-480.webp și <id>-960.webp.

@@ -103,6 +103,8 @@ Fonturile se descarcă la build prin `@nuxt/fonts` și se servesc din `/_fonts`,
 
 **Amintirile tale.** Un utilizator logat își poate scrie propriile fișe (titlu, an, categorie, notă), salvate în `user_cards` și văzute doar de el (RLS). Apar pe bandă și în grilă cu eticheta „a ta”, se pot șterge din fișă și sunt cel mult 200 pe cont. Nu intră în „Ghicește anul”, Caseta zilei, Random Hit sau caseta, fiindcă nu sunt în `FISE`. Fără cont, secțiunea cere intrarea; nu le ținem în browser.
 
+**Pozele amintirilor (decizie din 18 nov 2026).** La „Pune și tu o fișă” utilizatorul urcă o poză, alege una deja urcată sau o șterge (`GaleriePoze`). Browserul face două variante (480 și 960 px, WebP, JPEG pe Safari fără encoder), fără original și fără EXIF. Pozele stau în bucketul privat `amintiri`, câte un folder pe utilizator, și se văd doar prin linkuri semnate valabile o săptămână. RLS pe `storage.objects`: proprietarul citește, urcă și șterge în folderul lui; super adminul citește și șterge tot, din „Manager fișiere” în `/admin` (`AdminPoze`, încărcat doar la cerere). Fișa ține calea în `user_cards.photo` și `photo_ext`. Ștergerea unei poze o scoate din fișele proprietarului; ștergerea contului șterge întâi pozele. Cel mult 100 de poze pe cont. Migrarea: `20261119090000_amintiri_poze.sql`.
+
 ## Căutare și profil personal (vectori)
 
 Fișele primesc un vector de sens (Workers AI, `@cf/baai/bge-m3`, multilingv, bun pe română), ținut în Supabase cu pgvector. Pe aceeași bază vin, pe rând, căutarea, recomandările și profilul personal. Regula „nu inventăm fapte” rămâne: nimic nu generează text despre trecut fără să citeze fișe.

@@ -5,7 +5,7 @@ import type { Categorie, Fisa } from '../data/fise'
 import { ORDINE_CATEGORII } from './personalizare'
 import { diacriticeCorecte } from '../../shared/utils/intrebare'
 
-export type RandFisaProprie = Pick<Database['public']['Tables']['user_cards']['Row'], 'id' | 'title' | 'note' | 'year' | 'category'>
+export type RandFisaProprie = Pick<Database['public']['Tables']['user_cards']['Row'], 'id' | 'title' | 'note' | 'year' | 'category' | 'photo' | 'photo_ext'>
 
 export const LIMITE_FISA = { titlu: 80, nota: 500, anMin: 1900, anMax: 2100, peCont: 200 } as const
 export const PREFIX_PROPRIE = 'U-'
@@ -45,7 +45,8 @@ export function randDinFormular(f: FisaNoua): { title: string, note: string, yea
 }
 
 // Rândurile cu o categorie necunoscută (n-ar trebui să existe, dar baza le-ar putea avea) sunt sărite.
-export function fisaDinRand(r: RandFisaProprie): Fisa | null {
+// linkuri: căile variantelor → linkuri semnate; fără linkuri (încă necerute sau poza ștearsă), fișa e fără poză.
+export function fisaDinRand(r: RandFisaProprie, linkuri: Record<string, string> = {}): Fisa | null {
   if (!esteCategorie(r.category)) return null
   return {
     id: PREFIX_PROPRIE + r.id,
@@ -58,8 +59,28 @@ export function fisaDinRand(r: RandFisaProprie): Fisa | null {
     oras: null,
     verificat: false,
     culori: CULORI[r.category],
-    proprie: true
+    proprie: true,
+    ...pozaDinRand(r, linkuri)
   }
 }
 
+// Căile celor două variante ale pozei unei fișe proprii (vezi utils/pozeProprii.ts).
+export function caiPozaRand(r: Pick<RandFisaProprie, 'photo' | 'photo_ext'>): [string, string] | null {
+  if (!r.photo || (r.photo_ext !== 'webp' && r.photo_ext !== 'jpg')) return null
+  return [`${r.photo}-480.${r.photo_ext}`, `${r.photo}-960.${r.photo_ext}`]
+}
+
+function pozaDinRand(r: RandFisaProprie, linkuri: Record<string, string>): Pick<Fisa, 'poza' | 'imagine'> {
+  const cai = caiPozaRand(r)
+  const mica = cai && linkuri[cai[0]]
+  const mare = cai && linkuri[cai[1]]
+  if (!mica || !mare) return {}
+  return { poza: { autor: 'Poza ta', licenta: '', alt: r.title }, imagine: { mica, mare } }
+}
+
 export const idRand = (idFisa: string) => (idFisa.startsWith(PREFIX_PROPRIE) ? idFisa.slice(PREFIX_PROPRIE.length) : null)
+
+// Adresa pozei unei fișe: linkul semnat al fișei proprii sau fișierul din public/fise.
+export const srcPoza = (f: Pick<Fisa, 'id' | 'imagine'>, latime: 480 | 960) =>
+  f.imagine ? (latime === 480 ? f.imagine.mica : f.imagine.mare) : `/fise/${f.id}-${latime}.webp`
+export const srcsetPoza = (f: Pick<Fisa, 'id' | 'imagine'>) => `${srcPoza(f, 480)} 480w, ${srcPoza(f, 960)} 960w`
