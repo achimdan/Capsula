@@ -270,7 +270,7 @@ let sursa: HTMLElement | null = null
 // Efectul la deschidere cu fundal televizor: 'tv-vine' (televizorul zboară spre vizitator) sau 'tv-zoom' (camera se repede în ecran, hiperspațiu).
 const EFECT_TV: 'tv-vine' | 'tv-zoom' = 'tv-vine'
 // Cu „vine”, o fișă cu poză (fără video sau embed) își pune poza pe ecranul televizorului; fereastra arată doar descrierea, sub televizor.
-const fisaPeTv = useState<{ id: string; titlu: string } | null>('fisa-pe-tv', () => null)
+const fisaPeTv = useState<{ id: string; titlu: string; src: string } | null>('fisa-pe-tv', () => null)
 const peTv = ref(false)
 let tIntoarcere: ReturnType<typeof setTimeout> | undefined
 // Televizorul și ecranul lui înainte de zbor; null = fereastra nu a pornit din televizor.
@@ -304,7 +304,7 @@ function aseazaTv(c: HTMLElement, f0: Fisa) {
     tv.style.setProperty('--tvdy', `${innerHeight / 2 - csy}px`)
     tv.style.setProperty('--tvs', String(sc))
   }
-  fisaPeTv.value = cuPoza ? { id: f0.id, titlu: f0.titlu } : null
+  fisaPeTv.value = cuPoza ? { id: f0.id, titlu: f0.titlu, src: srcPoza(f0, 960) } : null
   peTv.value = cuPoza
 }
 
@@ -508,7 +508,7 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) i
                 @click="deschide(f, $event)"
               >
                 <span class="img" :style="{ background: `linear-gradient(135deg, ${f.culori[0]}, ${f.culori[1]})` }">
-                  <img v-if="f.poza" :src="`/fise/${f.id}-480.webp`" alt="" loading="lazy" decoding="async" width="480" height="480" draggable="false">
+                  <img v-if="f.poza" :src="srcPoza(f, 480)" alt="" loading="lazy" decoding="async" width="480" height="480" draggable="false">
                   <span v-if="caseta.includes(f.id)" class="avut">{{ f.categorie === 'Locuri' ? 'Am fost' : 'Am avut' }}</span>
                 </span>
                 <span class="titlu">{{ f.titlu }}</span>

@@ -7,5 +7,8 @@ export const queryKeys = {
   cautare: (q: string) => ['cautare', q] as const,
   similare: (id: string) => ['fise-similare', id] as const,
   fiseProprii: (userId: string) => ['fise-proprii', userId] as const,
-  toateFiseleProprii: ['fise-proprii'] as const
+  toateFiseleProprii: ['fise-proprii'] as const,
+  pozeProprii: (userId: string) => ['poze-proprii', userId] as const,
+  linkuriPoze: (cai: string) => ['linkuri-poze', cai] as const,
+  pozeAdmin: ['poze-admin'] as const
 }

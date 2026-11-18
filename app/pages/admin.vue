@@ -139,6 +139,11 @@ async function alege<K extends keyof SetariSite>(cheie: K, valoare: SetariSite[K
         </p>
         <p class="k nota" role="status" aria-live="polite">{{ rezultatReindexare }}</p>
       </section>
+      <section class="bloc">
+        <h2 class="d3">Manager fișiere</h2>
+        <p class="desc">Pozele urcate de utilizatori la „Pune și tu o fișă”. Sunt private: le vede autorul și super adminul.</p>
+        <AdminPoze />
+      </section>
       <template #fallback><div class="grila" style="min-height:240px" /></template>
     </ClientOnly>
   </main>

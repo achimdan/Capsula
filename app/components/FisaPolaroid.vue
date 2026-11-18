@@ -84,7 +84,7 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
         ref="film"
         class="foto"
         :src="`/fise/${fisa.id}.mp4`"
-        :poster="fisa.poza ? `/fise/${fisa.id}-960.webp` : undefined"
+        :poster="fisa.poza ? srcPoza(fisa, 960) : undefined"
         :autoplay="!faraMiscare"
         :muted="mut"
         loop
@@ -102,7 +102,7 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
           <small>Se încarcă de pe facebook.com, care poate pune cookie-uri.</small>
         </template>
       </div>
-      <img v-else-if="fisa.poza" class="foto" :src="`/fise/${fisa.id}-480.webp`" :srcset="`/fise/${fisa.id}-480.webp 480w, /fise/${fisa.id}-960.webp 960w`" :sizes="mare ? '(max-width: 800px) 92vw, 400px' : '(max-width: 640px) 90vw, 300px'" :alt="fisa.poza.alt ?? fisa.titlu" loading="lazy" decoding="async" width="480" height="480">
+      <img v-else-if="fisa.poza" class="foto" :src="srcPoza(fisa, 480)" :srcset="srcsetPoza(fisa)" :sizes="mare ? '(max-width: 800px) 92vw, 400px' : '(max-width: 640px) 90vw, 300px'" :alt="fisa.poza.alt ?? fisa.titlu" loading="lazy" decoding="async" width="480" height="480">
       <span class="eticheta">{{ fisa.categorie }}{{ fisa.oras ? ' · ' + fisa.oras : '' }}{{ aScenei ? ' · scena ta' : '' }}{{ fisa.proprie ? ' · a ta' : '' }}</span>
       <span v-if="avut" :key="stamped ? 'nou' : 'vechi'" class="stampila" :class="{ nou: stamped }" aria-hidden="true">{{ fisa.categorie === 'Locuri' ? 'Am fost acolo' : 'Am avut asta' }}</span>
       <div v-if="cuVideo" class="film-act">
@@ -128,7 +128,7 @@ const anText = computed(() => props.ascundeAn ? '????' : props.fisa.an + (props.
       Video: <a v-if="fisa.video.url" :href="fisa.video.url" target="_blank" rel="noopener">{{ fisa.video.autor }}</a><template v-else>{{ fisa.video.autor }}</template> · {{ fisa.video.licenta }}
     </p>
     <p v-else-if="fisa.poza?.generata" class="sursa credit">Ilustrație generată pentru Capsula</p>
-    <p v-else-if="fisa.poza" class="sursa credit">
+    <p v-else-if="fisa.poza && !fisa.proprie" class="sursa credit">
       Foto: <a v-if="fisa.poza.url" :href="fisa.poza.url" target="_blank" rel="noopener">{{ fisa.poza.autor }}</a><template v-else>{{ fisa.poza.autor }}</template> · {{ fisa.poza.licenta }}
     </p>
     <div v-if="actiuni && fisa.proprie" class="act">
