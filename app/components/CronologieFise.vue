@@ -365,6 +365,14 @@ function deschide(f: Fisa, e: MouseEvent) {
   selectata.value = f
   nextTick(() => { if (!leaga()) requestAnimationFrame(leaga) })
 }
+// Din „Seamănă cu”: altă fișă în aceeași fereastră. Ieșim din modul „poza pe televizor”, ca fișa nouă să-și arate poza.
+function schimba(f: Fisa) {
+  afisata.value = f
+  selectata.value = f
+  plecata.value = f.id
+  peTv.value = false
+  fisaPeTv.value = null
+}
 function inchide() {
   if (!selectata.value) return
   leaga()
@@ -508,7 +516,7 @@ const deschis = computed({ get: () => !!selectata.value, set: (v) => { if (!v) i
     :ui="{ overlay: 'fisa-voal bg-[#14211B]/75 data-[state=open]:animate-none data-[state=closed]:animate-none', content: 'max-w-[812px] cron-modal fisa-modal data-[state=open]:animate-none data-[state=closed]:animate-none bg-transparent ring-0 shadow-none divide-y-0', header: 'sr-only', body: 'p-2 sm:p-4 flex justify-center [scrollbar-width:none]' }"
   >
     <template #body>
-      <FisaPolaroid v-if="afisata" :fisa="afisata" mare :fara-poza="peTv" @inchide="inchide" />
+      <FisaPolaroid v-if="afisata" :fisa="afisata" mare :fara-poza="peTv" @inchide="inchide" @deschide="schimba" />
     </template>
   </UModal>
 </template>

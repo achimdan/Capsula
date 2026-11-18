@@ -150,5 +150,12 @@ export function fiseApi() {
     return fiseDinRanduri(data ?? [])
   }
 
-  return { toate }
+  // „Fișe asemănătoare”: vecinii după sens (pgvector), doar fișe publicate. Întoarce id-uri, în ordine.
+  async function similare(id: string): Promise<string[]> {
+    const { data, error } = await client.rpc('fise_similare', { p_fisa_id: id, match_count: 6 })
+    if (error) throw error
+    return ((data ?? []) as { fisa_id: string }[]).map(r => r.fisa_id)
+  }
+
+  return { toate, similare }
 }
