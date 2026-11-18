@@ -18,7 +18,8 @@
 [data-fundal="arhiva"]:is(:root,.previzualizare){--paper:#EFE6D0;--card:#FBF6E8;--ink:#2A2218;--muted:#5C503F;--line:#CFC2A3;--signal:#C24A1C;--on-signal:#FFFFFF;color-scheme:light}
 [data-fundal="bloc"]:is(:root,.previzualizare){--paper:#F3E3C8;--card:#FBF1DE;--ink:#2E2018;--muted:#66503C;--line:#DDC3A0;--signal:#C4471C;--on-signal:#FFFFFF;color-scheme:light}
 [data-fundal="pop"]:is(:root,.previzualizare){--paper:#FFF1CF;--card:#FFFAEA;--ink:#1E1B2E;--muted:#55506B;--line:#E8D3A0;--signal:#C2255C;--on-signal:#FFFFFF;color-scheme:light}
-[data-fundal="televizor"]:is(:root,.previzualizare),[data-fundal="televizor-90"]:is(:root,.previzualizare){--paper:#0B0A10;--card:#16141D;--ink:#E8E4F0;--muted:#A39FB3;--line:#2B2836;--signal:#FF8A4C;color-scheme:dark}
+[data-fundal="anuar"]:is(:root,.previzualizare){--paper:#EEECE6;--card:#E2DFD6;--ink:#121212;--muted:#56534C;--line:#CBC7BC;--signal:#D9461A;--on-signal:#FFFFFF;color-scheme:light}
+[data-fundal="televizor"]:is(:root,.previzualizare),[data-fundal="televizor-90"]:is(:root,.previzualizare),[data-fundal="caseta"]:is(:root,.previzualizare){--paper:#0B0A10;--card:#16141D;--ink:#E8E4F0;--muted:#A39FB3;--line:#2B2836;--signal:#FF8A4C;color-scheme:dark}
 /* Pe fundal decorat, pagina lasă fundalul să se vadă; antetul rămâne plin. */
 :root[data-fundal]:not([data-fundal="clasic"]) body{background:transparent}
 :root[data-fundal]:not([data-fundal="clasic"]){background:var(--paper)}
