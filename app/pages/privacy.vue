@@ -58,6 +58,7 @@ async function sterge() {
         <li><strong>Răspunsurile la test</strong>, ca să-l poți relua de unde ai rămas.</li>
         <li><strong>Caseta mea:</strong> fișele marcate „Am avut asta” sau „Am fost acolo”.</li>
         <li><strong>Amintirile tale:</strong> fișele scrise de tine (titlu, an, categorie, notă). Le vezi doar tu; cât le scrii, textul trece prin Cloudflare Workers AI (vezi mai jos).</li>
+        <li><strong>Pozele tale:</strong> pozele urcate la „Pune și tu o fișă”. Le micșorăm în browser înainte de urcare, iar datele ascunse din fișier, cum ar fi locul unde a fost făcută poza, nu mai ajung la noi. Stau într-un spațiu privat din Supabase Storage și se văd doar prin linkuri temporare. Le vezi tu și administratorul site-ului, care le poate șterge. Pleacă odată cu contul.</li>
       </ul>
       <p>
         Le folosim doar ca să-ți arătăm capsula personalizată și să-ți păstrăm salvările între dispozitive.
@@ -66,7 +67,7 @@ async function sterge() {
 
       <h2 class="d2">Pe cine folosim</h2>
       <ul>
-        <li><strong>Supabase</strong> găzduiește baza de date și conturile.</li>
+        <li><strong>Supabase</strong> găzduiește baza de date, conturile și pozele tale.</li>
         <li><strong>Cloudflare</strong> servește site-ul. Ca orice server, înregistrează cererile (inclusiv adresa IP) în jurnale tehnice.</li>
         <li>
           <strong>Cloudflare Workers AI</strong> transformă texte în vectori și scrie răspunsurile din „Întreabă capsula”.
